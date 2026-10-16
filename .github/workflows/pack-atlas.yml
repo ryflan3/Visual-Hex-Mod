@@ -36,7 +36,7 @@ jobs:
 
       - name: Commit the atlas if it changed
         run: |
-          git add game.atlas game*.png Atlases.json
+          git add -A -- game.atlas Atlases.json 'game*.png'
           if git diff --cached --quiet; then
             echo "Atlas already matches the images."
             exit 0

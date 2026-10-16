@@ -6,1366 +6,1967 @@ filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
 TileSets/Visual Hex Satellite/Arrows/Generic
   rotate: false
-  xy: 700, 1092
+  xy: 1396, 56
   size: 200, 120
   orig: 200, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Arrows/UnitAttacked
   rotate: false
-  xy: 932, 1294
+  xy: 1666, 1515
   size: 200, 120
   orig: 200, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Arrows/UnitHasAttacked
   rotate: false
-  xy: 700, 964
+  xy: 1604, 48
   size: 200, 120
   orig: 200, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Arrows/UnitMoved
   rotate: false
-  xy: 700, 836
+  xy: 1812, 48
   size: 200, 120
   orig: 200, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Arrows/UnitMoving
   rotate: false
-  xy: 700, 708
+  xy: 1396, 919
   size: 200, 120
   orig: 200, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Arrows/UnitTeleported
   rotate: false
-  xy: 700, 580
+  xy: 1604, 919
   size: 200, 120
   orig: 200, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Arrows/UnitWithdrew
   rotate: false
-  xy: 700, 452
+  xy: 1628, 1134
   size: 200, 120
   orig: 200, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Borders/ConcaveConvexInner
   rotate: false
-  xy: 4, 1999
+  xy: 4, 1994
   size: 243, 45
   orig: 243, 45
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Borders/ConcaveConvexOuter
   rotate: false
-  xy: 4, 1946
+  xy: 4, 1941
   size: 243, 45
   orig: 243, 45
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Borders/ConcaveInner
   rotate: false
-  xy: 255, 1999
+  xy: 4, 1888
   size: 243, 45
   orig: 243, 45
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Borders/ConcaveOuter
   rotate: false
-  xy: 4, 1893
+  xy: 4, 1835
   size: 243, 45
   orig: 243, 45
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Borders/ConvexConcaveInner
   rotate: false
-  xy: 255, 1946
+  xy: 4, 1782
   size: 243, 45
   orig: 243, 45
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Borders/ConvexConcaveOuter
   rotate: false
-  xy: 506, 1999
+  xy: 255, 1782
   size: 243, 45
   orig: 243, 45
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Borders/ConvexInner
   rotate: false
-  xy: 4, 1840
+  xy: 255, 1994
   size: 243, 45
   orig: 243, 45
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Borders/ConvexOuter
   rotate: false
-  xy: 255, 1893
+  xy: 506, 1994
   size: 243, 45
   orig: 243, 45
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Crosshair
   rotate: false
-  xy: 4, 1075
+  xy: 236, 1603
   size: 224, 171
   orig: 224, 171
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/CrosshatchHexagon
   rotate: false
-  xy: 4, 873
+  xy: 757, 1845
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-Bottom
-  rotate: false
-  xy: 932, 1266
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-BottomLeft
-  rotate: false
-  xy: 700, 380
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-BottomRight
-  rotate: false
-  xy: 1917, 1909
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-Top
-  rotate: false
-  xy: 700, 275
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-TopLeft
-  rotate: false
-  xy: 1917, 1804
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-TopRight
-  rotate: false
-  xy: 700, 170
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-Bottom
-  rotate: false
-  xy: 4, 12
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-BottomLeft
-  rotate: false
-  xy: 1917, 1733
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-BottomRight
-  rotate: false
-  xy: 700, 97
-  size: 112, 65
-  orig: 112, 65
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-Top
-  rotate: false
-  xy: 1917, 1628
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-TopLeft
-  rotate: false
-  xy: 1917, 1523
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-TopRight
-  rotate: false
-  xy: 820, 347
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-Bottom
-  rotate: false
-  xy: 932, 1237
-  size: 112, 21
-  orig: 112, 21
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-BottomLeft
-  rotate: false
-  xy: 604, 12
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-BottomRight
-  rotate: false
-  xy: 724, 22
-  size: 112, 67
-  orig: 112, 67
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-Top
-  rotate: false
-  xy: 1140, 1317
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-TopLeft
-  rotate: false
-  xy: 1052, 1189
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-TopRight
-  rotate: false
-  xy: 932, 1132
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-Bottom
-  rotate: false
-  xy: 1052, 1160
-  size: 112, 21
-  orig: 112, 21
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-BottomLeft
-  rotate: false
-  xy: 908, 1061
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-BottomRight
-  rotate: false
-  xy: 908, 988
-  size: 112, 65
-  orig: 112, 65
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-Top
-  rotate: false
-  xy: 908, 883
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-TopLeft
-  rotate: false
-  xy: 908, 778
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-TopRight
-  rotate: false
-  xy: 908, 673
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-Bottom
-  rotate: false
-  xy: 908, 644
-  size: 112, 21
-  orig: 112, 21
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-BottomLeft
-  rotate: false
-  xy: 908, 573
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-BottomRight
-  rotate: false
-  xy: 908, 503
-  size: 112, 62
-  orig: 112, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-Top
-  rotate: false
-  xy: 1172, 1212
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-TopLeft
-  rotate: false
-  xy: 1172, 1107
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-TopRight
-  rotate: false
-  xy: 1052, 1055
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-Bottom
-  rotate: false
-  xy: 908, 477
-  size: 112, 18
-  orig: 112, 18
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-BottomLeft
-  rotate: false
-  xy: 1172, 1036
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-BottomRight
-  rotate: false
-  xy: 1028, 985
-  size: 112, 62
-  orig: 112, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-Top
-  rotate: false
-  xy: 1028, 880
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-TopLeft
-  rotate: false
-  xy: 1028, 775
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-TopRight
-  rotate: false
-  xy: 1028, 670
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-Bottom
-  rotate: false
-  xy: 1028, 642
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-BottomLeft
-  rotate: false
-  xy: 1028, 570
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-BottomRight
-  rotate: false
-  xy: 1028, 499
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-Top
-  rotate: false
-  xy: 1148, 931
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-TopLeft
-  rotate: false
-  xy: 940, 372
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-TopRight
-  rotate: false
-  xy: 1060, 394
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-Bottom
-  rotate: false
-  xy: 940, 344
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-BottomLeft
-  rotate: false
-  xy: 1060, 320
-  size: 112, 66
-  orig: 112, 66
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-BottomRight
-  rotate: false
-  xy: 940, 273
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-Top
-  rotate: false
-  xy: 1060, 215
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-TopLeft
-  rotate: false
-  xy: 940, 168
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-TopRight
-  rotate: false
-  xy: 1060, 110
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-Bottom
-  rotate: false
-  xy: 940, 139
-  size: 112, 21
-  orig: 112, 21
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-BottomLeft
-  rotate: false
-  xy: 940, 66
-  size: 112, 65
-  orig: 112, 65
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-BottomRight
-  rotate: false
-  xy: 1060, 41
-  size: 112, 61
-  orig: 112, 61
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-Top
-  rotate: false
-  xy: 1268, 931
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-TopLeft
-  rotate: false
-  xy: 1202, 1543
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-TopRight
-  rotate: false
-  xy: 1322, 1543
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-Bottom
-  rotate: false
-  xy: 1442, 1620
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-BottomLeft
-  rotate: false
-  xy: 1442, 1548
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-BottomRight
-  rotate: false
-  xy: 1562, 1576
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-Top
-  rotate: false
-  xy: 1183, 1438
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-TopLeft
-  rotate: false
-  xy: 1303, 1438
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-TopRight
-  rotate: false
-  xy: 1260, 1333
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-Bottom
-  rotate: false
-  xy: 1260, 1320
-  size: 112, 5
-  orig: 112, 5
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-BottomLeft
-  rotate: false
-  xy: 1292, 1261
-  size: 112, 51
-  orig: 112, 51
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-BottomRight
-  rotate: false
-  xy: 1292, 1201
-  size: 112, 52
-  orig: 112, 52
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-Bottom
-  rotate: false
-  xy: 1292, 1173
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-BottomLeft
-  rotate: false
-  xy: 1292, 1101
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-BottomRight
-  rotate: false
-  xy: 1442, 1478
-  size: 112, 62
-  orig: 112, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-Top
-  rotate: false
-  xy: 1423, 1373
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-TopLeft
-  rotate: false
-  xy: 1412, 1268
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-TopRight
-  rotate: false
-  xy: 1412, 1163
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-Bottom
-  rotate: false
-  xy: 1292, 1073
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-BottomLeft
-  rotate: false
-  xy: 1412, 1091
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-BottomRight
-  rotate: false
-  xy: 1268, 864
-  size: 112, 59
-  orig: 112, 59
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-Top
-  rotate: false
-  xy: 1543, 1373
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-TopLeft
-  rotate: false
-  xy: 1532, 1268
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-TopRight
-  rotate: false
-  xy: 1532, 1163
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-Bottom
-  rotate: false
-  xy: 1292, 1047
-  size: 112, 18
-  orig: 112, 18
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-BottomLeft
-  rotate: false
-  xy: 1532, 1094
-  size: 112, 61
-  orig: 112, 61
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-BottomRight
-  rotate: false
-  xy: 1532, 1025
-  size: 112, 61
-  orig: 112, 61
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-Top
-  rotate: false
-  xy: 1663, 1431
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-TopLeft
-  rotate: false
-  xy: 1783, 1431
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-TopRight
-  rotate: false
-  xy: 1903, 1418
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-Bottom
-  rotate: false
-  xy: 1663, 1406
-  size: 112, 17
-  orig: 112, 17
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-BottomLeft
-  rotate: false
-  xy: 1783, 1360
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-BottomRight
-  rotate: false
-  xy: 1663, 1336
-  size: 112, 62
-  orig: 112, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-Top
-  rotate: false
-  xy: 1903, 1313
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-TopLeft
-  rotate: false
-  xy: 1783, 1255
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-TopRight
-  rotate: false
-  xy: 1663, 1231
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-Bottom
-  rotate: false
-  xy: 1903, 1285
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-BottomLeft
-  rotate: false
-  xy: 1652, 1163
-  size: 112, 60
-  orig: 112, 60
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-BottomRight
-  rotate: false
-  xy: 1652, 1092
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-Top
-  rotate: false
-  xy: 1652, 987
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-TopLeft
-  rotate: false
-  xy: 1903, 1180
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-TopRight
-  rotate: false
-  xy: 1783, 1150
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-Bottom
-  rotate: false
-  xy: 1903, 1154
-  size: 112, 18
-  orig: 112, 18
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-BottomLeft
-  rotate: false
-  xy: 1772, 1079
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-BottomRight
-  rotate: false
-  xy: 1772, 1005
-  size: 112, 66
-  orig: 112, 66
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-Top
-  rotate: false
-  xy: 1772, 900
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-TopLeft
-  rotate: false
-  xy: 1903, 1049
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-TopRight
-  rotate: false
-  xy: 1268, 759
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-Bottom
-  rotate: false
-  xy: 1268, 717
-  size: 112, 34
-  orig: 112, 34
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-BottomLeft
-  rotate: false
-  xy: 1268, 635
-  size: 112, 74
-  orig: 112, 74
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-BottomRight
-  rotate: false
-  xy: 1268, 553
-  size: 112, 74
-  orig: 112, 74
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-Top
-  rotate: false
-  xy: 1268, 448
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-TopLeft
-  rotate: false
-  xy: 1180, 343
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-TopRight
-  rotate: false
-  xy: 1180, 238
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-Bottom
-  rotate: false
-  xy: 1180, 222
-  size: 112, 8
-  orig: 112, 8
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-BottomLeft
-  rotate: false
-  xy: 1180, 159
-  size: 112, 55
-  orig: 112, 55
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-BottomRight
-  rotate: false
-  xy: 1180, 98
-  size: 112, 53
-  orig: 112, 53
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-Top
-  rotate: false
-  xy: 1300, 343
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-TopLeft
-  rotate: false
-  xy: 1300, 238
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-TopRight
-  rotate: false
-  xy: 1300, 133
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-Bottom
-  rotate: false
-  xy: 724, 4
-  size: 112, 10
-  orig: 112, 10
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-BottomLeft
-  rotate: false
-  xy: 1180, 34
-  size: 112, 56
-  orig: 112, 56
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-BottomRight
-  rotate: false
-  xy: 1300, 68
-  size: 112, 57
-  orig: 112, 57
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-Top
-  rotate: false
-  xy: 1388, 942
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-TopLeft
-  rotate: false
-  xy: 1388, 837
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-TopRight
-  rotate: false
-  xy: 1388, 732
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-Bottom
-  rotate: false
-  xy: 1388, 713
-  size: 112, 11
-  orig: 112, 11
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-BottomLeft
-  rotate: false
-  xy: 1388, 653
-  size: 112, 52
-  orig: 112, 52
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-BottomRight
-  rotate: false
-  xy: 1388, 590
-  size: 112, 55
-  orig: 112, 55
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-Top
-  rotate: false
-  xy: 1388, 485
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-TopLeft
-  rotate: false
-  xy: 1508, 920
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-TopRight
-  rotate: false
-  xy: 1628, 882
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-Bottom
-  rotate: false
-  xy: 1388, 467
-  size: 112, 10
-  orig: 112, 10
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-BottomLeft
-  rotate: false
-  xy: 1420, 406
-  size: 112, 53
-  orig: 112, 53
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-BottomRight
-  rotate: false
-  xy: 1420, 343
-  size: 112, 55
-  orig: 112, 55
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-Top
-  rotate: false
-  xy: 1420, 238
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-TopLeft
-  rotate: false
-  xy: 1420, 133
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-TopRight
-  rotate: false
-  xy: 1420, 28
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-Bottom
-  rotate: false
-  xy: 124, 23
-  size: 112, 9
-  orig: 112, 9
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-BottomLeft
-  rotate: false
-  xy: 1748, 835
-  size: 112, 57
-  orig: 112, 57
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-BottomRight
-  rotate: false
-  xy: 844, 4
-  size: 112, 54
-  orig: 112, 54
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-Top
-  rotate: false
-  xy: 1508, 795
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-TopLeft
-  rotate: false
-  xy: 1628, 777
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-TopRight
-  rotate: false
-  xy: 1508, 690
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
 TileSets/Visual Hex Satellite/Hexagon
   rotate: false
-  xy: 255, 1691
+  xy: 700, 754
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Highlight
   rotate: false
-  xy: 236, 1516
+  xy: 970, 1467
   size: 224, 167
   orig: 224, 167
   offset: 0, 0
   index: -1
-TileSets/Visual Hex Satellite/Railroad
+TileSets/Visual Hex Satellite/Tiles/Academy
   rotate: false
-  xy: 468, 4
-  size: 128, 72
-  orig: 128, 72
+  xy: 1604, 761
+  size: 192, 150
+  orig: 192, 150
   offset: 0, 0
   index: -1
-TileSets/Visual Hex Satellite/Road
+TileSets/Visual Hex Satellite/Tiles/Ancient ruins
   rotate: false
-  xy: 1917, 1980
-  size: 120, 64
-  orig: 120, 64
+  xy: 1396, 776
+  size: 192, 135
+  orig: 192, 135
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Atoll
   rotate: false
-  xy: 4, 1658
+  xy: 506, 1812
   size: 224, 174
   orig: 224, 174
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Barbarian encampment
+  rotate: false
+  xy: 1628, 611
+  size: 192, 142
+  orig: 192, 142
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Barringer Crater
+  rotate: false
+  xy: 506, 1602
+  size: 224, 202
+  orig: 224, 202
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Camp
+  rotate: false
+  xy: 1812, 963
+  size: 192, 163
+  orig: 192, 163
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Cerro de Potosi
+  rotate: false
+  xy: 4, 1556
+  size: 224, 218
+  orig: 224, 218
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Citadel
+  rotate: false
+  xy: 1812, 803
+  size: 192, 152
+  orig: 192, 152
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City center
+  rotate: false
+  xy: 236, 1411
+  size: 224, 183
+  orig: 224, 183
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City center-Ancient era
+  rotate: false
+  xy: 236, 1411
+  size: 224, 183
+  orig: 224, 183
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City center-Classical era
+  rotate: false
+  xy: 4, 1362
+  size: 224, 186
+  orig: 224, 186
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City center-Industrial era
+  rotate: false
+  xy: 468, 1385
+  size: 224, 209
+  orig: 224, 209
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City center-Information era
+  rotate: false
+  xy: 236, 1208
+  size: 224, 195
+  orig: 224, 195
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City center-Medieval era
+  rotate: false
+  xy: 4, 1163
+  size: 224, 191
+  orig: 224, 191
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City center-Modern era
+  rotate: false
+  xy: 468, 1182
+  size: 224, 195
+  orig: 224, 195
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City center-Renaissance era
+  rotate: false
+  xy: 236, 1009
+  size: 224, 191
+  orig: 224, 191
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/City ruins
+  rotate: false
+  xy: 1628, 451
+  size: 192, 152
+  orig: 192, 152
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Coast
   rotate: false
-  xy: 4, 1456
+  xy: 4, 961
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Coast2
   rotate: false
-  xy: 4, 1254
+  xy: 700, 1183
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Customs house
+  rotate: false
+  xy: 1828, 453
+  size: 192, 150
+  orig: 192, 150
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Desert
   rotate: false
-  xy: 4, 671
+  xy: 738, 1643
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Desert2
   rotate: false
-  xy: 4, 469
+  xy: 738, 1441
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Desert3
   rotate: false
-  xy: 4, 267
+  xy: 932, 1239
   size: 224, 194
   orig: 224, 194
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/El Dorado
+  rotate: false
+  xy: 989, 1844
+  size: 224, 195
+  orig: 224, 195
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Fallout
   rotate: false
-  xy: 4, 65
+  xy: 970, 1642
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Farm
+  rotate: false
+  xy: 1828, 628
+  size: 192, 167
+  orig: 192, 167
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Fishing Boats
+  rotate: false
+  xy: 1396, 633
+  size: 192, 135
+  orig: 192, 135
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Flood plains
   rotate: false
-  xy: 506, 1797
+  xy: 932, 1037
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Forest
   rotate: false
-  xy: 757, 1826
+  xy: 468, 956
   size: 224, 218
   orig: 224, 218
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Forest2
   rotate: false
-  xy: 989, 1826
+  xy: 4, 735
   size: 224, 218
   orig: 224, 218
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Fountain of Youth
+  rotate: false
+  xy: 236, 758
+  size: 224, 195
+  orig: 224, 195
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Grand Mesa
+  rotate: false
+  xy: 700, 962
+  size: 224, 212
+  orig: 224, 212
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Grassland
   rotate: false
-  xy: 1221, 1850
+  xy: 932, 835
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Grassland2
   rotate: false
-  xy: 1453, 1850
+  xy: 468, 754
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Grassland3
   rotate: false
-  xy: 1685, 1850
+  xy: 236, 556
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Great Barrier Reef
+  rotate: false
+  xy: 4, 532
+  size: 224, 195
+  orig: 224, 195
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Hill
   rotate: false
-  xy: 236, 1316
+  xy: 932, 635
   size: 224, 192
   orig: 224, 192
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Hill2
   rotate: false
-  xy: 236, 1115
+  xy: 468, 553
   size: 224, 193
   orig: 224, 193
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Ice
   rotate: false
-  xy: 236, 913
+  xy: 236, 354
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Jungle
   rotate: false
-  xy: 236, 680
+  xy: 4, 299
   size: 224, 225
   orig: 224, 225
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Jungle2
   rotate: false
-  xy: 236, 447
+  xy: 700, 521
   size: 224, 225
   orig: 224, 225
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/King Solomon's Mines
+  rotate: false
+  xy: 468, 350
+  size: 224, 195
+  orig: 224, 195
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Krakatoa
+  rotate: false
+  xy: 236, 89
+  size: 224, 257
+  orig: 224, 257
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Lake Victoria
+  rotate: false
+  xy: 4, 89
+  size: 224, 202
+  orig: 224, 202
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Lakes
   rotate: false
-  xy: 236, 245
+  xy: 1164, 633
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Marsh
   rotate: false
-  xy: 236, 43
+  xy: 932, 433
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Mount Fuji
+  rotate: false
+  xy: 700, 289
+  size: 224, 224
+  orig: 224, 224
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Mount Kailash
+  rotate: false
+  xy: 468, 91
+  size: 224, 251
+  orig: 224, 251
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Mount Kilimanjaro
+  rotate: false
+  xy: 1164, 1257
+  size: 224, 202
+  orig: 224, 202
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Mount Sinai
+  rotate: false
+  xy: 1221, 1837
+  size: 224, 202
+  orig: 224, 202
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Mountain
   rotate: false
-  xy: 487, 1587
+  xy: 1202, 1627
   size: 224, 202
   orig: 224, 202
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Mountain2
   rotate: false
-  xy: 468, 1375
+  xy: 1164, 1045
   size: 224, 204
   orig: 224, 204
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Mountain3
   rotate: false
-  xy: 468, 1165
+  xy: 1396, 1047
   size: 224, 202
   orig: 224, 202
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Oasis
   rotate: false
-  xy: 468, 1004
+  xy: 1434, 1676
   size: 224, 153
   orig: 224, 153
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Ocean
   rotate: false
-  xy: 468, 802
+  xy: 1453, 1845
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Ocean2
   rotate: false
-  xy: 468, 600
+  xy: 1434, 1474
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Ocean3
   rotate: false
-  xy: 468, 398
+  xy: 1396, 1272
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Old Faithful
+  rotate: false
+  xy: 1628, 1262
+  size: 224, 204
+  orig: 224, 204
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Plains
   rotate: false
-  xy: 468, 196
+  xy: 1666, 1643
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Plains2
   rotate: false
-  xy: 1221, 1648
+  xy: 1685, 1845
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Plains3
   rotate: false
-  xy: 1453, 1648
+  xy: 1164, 843
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/River-Bottom
   rotate: false
-  xy: 4, 40
+  xy: 236, 984
   size: 224, 17
   orig: 224, 17
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/River-BottomLeft
   rotate: false
-  xy: 468, 84
+  xy: 1202, 1515
   size: 224, 104
   orig: 224, 104
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/River-BottomRight
   rotate: false
-  xy: 1685, 1738
+  xy: 255, 1882
   size: 224, 104
   orig: 224, 104
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Rock of Gibraltar
+  rotate: false
+  xy: 1164, 408
+  size: 224, 217
+  orig: 224, 217
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Snow
   rotate: false
-  xy: 1685, 1536
+  xy: 932, 231
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Snow2
   rotate: false
-  xy: 738, 1624
+  xy: 700, 87
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Sri Pada
+  rotate: false
+  xy: 1396, 386
+  size: 224, 239
+  orig: 224, 239
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Tiles/Tundra
   rotate: false
-  xy: 970, 1624
+  xy: 1164, 206
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Tundra2
   rotate: false
-  xy: 719, 1422
+  xy: 932, 29
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Tundra3
   rotate: false
-  xy: 951, 1422
+  xy: 1396, 184
   size: 224, 194
   orig: 224, 194
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Tiles/Uluru
+  rotate: false
+  xy: 1628, 176
+  size: 224, 202
+  orig: 224, 202
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/UnexploredTile
   rotate: false
-  xy: 700, 1220
+  xy: 1164, 4
   size: 224, 194
   orig: 224, 194
+  offset: 0, 0
+  index: -1
+
+game2.png
+size: 2048, 2048
+format: RGBA8888
+filter: MipMapLinearLinear, MipMapLinearLinear
+repeat: none
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-Bottom
+  rotate: false
+  xy: 4, 4
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-BottomLeft
+  rotate: false
+  xy: 1908, 1895
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-BottomRight
+  rotate: false
+  xy: 1612, 1393
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-Top
+  rotate: false
+  xy: 1612, 1288
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-TopLeft
+  rotate: false
+  xy: 1908, 1790
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-TopRight
+  rotate: false
+  xy: 1444, 1176
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-Bottom
+  rotate: false
+  xy: 1612, 1260
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-BottomLeft
+  rotate: false
+  xy: 1564, 1189
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-BottomRight
+  rotate: false
+  xy: 1564, 1116
+  size: 112, 65
+  orig: 112, 65
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-Top
+  rotate: false
+  xy: 1684, 1155
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-TopLeft
+  rotate: false
+  xy: 1732, 1359
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-TopRight
+  rotate: false
+  xy: 204, 1474
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-Bottom
+  rotate: false
+  xy: 1732, 1330
+  size: 112, 21
+  orig: 112, 21
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-BottomLeft
+  rotate: false
+  xy: 1740, 1464
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-BottomRight
+  rotate: false
+  xy: 204, 1399
+  size: 112, 67
+  orig: 112, 67
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-Top
+  rotate: false
+  xy: 204, 1294
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-TopLeft
+  rotate: false
+  xy: 204, 1189
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-TopRight
+  rotate: false
+  xy: 204, 1084
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-Bottom
+  rotate: false
+  xy: 1732, 1301
+  size: 112, 21
+  orig: 112, 21
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-BottomLeft
+  rotate: false
+  xy: 204, 1013
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-BottomRight
+  rotate: false
+  xy: 204, 940
+  size: 112, 65
+  orig: 112, 65
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-Top
+  rotate: false
+  xy: 204, 835
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-TopLeft
+  rotate: false
+  xy: 204, 730
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-TopRight
+  rotate: false
+  xy: 204, 625
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-Bottom
+  rotate: false
+  xy: 1732, 1272
+  size: 112, 21
+  orig: 112, 21
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-BottomLeft
+  rotate: false
+  xy: 204, 554
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-BottomRight
+  rotate: false
+  xy: 1804, 1202
+  size: 112, 62
+  orig: 112, 62
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-Top
+  rotate: false
+  xy: 1804, 1097
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-TopLeft
+  rotate: false
+  xy: 1852, 1359
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-TopRight
+  rotate: false
+  xy: 324, 1474
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-Bottom
+  rotate: false
+  xy: 1852, 1333
+  size: 112, 18
+  orig: 112, 18
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-BottomLeft
+  rotate: false
+  xy: 324, 1403
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-BottomRight
+  rotate: false
+  xy: 324, 1333
+  size: 112, 62
+  orig: 112, 62
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-Top
+  rotate: false
+  xy: 324, 1228
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-TopLeft
+  rotate: false
+  xy: 324, 1123
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-TopRight
+  rotate: false
+  xy: 324, 1018
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-Bottom
+  rotate: false
+  xy: 1852, 1305
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-BottomLeft
+  rotate: false
+  xy: 324, 946
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-BottomRight
+  rotate: false
+  xy: 324, 875
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-Top
+  rotate: false
+  xy: 324, 770
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-TopLeft
+  rotate: false
+  xy: 324, 665
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-TopRight
+  rotate: false
+  xy: 324, 560
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-Bottom
+  rotate: false
+  xy: 1852, 1277
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-BottomLeft
+  rotate: false
+  xy: 340, 486
+  size: 112, 66
+  orig: 112, 66
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-BottomRight
+  rotate: false
+  xy: 340, 415
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-Top
+  rotate: false
+  xy: 1924, 1172
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-TopLeft
+  rotate: false
+  xy: 1924, 1067
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-TopRight
+  rotate: false
+  xy: 340, 310
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-Bottom
+  rotate: false
+  xy: 340, 281
+  size: 112, 21
+  orig: 112, 21
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-BottomLeft
+  rotate: false
+  xy: 340, 208
+  size: 112, 65
+  orig: 112, 65
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-BottomRight
+  rotate: false
+  xy: 340, 139
+  size: 112, 61
+  orig: 112, 61
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-Top
+  rotate: false
+  xy: 340, 34
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-TopLeft
+  rotate: false
+  xy: 1780, 1685
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-TopRight
+  rotate: false
+  xy: 1780, 1580
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-Bottom
+  rotate: false
+  xy: 1780, 1552
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-BottomLeft
+  rotate: false
+  xy: 1900, 1718
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-BottomRight
+  rotate: false
+  xy: 1900, 1646
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-Top
+  rotate: false
+  xy: 1900, 1541
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-TopLeft
+  rotate: false
+  xy: 444, 1474
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-TopRight
+  rotate: false
+  xy: 444, 1369
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-Bottom
+  rotate: false
+  xy: 1780, 1539
+  size: 112, 5
+  orig: 112, 5
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-BottomLeft
+  rotate: false
+  xy: 444, 1310
+  size: 112, 51
+  orig: 112, 51
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-BottomRight
+  rotate: false
+  xy: 444, 1250
+  size: 112, 52
+  orig: 112, 52
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-Bottom
+  rotate: false
+  xy: 444, 1222
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-BottomLeft
+  rotate: false
+  xy: 444, 1150
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-BottomRight
+  rotate: false
+  xy: 444, 1080
+  size: 112, 62
+  orig: 112, 62
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-Top
+  rotate: false
+  xy: 444, 975
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-TopLeft
+  rotate: false
+  xy: 444, 870
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-TopRight
+  rotate: false
+  xy: 444, 765
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-Bottom
+  rotate: false
+  xy: 444, 737
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-BottomLeft
+  rotate: false
+  xy: 444, 665
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-BottomRight
+  rotate: false
+  xy: 444, 598
+  size: 112, 59
+  orig: 112, 59
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-Top
+  rotate: false
+  xy: 564, 1380
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-TopLeft
+  rotate: false
+  xy: 684, 1380
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-TopRight
+  rotate: false
+  xy: 804, 1380
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-Bottom
+  rotate: false
+  xy: 444, 572
+  size: 112, 18
+  orig: 112, 18
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-BottomLeft
+  rotate: false
+  xy: 460, 503
+  size: 112, 61
+  orig: 112, 61
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-BottomRight
+  rotate: false
+  xy: 460, 434
+  size: 112, 61
+  orig: 112, 61
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-Top
+  rotate: false
+  xy: 460, 329
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-TopLeft
+  rotate: false
+  xy: 460, 224
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-TopRight
+  rotate: false
+  xy: 460, 119
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-Bottom
+  rotate: false
+  xy: 460, 94
+  size: 112, 17
+  orig: 112, 17
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-BottomLeft
+  rotate: false
+  xy: 460, 23
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-BottomRight
+  rotate: false
+  xy: 1900, 1471
+  size: 112, 62
+  orig: 112, 62
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-Top
+  rotate: false
+  xy: 684, 1275
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-TopLeft
+  rotate: false
+  xy: 804, 1275
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-TopRight
+  rotate: false
+  xy: 564, 1262
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-Bottom
+  rotate: false
+  xy: 564, 1234
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-BottomLeft
+  rotate: false
+  xy: 564, 1166
+  size: 112, 60
+  orig: 112, 60
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-BottomRight
+  rotate: false
+  xy: 684, 1204
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-Top
+  rotate: false
+  xy: 564, 1061
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-TopLeft
+  rotate: false
+  xy: 564, 956
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-TopRight
+  rotate: false
+  xy: 564, 851
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-Bottom
+  rotate: false
+  xy: 804, 1249
+  size: 112, 18
+  orig: 112, 18
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-BottomLeft
+  rotate: false
+  xy: 564, 780
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-BottomRight
+  rotate: false
+  xy: 564, 706
+  size: 112, 66
+  orig: 112, 66
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-Top
+  rotate: false
+  xy: 564, 601
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-TopLeft
+  rotate: false
+  xy: 924, 1262
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-TopRight
+  rotate: false
+  xy: 580, 496
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-Bottom
+  rotate: false
+  xy: 804, 1207
+  size: 112, 34
+  orig: 112, 34
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-BottomLeft
+  rotate: false
+  xy: 580, 414
+  size: 112, 74
+  orig: 112, 74
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-BottomRight
+  rotate: false
+  xy: 580, 332
+  size: 112, 74
+  orig: 112, 74
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-Top
+  rotate: false
+  xy: 580, 227
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-TopLeft
+  rotate: false
+  xy: 580, 122
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-TopRight
+  rotate: false
+  xy: 580, 17
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-Bottom
+  rotate: false
+  xy: 924, 1246
+  size: 112, 8
+  orig: 112, 8
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-BottomLeft
+  rotate: false
+  xy: 804, 1144
+  size: 112, 55
+  orig: 112, 55
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-BottomRight
+  rotate: false
+  xy: 1044, 1304
+  size: 112, 53
+  orig: 112, 53
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-Top
+  rotate: false
+  xy: 1044, 1199
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-TopLeft
+  rotate: false
+  xy: 684, 1071
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-TopRight
+  rotate: false
+  xy: 684, 966
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-Bottom
+  rotate: false
+  xy: 804, 1126
+  size: 112, 10
+  orig: 112, 10
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-BottomLeft
+  rotate: false
+  xy: 684, 902
+  size: 112, 56
+  orig: 112, 56
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-BottomRight
+  rotate: false
+  xy: 804, 1061
+  size: 112, 57
+  orig: 112, 57
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-Top
+  rotate: false
+  xy: 684, 797
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-TopLeft
+  rotate: false
+  xy: 804, 956
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-TopRight
+  rotate: false
+  xy: 684, 692
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-Bottom
+  rotate: false
+  xy: 804, 937
+  size: 112, 11
+  orig: 112, 11
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-BottomLeft
+  rotate: false
+  xy: 684, 632
+  size: 112, 52
+  orig: 112, 52
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-BottomRight
+  rotate: false
+  xy: 804, 874
+  size: 112, 55
+  orig: 112, 55
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-Top
+  rotate: false
+  xy: 804, 769
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-TopLeft
+  rotate: false
+  xy: 804, 664
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-TopRight
+  rotate: false
+  xy: 700, 527
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-Bottom
+  rotate: false
+  xy: 700, 509
+  size: 112, 10
+  orig: 112, 10
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-BottomLeft
+  rotate: false
+  xy: 700, 448
+  size: 112, 53
+  orig: 112, 53
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-BottomRight
+  rotate: false
+  xy: 700, 385
+  size: 112, 55
+  orig: 112, 55
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-Top
+  rotate: false
+  xy: 700, 280
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-TopLeft
+  rotate: false
+  xy: 700, 175
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-TopRight
+  rotate: false
+  xy: 700, 70
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-Bottom
+  rotate: false
+  xy: 804, 647
+  size: 112, 9
+  orig: 112, 9
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-BottomLeft
+  rotate: false
+  xy: 700, 5
+  size: 112, 57
+  orig: 112, 57
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-BottomRight
+  rotate: false
+  xy: 820, 585
+  size: 112, 54
+  orig: 112, 54
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-Top
+  rotate: false
+  xy: 820, 480
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-TopLeft
+  rotate: false
+  xy: 820, 375
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-TopRight
+  rotate: false
+  xy: 820, 270
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Railroad
+  rotate: false
+  xy: 1908, 1967
+  size: 128, 72
+  orig: 128, 72
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Road
+  rotate: false
+  xy: 1612, 1464
+  size: 120, 64
+  orig: 120, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Aluminum
+  rotate: false
+  xy: 1404, 1918
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Bananas
+  rotate: false
+  xy: 4, 421
+  size: 160, 120
+  orig: 160, 120
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Bison
+  rotate: false
+  xy: 1572, 1918
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Cattle
+  rotate: false
+  xy: 4, 292
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Citrus
+  rotate: false
+  xy: 1740, 1920
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Coal
+  rotate: false
+  xy: 4, 162
+  size: 160, 122
+  orig: 160, 122
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Cocoa
+  rotate: false
+  xy: 4, 32
+  size: 160, 122
+  orig: 160, 122
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Copper
+  rotate: false
+  xy: 1204, 1774
+  size: 160, 118
+  orig: 160, 118
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Cotton
+  rotate: false
+  xy: 1404, 1791
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Crab
+  rotate: false
+  xy: 1572, 1790
+  size: 160, 120
+  orig: 160, 120
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Deer
+  rotate: false
+  xy: 1740, 1792
+  size: 160, 120
+  orig: 160, 120
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Dyes
+  rotate: false
+  xy: 604, 1741
+  size: 160, 123
+  orig: 160, 123
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Fish
+  rotate: false
+  xy: 804, 1750
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Fort
+  rotate: false
+  xy: 4, 1887
+  size: 192, 152
+  orig: 192, 152
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Furs
+  rotate: false
+  xy: 1004, 1753
+  size: 160, 120
+  orig: 160, 120
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Gems
+  rotate: false
+  xy: 604, 1615
+  size: 160, 118
+  orig: 160, 118
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Gold Ore
+  rotate: false
+  xy: 772, 1621
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Holy site
+  rotate: false
+  xy: 4, 1732
+  size: 192, 147
+  orig: 192, 147
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Horses
+  rotate: false
+  xy: 604, 1485
+  size: 160, 122
+  orig: 160, 122
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Incense
+  rotate: false
+  xy: 172, 402
+  size: 160, 139
+  orig: 160, 139
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Iron
+  rotate: false
+  xy: 940, 1622
+  size: 160, 120
+  orig: 160, 120
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Ivory
+  rotate: false
+  xy: 1108, 1623
+  size: 160, 122
+  orig: 160, 122
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Landmark
+  rotate: false
+  xy: 204, 1892
+  size: 192, 147
+  orig: 192, 147
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Lumber mill
+  rotate: false
+  xy: 4, 1579
+  size: 192, 145
+  orig: 192, 145
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Manufactory
+  rotate: false
+  xy: 204, 1693
+  size: 192, 191
+  orig: 192, 191
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Marble
+  rotate: false
+  xy: 1276, 1645
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Mine
+  rotate: false
+  xy: 404, 1861
+  size: 192, 178
+  orig: 192, 178
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Moai
+  rotate: false
+  xy: 4, 1447
+  size: 192, 124
+  orig: 192, 124
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Offshore Platform
+  rotate: false
+  xy: 4, 1229
+  size: 192, 210
+  orig: 192, 210
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Oil
+  rotate: false
+  xy: 1276, 1526
+  size: 160, 111
+  orig: 160, 111
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Oil well
+  rotate: false
+  xy: 604, 1872
+  size: 192, 167
+  orig: 192, 167
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Pasture
+  rotate: false
+  xy: 4, 1061
+  size: 192, 160
+  orig: 192, 160
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Pearls
+  rotate: false
+  xy: 1108, 1493
+  size: 160, 122
+  orig: 160, 122
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Plantation
+  rotate: false
+  xy: 804, 1877
+  size: 192, 162
+  orig: 192, 162
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Polder
+  rotate: false
+  xy: 4, 887
+  size: 192, 166
+  orig: 192, 166
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Quarry
+  rotate: false
+  xy: 1004, 1881
+  size: 192, 158
+  orig: 192, 158
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Salt
+  rotate: false
+  xy: 940, 1494
+  size: 160, 120
+  orig: 160, 120
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Sheep
+  rotate: false
+  xy: 772, 1485
+  size: 160, 122
+  orig: 160, 122
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Silk
+  rotate: false
+  xy: 1276, 1397
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Silver
+  rotate: false
+  xy: 940, 1367
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Spices
+  rotate: false
+  xy: 1108, 1365
+  size: 160, 120
+  orig: 160, 120
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Stone
+  rotate: false
+  xy: 1276, 1270
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Sugar
+  rotate: false
+  xy: 1444, 1663
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Terrace farm
+  rotate: false
+  xy: 4, 724
+  size: 192, 155
+  orig: 192, 155
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Trading post
+  rotate: false
+  xy: 1204, 1900
+  size: 192, 139
+  orig: 192, 139
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Truffles
+  rotate: false
+  xy: 1444, 1536
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Uranium
+  rotate: false
+  xy: 1444, 1407
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Whales
+  rotate: false
+  xy: 1444, 1281
+  size: 160, 118
+  orig: 160, 118
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Wheat
+  rotate: false
+  xy: 1612, 1663
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Wheat+Farm
+  rotate: false
+  xy: 4, 549
+  size: 192, 167
+  orig: 192, 167
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Wine
+  rotate: false
+  xy: 1612, 1536
+  size: 160, 119
+  orig: 160, 119
   offset: 0, 0
   index: -1

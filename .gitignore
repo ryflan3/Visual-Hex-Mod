@@ -1,0 +1,3 @@
+# libGDX jars downloaded by tools/build.sh
+.gdx/
+__pycache__/

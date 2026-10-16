@@ -1,0 +1,47 @@
+# Repacks game.atlas/game.png whenever images change, so Android players (who can't pack
+# images on their device) always get an atlas that matches the images in the repo.
+name: Pack texture atlas
+
+on:
+  push:
+    paths:
+      - "Images/**"
+      - "tools/PackAtlas.java"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Download the libGDX texture packer
+        run: |
+          mkdir -p .gdx
+          for jar in gdx gdx-tools; do
+            curl -sSfL -o ".gdx/$jar.jar" \
+              "https://repo1.maven.org/maven2/com/badlogicgames/gdx/$jar/1.14.2/$jar-1.14.2.jar"
+          done
+
+      - name: Pack
+        run: java -cp ".gdx/gdx.jar:.gdx/gdx-tools.jar" tools/PackAtlas.java .
+
+      - name: Commit the atlas if it changed
+        run: |
+          git add game.atlas game*.png Atlases.json
+          if git diff --cached --quiet; then
+            echo "Atlas already matches the images."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Repack texture atlas"
+          git push

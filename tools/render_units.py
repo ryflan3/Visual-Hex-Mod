@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the unit set: units as painted miniatures, in the same light and projection as the map.
+"""Render the unit set: units as flat illustrations with ink outlines, so they stand out on the map.
 
     python3 tools/render_units.py              # every unit
     python3 tools/render_units.py Tank Archer  # only units whose image path contains one of the words
@@ -19,1989 +19,1758 @@ How Unciv draws unit images
   use EmbarkedUnit-Military or EmbarkedUnit-Civilian, which have later-era versions.
 * Aircraft and missiles never stand on a tile (they are listed on their city's or carrier's
   flag), so they have no images.
+
+How they are drawn
+------------------
+Each unit is a list of flat shapes in local units: a standing figure is about 100 tall, x points
+east, y points down and the feet stand on y = 0. Shapes are SVG-style paths, ellipses, rounded
+rectangles and round-ended limbs. Every shape gets a dark ink outline and a shading ramp lit from
+the west, like the map, and the whole unit a soft dark edge and a ground shadow. Pillow fills the
+shapes at four times the final size and the result is averaged down.
 """
 
 import math
+import os
+import re
 import sys
 from contextlib import contextmanager
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
-import render_items as ri
 import render_tiles as rt
-from render_tiles import C, over, premult
 
-K = rt.K_RISE
-SS = rt.SS
-UNIT_W = 160            # the same resolution as resources
-LAYER_SCALE = 2         # the colour layer is stored at half resolution: it is flat, shaded colour
-OVERHANG = 80
-MIL = (0.56, 0.36)      # where a military unit stands: the middle of its width and its ground line (hex units,
-CIV = (-0.6, 0.32)      # centre at 0, 0, v pointing south); civilians stand on the left
-VIEW = np.array([0.0, K, 1.0]) / math.hypot(K, 1.0)   # toward the viewer: up and to the south
-LIGHT = rt.LIGHT
-HALF = (LIGHT + VIEW) / np.linalg.norm(LIGHT + VIEW)
-
-PAINT = C(.86, .86, .86)    # parts painted in the owner's colour are this light grey in the images
-
-# A few shared colours
-SKIN = C(.80, .60, .46)
-SKIN2 = C(.62, .44, .32)
-HAIR = C(.20, .14, .09)
-LEATHER = C(.42, .29, .17)
-DARK_LEATHER = C(.26, .18, .11)
-WOOD = C(.50, .36, .21)
-DARK_WOOD = C(.33, .23, .14)
-IRON = C(.55, .56, .58)
-STEEL = C(.70, .72, .75)
-BRONZE = C(.72, .52, .25)
-LINEN = C(.82, .78, .66)
-CLOTH = C(.48, .42, .34)
-KHAKI = C(.55, .50, .36)
-OLIVE = C(.36, .38, .22)
-FIELD_GREY = C(.42, .44, .40)
-NAVY_GREY = C(.52, .55, .58)
-BLACK = C(.08, .08, .09)
-WHITE = C(.92, .92, .90)
-HORSE = C(.42, .26, .15)
-HORSE2 = C(.24, .16, .10)
-GOLD = C(.95, .75, .25)
+UNIT_W = 160                 # the same resolution as resources
+S = 4                        # supersampling
+OVERHANG = 80                # room above the hex for tall units, in final pixels
+FOOT = round(UNIT_W * rt.S3 / 2)
+H = FOOT + OVERHANG
+K = UNIT_W / 168             # final pixels per local unit, before a unit is fitted to its side of the hex
+INK_W = 1.6                  # ink outline width, local units
+MIL = (0.56, 0.36)           # where a military unit stands: the middle of its width and its ground line (hex
+CIV = (-0.6, 0.32)           # units, centre at 0, 0, v pointing south); civilians stand on the left
+AT_SEA = (0.52, 0.34)
+CIV_SEA = (-0.6, 0.3)
+OWNER = "owner"              # as a colour: paint this part in the owner's colour
 
 
-# ============================================================================ layered painting
-class Layers:
-    """A unit's image and its owner-colour layer, painted together. Whatever is drawn in front
-    of a coloured part also hides that part in the colour layer."""
-
-    def __init__(self, cv):
-        self.base = cv.empty()
-        self.civ = cv.empty()
-        self.shape = self.base.shape
-        self.civ_on = False
+def hexcol(h):
+    return tuple(int(h[i:i + 2], 16) / 255 for i in (1, 3, 5))
 
 
-def _put(P, win, rgb, a):
-    x0, x1, y0, y1 = win[:4]
-    src = premult(rgb, a)
-    if not isinstance(P, Layers):
-        P[y0:y1, x0:x1] = over(P[y0:y1, x0:x1], src)
-        return
-    P.base[y0:y1, x0:x1] = over(P.base[y0:y1, x0:x1], src)
-    if P.civ_on:
-        P.civ[y0:y1, x0:x1] = over(P.civ[y0:y1, x0:x1], src)
-    else:
-        P.civ[y0:y1, x0:x1] *= 1.0 - np.clip(np.broadcast_to(a, src.shape[:2]), 0, 1)[..., None]
+INK = hexcol("#1d1a16")
+PAINT = (0.86, 0.86, 0.86)   # owner-coloured parts are this light grey in the images
+C = {name: hexcol(h) for name, h in {
+    "skin": "#d9a27c", "skin2": "#b8805c", "hair": "#3b2617", "grey_hair": "#c9c4ba", "beard": "#4a3020",
+    "pants": "#5a4b3c", "cloth": "#7a6a55", "linen": "#e8dfc8", "white": "#f1efe9", "boots": "#3a2a1c",
+    "leather": "#7b5333", "wood": "#8a5d35", "darkwood": "#5e3e22", "metal": "#8f979f", "steel": "#c7cdd3",
+    "iron": "#6f767d", "bronze": "#c08a3e", "gold": "#e2b443", "black": "#26272b", "navy": "#283048",
+    "horse": "#8a5a34", "darkhorse": "#4a3020", "greyhorse": "#b9b5ae", "mane": "#2f2117", "olive": "#646e3d",
+    "olivedark": "#464d2b", "khaki": "#9a8a5c", "camo": "#4f5a34", "sand": "#b7a57a", "track": "#2c2c2a",
+    "hull": "#3d2a1c", "deck": "#a27c52", "sail": "#f3efe2", "darksail": "#55575b", "rope": "#c9b48a",
+    "straw": "#d8b65c", "foam": "#e8f4f8", "glass": "#3e5664", "grey": "#8a9096", "navygrey": "#7d858c",
+    "darkgrey": "#4a4f55", "red": "#b33a2a", "stone": "#9c9890", "flame": "#ffb43c", "glow": "#9fe6ff",
+    "robe": "#6b4a2e", "black_robe": "#2a2626", "paper": "#f4ead2"}.items()}
 
 
-ri._put = _put   # the item primitives draw through this, so they work on Layers too
+# ----------------------------------------------------------------------------- geometry
+def bezier(p0, ctrl, p1, n=10):
+    pts = []
+    for i in range(1, n + 1):
+        t = i / n
+        q = [p0] + list(ctrl) + [p1]
+        while len(q) > 1:
+            q = [((1 - t) * a[0] + t * b[0], (1 - t) * a[1] + t * b[1]) for a, b in zip(q[:-1], q[1:])]
+        pts.append(q[0])
+    return pts
 
 
-# ============================================================================ the miniature painter
-def shade_normal(n, gloss=0.0):
-    """Brightness of a surface with normal(s) n (..., 3): sun from the west, fill from the viewer."""
-    n = np.asarray(n, float)
-    lam = np.clip(n @ LIGHT, 0, 1)
-    fill = np.clip(n @ VIEW, 0, 1)
-    out = np.clip(0.45 + 0.62 * lam + 0.3 * fill, 0, 1.15)
-    if gloss:
-        out = out + gloss * np.clip(n @ HALF, 0, 1) ** 24
+def path_points(d):
+    """Points along an SVG-style path with absolute M, L, H, V, Q, C and Z commands."""
+    toks = re.findall(r"[MLHVQCZ]|-?\d*\.?\d+", d)
+    pts, i, cmd, cur = [], 0, None, (0.0, 0.0)
+
+    def num():
+        nonlocal i
+        i += 1
+        return float(toks[i - 1])
+
+    while i < len(toks):
+        if toks[i] in "MLHVQCZ":
+            cmd = toks[i]
+            i += 1
+            if cmd == "Z":
+                continue
+        if cmd in ("M", "L"):
+            cur = (num(), num())
+            pts.append(cur)
+        elif cmd == "H":
+            cur = (num(), cur[1])
+            pts.append(cur)
+        elif cmd == "V":
+            cur = (cur[0], num())
+            pts.append(cur)
+        elif cmd == "Q":
+            c, e = (num(), num()), (num(), num())
+            pts += bezier(cur, [c], e)
+            cur = e
+        elif cmd == "C":
+            c1, c2, e = (num(), num()), (num(), num()), (num(), num())
+            pts += bezier(cur, [c1, c2], e)
+            cur = e
+        else:
+            raise ValueError("bad path: " + d)
+    return pts
+
+
+def ellipse_points(cx, cy, rx, ry, rot=0.0, n=40, a0=0.0, a1=2 * math.pi):
+    c, s = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+    out = []
+    for i in range(n):
+        t = a0 + (a1 - a0) * i / (n if a1 - a0 >= 2 * math.pi - 1e-6 else n - 1)
+        x, y = rx * math.cos(t), ry * math.sin(t)
+        out.append((cx + x * c - y * s, cy + x * s + y * c))
     return out
 
 
-def unit3(v):
-    v = np.asarray(v, float)
-    n = np.linalg.norm(v)
-    return v / n if n > 1e-9 else v
+def rect_points(x, y, w, h, rx=0.0, rot=0.0):
+    rx = min(rx, w / 2, h / 2)
+    if rx <= 0:
+        pts = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
+    else:
+        pts = []
+        for cx, cy, a in ((x + w - rx, y + rx, -90), (x + w - rx, y + h - rx, 0), (x + rx, y + h - rx, 90), (x + rx, y + rx, 180)):
+            pts += [(cx + rx * math.cos(math.radians(a + 90 * j / 6)), cy + rx * math.sin(math.radians(a + 90 * j / 6))) for j in range(7)]
+    if rot:
+        cx, cy = x + w / 2, y + h / 2
+        c, s = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+        pts = [(cx + (px - cx) * c - (py - cy) * s, cy + (px - cx) * s + (py - cy) * c) for px, py in pts]
+    return pts
 
 
-class Mini:
-    """Draws a unit in local coordinates: x east, y south, z up, in units of `s` hex radii, with the
-    unit standing at (u0, v0). Inside `turned(yaw)` the local frame is turned about its origin."""
+# ----------------------------------------------------------------------------- painting
+class Sheet:
+    """A unit image and its owner-colour layer, painted together at S times the final size.
+    Whatever is drawn over an owner-coloured part also hides it in the colour layer."""
 
-    def __init__(self, cv, P, u0, v0, s=1.0):
-        self.cv, self.P, self.u0, self.v0, self.s = cv, P, u0, v0, s
-        self.yaw = 0.0
+    def __init__(self):
+        self.base = np.zeros((H * S, UNIT_W * S, 4), np.float32)
+        self.civ = np.zeros_like(self.base)
+        self.ground = np.zeros_like(self.base)     # shadows on the ground, under everything
+        self.owner = False
 
-    # --- coordinates
-    def w(self, p):
-        """Local point to world (still in unit scale, before placing it on the hex)."""
-        x, y, z = p
-        if self.yaw:
-            c, s = math.cos(self.yaw), math.sin(self.yaw)
-            x, y = x * c - y * s, x * s + y * c
-        return np.array([x, y, z], float)
+    def put(self, x0, y0, cover, rgb):
+        h, w = cover.shape
+        X0, Y0, X1, Y1 = max(x0, 0), max(y0, 0), min(x0 + w, UNIT_W * S), min(y0 + h, H * S)
+        if X1 <= X0 or Y1 <= Y0:
+            return
+        a = cover[Y0 - y0:Y1 - y0, X0 - x0:X1 - x0, None]
+        rgb = np.broadcast_to(np.asarray(rgb, np.float32), (h, w, 3))[Y0 - y0:Y1 - y0, X0 - x0:X1 - x0]
+        src = np.concatenate([rgb * a, a], axis=-1)
+        self.base[Y0:Y1, X0:X1] = src + self.base[Y0:Y1, X0:X1] * (1 - a)
+        if self.owner:
+            self.civ[Y0:Y1, X0:X1] = src + self.civ[Y0:Y1, X0:X1] * (1 - a)
+        else:
+            self.civ[Y0:Y1, X0:X1] *= 1 - a
 
-    def wv(self, d):
-        """Local direction to world."""
-        return self.w(d)
 
-    def scr_w(self, q):
-        return self.u0 + self.s * q[0], self.v0 + self.s * q[1] - K * self.s * q[2]
+def ramp(t):
+    """Shading across a shape, 0 at its west side to 1 at its east side: lit, flat, shaded."""
+    light = np.clip(1 - t / 0.42, 0, 1) * 0.3
+    dark = np.clip((t - 0.6) / 0.4, 0, 1) * 0.32
+    return light, dark
 
-    def scr(self, x, y, z=0.0):
-        return self.scr_w(self.w((x, y, z)))
 
-    def gnd(self, x, y):
-        return self.scr(x, y, 0.0)
+class Pen:
+    """Draws a unit in local units onto a Sheet, standing at (ax, ay) final pixels, k pixels per
+    unit. Without a sheet it only measures how far the unit reaches."""
+
+    def __init__(self, sheet, ax=0.0, ay=0.0, k=1.0):
+        self.sheet, self.ax, self.ay, self.k = sheet, ax, ay, k
+        self.lo = [math.inf, math.inf]
+        self.hi = [-math.inf, -math.inf]
+        self._owner = False
+
+    # --- coordinates and colours
+    def px(self, x, y):
+        return (self.ax + self.k * x) * S, (self.ay + self.k * y) * S
+
+    def _grow(self, pts, pad=0.0):
+        for x, y in pts:
+            self.lo = [min(self.lo[0], x - pad), min(self.lo[1], y - pad)]
+            self.hi = [max(self.hi[0], x + pad), max(self.hi[1], y + pad)]
 
     @contextmanager
-    def turned(self, yaw):
-        old, self.yaw = self.yaw, self.yaw + yaw
-        try:
-            yield
-        finally:
-            self.yaw = old
-
-    def sub(self, p, k):
-        """A painter whose origin is the local point p and whose figures are k times smaller."""
-        u0, v0 = self.scr_w(self.w(p))
-        m = Mini(self.cv, self.P, u0, v0, self.s * k)
-        m.yaw = self.yaw
-        return m
-
-    @contextmanager
-    def civ(self):
+    def owner(self):
         """Parts drawn inside this block come out in the owner's colour."""
-        self.P.civ_on = True
+        old, self._owner = self._owner, True
         try:
             yield
         finally:
-            self.P.civ_on = False
+            self._owner = old
+
+    def _col(self, col):
+        own = self._owner or col is OWNER
+        if self.sheet is not None:
+            self.sheet.owner = own
+        return PAINT if own else (C[col] if isinstance(col, str) else col)
+
+    def _done(self):
+        if self.sheet is not None:
+            self.sheet.owner = False
+
+    def _mask(self, P, draw_fn, pad):
+        xs, ys = [p[0] for p in P], [p[1] for p in P]
+        x0, y0 = int(math.floor(min(xs) - pad)), int(math.floor(min(ys) - pad))
+        x1, y1 = int(math.ceil(max(xs) + pad)), int(math.ceil(max(ys) + pad))
+        img = Image.new("L", (max(1, x1 - x0), max(1, y1 - y0)), 0)
+        draw_fn(ImageDraw.Draw(img), [(x - x0, y - y0) for x, y in P])
+        return x0, y0, np.asarray(img, np.float32) / 255
 
     # --- primitives
-    def shadow(self, x, y, rx, ry, alpha=0.32, ang=0.0):
-        q = self.w((x, y, 0.0))
-        ri.blob(self.cv, self.P, self.u0 + self.s * q[0], self.v0 + self.s * q[1], rx * self.s, ry * self.s,
-                C(.02, .03, .02), ang=ang, alpha=alpha, flat=True)
-
-    def ball(self, p, r, col, gloss=0.0, ry=None, alpha=1.0):
-        q = self.w(p)
-        ri.blob(self.cv, self.P, self.u0 + self.s * q[0], self.v0 + self.s * q[1], r * self.s, (ry or r) * self.s, col,
-                lift=q[2] * self.s, gloss=gloss, shade_lo=0.42, alpha=alpha)
-
-    def _poly_w(self, pts_w, col, alpha=1.0):
-        ri.poly(self.cv, self.P, [self.scr_w(q) for q in pts_w], col, alpha=alpha)
-
-    def face(self, pts, col, gloss=0.0, alpha=1.0, light=None):
-        """Flat convex polygon through 3D points, shaded by its normal (either side may face us)."""
-        p = np.array([self.w(q) for q in pts])
-        n = unit3(np.cross(p[1] - p[0], p[2] - p[0]))
-        if n @ VIEW < 0:
-            n = -n
-        k = shade_normal(n, gloss) if light is None else light
-        self._poly_w(p, np.asarray(col, float) * k, alpha)
-
-    def capsule(self, a, b, r0, r1=None, col=C(.5, .5, .5), gloss=0.0, alpha=1.0):
-        """Tapered rod with rounded ends from a to b (local 3D points), shaded as a cylinder."""
-        r1 = r0 if r1 is None else r1
-        cv, P = self.cv, self.P
-        aw, bw = self.w(a), self.w(b)
-        xa, ya = cv.px(*self.scr_w(aw))
-        xb, yb = cv.px(*self.scr_w(bw))
-        R0, R1 = r0 * self.s * cv.spx, r1 * self.s * cv.spx
-        rm = max(R0, R1)
-        win = ri._box(cv, P, (xa + xb) / 2, (ya + yb) / 2, abs(xb - xa) / 2 + rm, abs(yb - ya) / 2 + rm)
-        if win is None:
+    def fill(self, pts, col, ink=True, shade=True, alpha=1.0, ink_w=INK_W):
+        """A filled shape through local points, with its ink outline."""
+        self._grow(pts, ink_w / 2 if ink else 0)
+        if self.sheet is None:
             return
-        xx, yy = win[4], win[5]
-        dx, dy = xb - xa, yb - ya
-        ln = math.hypot(dx, dy)
-        if ln < 1e-6:
-            dx, dy, ln = 0.0, -1e-6, 1e-6
-        ax, ay = dx / ln, dy / ln
-        nx, ny = -ay, ax
-        if nx < 0 or (nx == 0 and ny < 0):
-            nx, ny = -nx, -ny
-        along = (xx - xa) * ax + (yy - ya) * ay
-        t = np.clip(along / ln, 0, 1)
-        rr = np.maximum(R0 + (R1 - R0) * t, 0.3)
-        ex, ey = xx - (xa + t * dx), yy - (ya + t * dy)
-        d = np.hypot(ex, ey)
-        cover = np.clip((rr - d) / SS + 0.5, 0, 1) * alpha
-        if not cover.any():
+        P = [self.px(x, y) for x, y in pts]
+        x0, y0, cover = self._mask(P, lambda d, q: d.polygon(q, fill=255), 2)
+        rgb = np.asarray(self._col(col), np.float32)
+        if shade:
+            xs, ys = [p[0] for p in P], [p[1] for p in P]
+            gx = (np.arange(cover.shape[1]) + x0 + 0.5 - min(xs)) / max(1.0, max(xs) - min(xs))
+            gy = (np.arange(cover.shape[0]) + y0 + 0.5 - min(ys)) / max(1.0, max(ys) - min(ys))
+            t = (gx[None, :] + 0.25 * gy[:, None]) / 1.25
+            light, dark = ramp(t)
+            rgb = (rgb + (1 - rgb) * light[..., None]) * (1 - dark[..., None])
+        self.sheet.put(x0, y0, cover * alpha, rgb)
+        self._done()
+        if ink:
+            w = max(1, round(ink_w * self.k * S))
+            x0, y0, cover = self._mask(P, lambda d, q: d.line(q + [q[0]], fill=255, width=w, joint="curve"), w)
+            self.sheet.put(x0, y0, cover * alpha, INK)
+
+    def path(self, d, col, **kw):
+        self.fill(path_points(d), col, **kw)
+
+    def ellipse(self, cx, cy, rx, ry, col, rot=0.0, **kw):
+        self.fill(ellipse_points(cx, cy, rx, ry, rot), col, **kw)
+
+    def circle(self, cx, cy, r, col, **kw):
+        self.fill(ellipse_points(cx, cy, r, r), col, **kw)
+
+    def rect(self, x, y, w, h, col, rx=0.0, rot=0.0, **kw):
+        self.fill(rect_points(x, y, w, h, rx, rot), col, **kw)
+
+    def poly(self, pts, col, **kw):
+        self.fill(pts, col, **kw)
+
+    def stroke(self, pts, w, col, ink=True, alpha=1.0, shade=True):
+        """A round-ended line through local points, w units wide, outlined in ink."""
+        self._grow(pts, w / 2 + (INK_W if ink else 0))
+        if self.sheet is None:
             return
-        # a 3D frame: the rod's axis, "front" toward the viewer, "right" across the rod on screen
-        A = unit3(bw - aw)
-        if np.linalg.norm(A) < 1e-9:
-            A = np.array([0.0, 0.0, 1.0])
-        F = VIEW - (VIEW @ A) * A
-        F = unit3(F) if np.linalg.norm(F) > 1e-6 else VIEW
-        R = np.cross(A, F)
-        if R[0] * nx + (R[1] - K * R[2]) * ny < 0:
-            R = -R
-        sx = np.clip((ex * nx + ey * ny) / rr, -1, 1)
-        over_end = np.where(along < 0, along, np.where(along > ln, along - ln, 0.0))
-        cx = np.clip(over_end / rr, -1, 1)
-        fz = np.sqrt(np.clip(1 - sx * sx - cx * cx, 0, 1))
-        n = sx[..., None] * R + cx[..., None] * A + fz[..., None] * F
-        k = shade_normal(n, gloss) * (0.82 + 0.18 * fz)
-        ri._put(P, win, np.asarray(col, float) * k[..., None], cover)
+        P = [self.px(x, y) for x, y in pts]
 
-    def rod(self, a, b, w, col, gloss=0.0):
-        self.capsule(a, b, w / 2, w / 2, col, gloss)
+        def line(width):
+            r = width / 2
 
-    def disc(self, c, normal, r, col, gloss=0.0, n=20):
-        """A flat round shape (shield, wheel) of radius r centred at c, facing `normal`."""
-        nrm = unit3(normal)
-        e1 = unit3(np.cross(nrm, [0, 0, 1]) if abs(nrm[2]) < 0.9 else np.cross(nrm, [1, 0, 0]))
-        e2 = np.cross(nrm, e1)
-        self.face([np.asarray(c, float) + r * (math.cos(2 * math.pi * i / n) * e1 + math.sin(2 * math.pi * i / n) * e2)
-                   for i in range(n)], col, gloss)
+            def draw(d, q):
+                d.line(q, fill=255, width=max(1, round(width)), joint="curve")
+                for x, y in (q[0], q[-1]):
+                    d.ellipse((x - r, y - r, x + r, y + r), fill=255)
+            return draw
 
-    def loop(self, pts, w, col):
-        for i in range(len(pts)):
-            self.rod(pts[i], pts[(i + 1) % len(pts)], w, col)
+        wp = w * self.k * S
+        if ink:
+            wi = wp + 2 * INK_W * 0.8 * self.k * S
+            x0, y0, cover = self._mask(P, line(wi), wi)
+            self.sheet.put(x0, y0, cover * alpha, INK)
+        x0, y0, cover = self._mask(P, line(wp), wp)
+        rgb = np.asarray(self._col(col), np.float32)
+        if shade and len(P) == 2:
+            (xa, ya), (xb, yb) = P
+            ln = math.hypot(xb - xa, yb - ya) or 1.0
+            nx, ny = (yb - ya) / ln, -(xb - xa) / ln
+            if nx < 0 or (nx == 0 and ny < 0):
+                nx, ny = -nx, -ny
+            gx = np.arange(cover.shape[1]) + x0 + 0.5 - xa
+            gy = np.arange(cover.shape[0]) + y0 + 0.5 - ya
+            t = np.clip((gx[None, :] * nx + gy[:, None] * ny) / max(1.0, wp) + 0.5, 0, 1)
+            light, dark = ramp(t)
+            rgb = (rgb + (1 - rgb) * light[..., None]) * (1 - dark[..., None])
+        self.sheet.put(x0, y0, cover * alpha, rgb)
+        self._done()
 
-    def _solid(self, quads, centre, cols, gloss=0.0):
-        """Draw the faces of a convex solid that face the viewer, farthest first. quads are lists of
-        local points; cols gives each face's colour."""
-        cw = self.w(centre)
-        drawn = []
-        for q, col in zip(quads, cols):
-            p = np.array([self.w(x) for x in q])
-            n = unit3(np.cross(p[1] - p[0], p[2] - p[0]))
-            if n @ (p.mean(axis=0) - cw) < 0:
-                n = -n
-            if n @ VIEW <= 1e-6:
-                continue
-            drawn.append((p.mean(axis=0) @ VIEW, p, n, col))
-        for _, p, n, col in sorted(drawn, key=lambda d: d[0]):
-            self._poly_w(p, np.asarray(col, float) * shade_normal(n, gloss))
+    def limb(self, x1, y1, x2, y2, w, col, **kw):
+        self.stroke([(x1, y1), (x2, y2)], w, col, **kw)
 
-    def block(self, c, size, col, yaw=0.0, top=None, gloss=0.0):
-        """A box standing on c (x, y, bottom z), size (length along its heading, width, height),
-        turned `yaw` radians from east toward south."""
-        L, W, H = size
-        cu, cs = math.cos(yaw), math.sin(yaw)
-        fx, fy = np.array([cu, cs, 0.0]), np.array([-cs, cu, 0.0])
-        o = np.asarray(c, float)
-        P = {(i, j, k): o + sx * L / 2 * fx + sy * W / 2 * fy + np.array([0, 0, sz * H])
-             for i, sx in enumerate((-1, 1)) for j, sy in enumerate((-1, 1)) for k, sz in enumerate((0, 1))}
-        faces = [((0, 0, 1), (1, 0, 1), (1, 1, 1), (0, 1, 1)), ((0, 1, 0), (1, 1, 0), (1, 1, 1), (0, 1, 1)),
-                 ((0, 0, 0), (1, 0, 0), (1, 0, 1), (0, 0, 1)), ((1, 0, 0), (1, 1, 0), (1, 1, 1), (1, 0, 1)),
-                 ((0, 0, 0), (0, 1, 0), (0, 1, 1), (0, 0, 1))]
-        cols = [top if top is not None else col] + [col] * 4
-        self._solid([[P[q] for q in f] for f in faces], o + np.array([0, 0, H / 2]), cols, gloss)
+    def curve(self, d, w, col, **kw):
+        self.stroke(path_points(d), w, col, **kw)
 
-    def side_prism(self, profile, y0, y1, col, top=None, gloss=0.0, near=None):
-        """An extrusion of a convex side profile (list of (x, z)) across y from y0 to y1."""
-        n = len(profile)
-        cx = sum(p[0] for p in profile) / n
-        cz = sum(p[1] for p in profile) / n
-        quads, cols = [], []
-        for i in range(n):
-            (x0, z0), (x1, z1) = profile[i], profile[(i + 1) % n]
-            quads.append([(x0, y0, z0), (x1, y0, z1), (x1, y1, z1), (x0, y1, z0)])
-            up = (x1 - x0) != 0 and abs((z1 - z0) / (x1 - x0)) < 0.6 and (cz < (z0 + z1) / 2)
-            cols.append(top if (top is not None and up) else col)
-        quads.append([(x, y1, z) for x, z in profile])
-        cols.append(col if near is None else near)
-        quads.append([(x, y0, z) for x, z in profile])
-        cols.append(col if near is None else near)
-        self._solid(quads, (cx, (y0 + y1) / 2, cz), cols, gloss)
+    def thin(self, x1, y1, x2, y2, w, col):
+        """A string, rope or rigging line: no outline, no shading."""
+        self.stroke([(x1, y1), (x2, y2)], w, col, ink=False, shade=False)
 
-    def prism(self, outline, z0, z1, col, top=None, gloss=0.0):
-        """A vertical extrusion of a convex outline (list of (x, y)) from z0 to z1."""
-        n = len(outline)
-        cx = sum(p[0] for p in outline) / n
-        cy = sum(p[1] for p in outline) / n
-        quads = [[(outline[i][0], outline[i][1], z0), (outline[(i + 1) % n][0], outline[(i + 1) % n][1], z0),
-                  (outline[(i + 1) % n][0], outline[(i + 1) % n][1], z1), (outline[i][0], outline[i][1], z1)] for i in range(n)]
-        cols = [col] * n
-        quads.append([(x, y, z1) for x, y in outline])
-        cols.append(top if top is not None else col)
-        self._solid(quads, (cx, cy, (z0 + z1) / 2), cols, gloss)
+    def shadow(self, cx, cy, rx, ry, alpha=0.34):
+        """A soft shadow on the ground."""
+        self._grow([(cx - rx, cy), (cx + rx, cy)])
+        if self.sheet is None:
+            return
+        P = [self.px(x, y) for x, y in ellipse_points(cx, cy, rx, ry)]
+        blur = 2.0 * S
+        x0, y0, cover = self._mask(P, lambda d, q: d.polygon(q, fill=255), blur * 3)
+        img = Image.fromarray((cover * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(blur))
+        a = np.asarray(img, np.float32) / 255 * alpha
+        h, w = a.shape
+        X0, Y0, X1, Y1 = max(x0, 0), max(y0, 0), min(x0 + w, UNIT_W * S), min(y0 + h, H * S)
+        if X1 > X0 and Y1 > Y0:
+            g = self.sheet.ground[Y0:Y1, X0:X1]
+            a = a[Y0 - y0:Y1 - y0, X0 - x0:X1 - x0, None]
+            g[...] = np.concatenate([np.full(a.shape[:2] + (3,), 0.02, np.float32) * a, a], -1) + g * (1 - a)
+
+    def glow(self, cx, cy, r, col, alpha=0.5):
+        """A soft round glow (fire, a halo)."""
+        self._grow([(cx - r * 0.6, cy), (cx + r * 0.6, cy)])
+        if self.sheet is None:
+            return
+        P = [self.px(x, y) for x, y in ellipse_points(cx, cy, r, r)]
+        blur = r * self.k * S * 0.35
+        x0, y0, cover = self._mask(P, lambda d, q: d.polygon(q, fill=255), blur * 3)
+        img = Image.fromarray((cover * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(blur))
+        self.sheet.put(x0, y0, np.asarray(img, np.float32) / 255 * alpha, C[col] if isinstance(col, str) else col)
 
 
-# ============================================================================ figures
-OWNER = "owner"   # as a colour: paint this part in the owner's colour
-FIG = 1.12        # figures are drawn a little larger than the vehicles, so they read as clearly
-
-
-@contextmanager
-def colour(m, col):
-    """Yield the colour to draw with, switching to the owner-colour layer for OWNER."""
-    if isinstance(col, str):
-        with m.civ():
-            yield PAINT
-    else:
-        yield col
-
-
-def V(*xyz):
-    return np.array(xyz, float)
-
-
-class Body:
-    """Joint positions of a figure facing the viewer, 1.0 tall, feet at (x, y, z)."""
-
-    def __init__(self, x=0.0, y=0.0, z=0.0, lean=0.0):
-        self.x, self.y, self.z = x, y, z
-        f = lambda dx, h: np.array([x + dx + lean * h, y, z + h])
-        self.foot_l, self.foot_r = f(-0.06, 0.0), f(0.06, 0.0)
-        self.hip_l, self.hip_r = f(-0.055, 0.46), f(0.055, 0.46)
-        self.waist = f(0.0, 0.5)
-        self.chest = f(0.0, 0.7)
-        self.sh_l, self.sh_r = f(-0.125, 0.72), f(0.125, 0.72)
-        self.neck = f(0.0, 0.79)
-        self.head = f(0.0, 0.885)
-
-
-def ground(m, x=0.05, rx=0.22, ry=0.065, alpha=0.32):
-    m.shadow(x, 0.02, rx, ry, alpha)
-
-
-def legs(m, b, col, boots=LEATHER, stride=0.0):
-    for hip, foot, sx in ((b.hip_l, b.foot_l, -1), (b.hip_r, b.foot_r, 1)):
-        foot = foot + V(sx * stride, 0, 0)
-        knee = (hip + foot) / 2 + V(sx * stride * 0.3, 0.01, 0.02)
-        with colour(m, col) as c:
-            m.capsule(hip, knee, 0.056, 0.048, c)
-            m.capsule(knee, foot + V(0, 0, 0.1), 0.048, 0.042, c)
-        with colour(m, boots) as c:
-            m.capsule(foot + V(0, 0, 0.02), foot + V(0, 0, 0.14), 0.045, 0.045, c)
-            m.ball(foot + V(0, 0.03, 0.025), 0.045, c, ry=0.032)
-
-
-def head(m, b, skin=SKIN, hair=HAIR, beard=None):
-    m.capsule(b.neck - V(0, 0, 0.02), b.neck + V(0, 0, 0.03), 0.036, 0.036, skin)
-    m.ball(b.head, 0.078, skin)
-    if hair is not None:
-        m.ball(b.head + V(0.0, -0.015, 0.032), 0.07, hair, ry=0.056)
-    if beard is not None:
-        m.ball(b.head + V(0.0, 0.025, -0.045), 0.054, beard, ry=0.044)
-
-
-def figure(m, b=None, legs_col=CLOTH, boots=LEATHER, coat=OWNER, skirt=None, skirt_len=0.15, robe=None,
-           belt=None, skin=SKIN, hair=HAIR, beard=None, hat=None, hat_col=IRON, plume=None, wide=1.0, armour=None):
-    """A standing figure facing the viewer. Returns its Body, for adding arms and what they hold."""
-    b = b or Body()
+# ============================================================================ people
+def figure(p, tunic=OWNER, pants="pants", boots="boots", skirt=True, bare=False, belt="leather", robe=None,
+           long_coat=False, wide=1.0):
+    """A standing figure facing the viewer, feet on y = 0, head centred at (0, -89)."""
     if robe is not None:
-        for foot in (b.foot_l, b.foot_r):
-            m.ball(foot + V(0, 0.035, 0.025), 0.045, boots, ry=0.032)
-        with colour(m, robe) as c:
-            m.capsule(b.waist + V(0, 0, 0.1), V(b.waist[0], b.y, b.z + 0.07), 0.11 * wide, 0.17 * wide, c)
+        for x in (-6, 6):
+            p.ellipse(x, -2, 6, 3.5, boots)
+        p.path("M-14,-74 Q-15,-77 -9,-78 L9,-78 Q15,-77 14,-74 L%g,-2 Q0,1 %g,-2 Z" % (19 * wide, -19 * wide), robe)
     else:
-        legs(m, b, legs_col, boots)
-    if skirt is not None:
-        with colour(m, skirt) as c:
-            m.capsule(b.waist + V(0, 0, 0.02), b.waist - V(0, 0, skirt_len), 0.105 * wide, 0.14 * wide, c)
-    with colour(m, coat) as c:
-        m.capsule(b.waist, b.chest, 0.105 * wide, 0.13 * wide, c)
-        m.capsule(b.sh_l + V(0.035, 0, 0), b.sh_r - V(0.035, 0, 0), 0.062, 0.062, c)
-    if armour is not None:   # breastplate or mail over the coat
-        m.capsule(b.waist + V(0, 0.015, 0.07), b.chest + V(0, 0.015, 0.0), 0.095 * wide, 0.118 * wide, armour, gloss=0.6)
-    if belt is not None:
-        m.capsule(b.waist + V(-0.1 * wide, 0.018, 0.03), b.waist + V(0.1 * wide, 0.018, 0.03), 0.026, 0.026, belt)
-    head(m, b, skin, hair, beard)
-    if hat is not None:
-        helmet(m, b, hat_col, hat, plume=plume)
-    return b
+        for x in (-6, 6):
+            p.rect(x - 4.5, -47, 9, 40, "skin" if bare else pants, rx=3.5)
+            p.rect(x - 5.5, -13, 11, 13, boots, rx=3)
+        if skirt:
+            p.poly([(-13 * wide, -52), (13 * wide, -52), (17 * wide, -33), (-17 * wide, -33)], tunic)
+        if long_coat:
+            p.poly([(-13, -52), (13, -52), (18, -24), (-18, -24)], tunic)
+        p.path("M%g,-70 Q%g,-76 -9,-77 L9,-77 Q%g,-76 %g,-70 L%g,-47 L%g,-47 Z"
+               % (-15 * wide, -16 * wide, 16 * wide, 15 * wide, 13 * wide, -13 * wide), "skin" if bare else tunic)
+    if belt:
+        p.rect(-13.5 * wide, -51, 27 * wide, 4.5, belt, rx=1.5)
+    p.rect(-3.2, -84, 6.4, 8, "skin", rx=2)
+    p.circle(0, -89, 9.5, "skin")
 
 
-def arm(m, sh, hand, col, skin=SKIN):
-    sh, hand = np.asarray(sh, float), np.asarray(hand, float)
-    elbow = (sh + hand) / 2 + V(0, 0.0, -0.035)
-    with colour(m, col) as c:
-        m.capsule(sh, elbow, 0.042, 0.037, c)
-        m.capsule(elbow, hand, 0.037, 0.032, c)
-    m.ball(hand, 0.034, skin)
+def hair(p, col="hair"):
+    p.path("M-9.6,-89 Q-10,-100 0,-100 Q10,-100 9.6,-89 Q6,-94 0,-94 Q-6,-94 -9.6,-89 Z", col)
 
 
-def helmet(m, b, col, kind="round", gloss=0.5, plume=None):
-    hp = b.head
-    with colour(m, col) as col:
-        if kind == "round":
-            m.ball(hp + V(0, -0.005, 0.028), 0.086, col, gloss=gloss, ry=0.07)
-        elif kind == "cone":
-            m.ball(hp + V(0, 0, 0.022), 0.084, col, gloss=gloss, ry=0.064)
-            m.capsule(hp + V(0, 0, 0.05), hp + V(0, 0, 0.16), 0.056, 0.008, col, gloss)
-        elif kind == "crest":          # Greek helmet; the crest is in the owner's colour
-            m.ball(hp + V(0, -0.005, 0.028), 0.088, col, gloss=gloss, ry=0.076)
-        elif kind == "brodie":         # First World War helmet with a wide brim
-            m.ball(hp + V(0, 0, 0.035), 0.118, col, gloss=0.15, ry=0.045)
-            m.ball(hp + V(0, -0.005, 0.06), 0.078, col, gloss=0.15, ry=0.058)
-        elif kind == "m1":             # Second World War and later helmet
-            m.ball(hp + V(0, -0.005, 0.032), 0.095, col, gloss=0.12, ry=0.08)
-            m.rod(hp + V(-0.092, 0.005, 0.0), hp + V(0.092, 0.005, 0.0), 0.022, col * 0.8)
-        elif kind == "kepi":
-            m.capsule(hp + V(0, 0, 0.04), hp + V(0, -0.012, 0.135), 0.076, 0.066, col)
-            m.ball(hp + V(0, 0.055, 0.035), 0.05, BLACK, ry=0.02)
-        elif kind == "tricorne":
-            m.ball(hp + V(0, 0, 0.045), 0.118, col, ry=0.05)
-            m.ball(hp + V(0, 0, 0.075), 0.066, col, ry=0.055)
-        elif kind == "bicorne":
-            m.capsule(hp + V(-0.16, -0.01, 0.1), hp + V(0, -0.01, 0.18), 0.028, 0.06, col)
-            m.capsule(hp + V(0, -0.01, 0.18), hp + V(0.16, -0.01, 0.1), 0.06, 0.028, col)
-            m.ball(hp + V(0.02, 0.03, 0.15), 0.022, GOLD, gloss=0.5)
-        elif kind == "beret":
-            m.ball(hp + V(0.025, 0, 0.065), 0.092, col, ry=0.045)
-        elif kind == "hood":
-            m.ball(hp + V(0, -0.03, 0.03), 0.1, col, ry=0.09)
-            m.ball(hp + V(0, 0.01, -0.005), 0.062, SKIN * 0.8)
-        elif kind == "turban":
-            m.ball(hp + V(0, -0.005, 0.055), 0.094, col, ry=0.062)
-            m.ball(hp + V(0, -0.01, 0.09), 0.07, col * 1.05, ry=0.05)
-        elif kind == "czapka":         # lancer's square-topped cap
-            m.capsule(hp + V(0, 0, 0.05), hp + V(0, 0, 0.17), 0.062, 0.07, col)
-            m.block(hp + V(0, 0, 0.17), (0.16, 0.16, 0.035), col)
-        elif kind == "morion":         # crested helmet with an upturned brim
-            m.ball(hp + V(0, 0, 0.035), 0.125, col, gloss=gloss, ry=0.045)
-            m.ball(hp + V(0, -0.005, 0.07), 0.075, col, gloss=gloss, ry=0.065)
-            m.capsule(hp + V(-0.05, 0, 0.13), hp + V(0.05, 0, 0.13), 0.022, 0.022, col, gloss)
-        elif kind == "kettle":         # brimmed iron hat
-            m.ball(hp + V(0, 0, 0.035), 0.12, col, gloss=gloss, ry=0.045)
-            m.ball(hp + V(0, -0.005, 0.06), 0.077, col, gloss=gloss, ry=0.062)
-        elif kind == "great":          # knight's great helm
-            m.capsule(hp + V(0, 0, -0.045), hp + V(0, 0, 0.075), 0.086, 0.083, col, gloss)
-            m.rod(hp + V(-0.065, 0.075, 0.0), hp + V(0.065, 0.075, 0.0), 0.014, BLACK)
-        elif kind == "slouch":         # cavalry hat
-            m.ball(hp + V(0, 0, 0.04), 0.125, col, ry=0.045)
-            m.ball(hp + V(0, -0.005, 0.075), 0.07, col, ry=0.06)
-        elif kind == "hardhat":
-            m.ball(hp + V(0, 0, 0.035), 0.105, col, gloss=0.3, ry=0.04)
-            m.ball(hp + V(0, -0.005, 0.06), 0.08, col, gloss=0.3, ry=0.065)
-        elif kind == "cap":            # peaked cap
-            m.ball(hp + V(0, -0.005, 0.07), 0.088, col, ry=0.04)
-            m.ball(hp + V(0, 0.06, 0.035), 0.05, BLACK, ry=0.02)
-        elif kind == "mitre":
-            m.capsule(hp + V(0, 0, 0.04), hp + V(0, 0, 0.2), 0.07, 0.035, col)
-    if kind == "crest":
-        with m.civ():
-            m.capsule(hp + V(0, -0.04, 0.1), hp + V(0, 0.06, 0.135), 0.036, 0.028, PAINT)
-            m.capsule(hp + V(0, -0.04, 0.1), hp + V(0, -0.08, 0.03), 0.03, 0.02, PAINT)
+def beard(p, col="beard"):
+    p.ellipse(0, -82, 7, 4.5, col)
+
+
+def arm(p, sx, sy, hx, hy, col, hand="skin", w=6.5):
+    p.limb(sx, sy, hx, hy, w, col)
+    p.circle(hx, hy, 3.8, hand)
+
+
+def hat(p, kind, col="iron", plume=None):
+    """Helmets and hats, on a head centred at (0, -89)."""
+    if kind == "round":
+        p.path("M-10.5,-88 Q-11,-104 0,-104 Q11,-104 10.5,-88 Z", col)
+    elif kind == "cone":
+        p.path("M-10.5,-88 Q-11,-98 -4,-102 L0,-113 L4,-102 Q11,-98 10.5,-88 Z", col)
+    elif kind == "crest":
+        p.path("M-10.5,-84 L-10.5,-92 Q-10,-104 0,-104 Q10,-104 10.5,-92 L10.5,-84 L6,-86 L6,-91 L-6,-91 L-6,-86 Z", col)
+    elif kind == "kettle":
+        p.ellipse(0, -94, 15, 3.5, col)
+        p.path("M-9.5,-94 Q-9,-105 0,-105 Q9,-105 9.5,-94 Z", col)
+    elif kind == "morion":
+        p.path("M-16,-92 Q-12,-96 -9,-95 Q-8,-106 0,-107 Q8,-106 9,-95 Q12,-96 16,-92 Q0,-90 -16,-92 Z", col)
+        p.path("M-6,-104 Q0,-114 6,-104 Z", col)
+    elif kind == "great":
+        p.rect(-10, -101, 20, 22, col, rx=5)
+        p.rect(-7.5, -93, 15, 2.4, "black", ink=False)
+    elif kind == "tricorne":
+        p.path("M-16,-93 Q-12,-101 0,-104 Q12,-101 16,-93 Q0,-97 -16,-93 Z", col)
+    elif kind == "bicorne":
+        p.path("M-18,-95 Q-8,-111 0,-112 Q8,-111 18,-95 Q0,-99 -18,-95 Z", col)
+        p.circle(5, -102, 2.2, "gold", ink=False)
+    elif kind == "kepi":
+        p.path("M-9.5,-93 L-8,-106 Q0,-108 8,-106 L9.5,-93 Z", col)
+        p.path("M-10,-94 L10,-94 L13,-91 L-3,-91 Z", "black")
+    elif kind == "shako":
+        p.path("M-9.5,-94 L-10,-112 Q0,-114 10,-112 L9.5,-94 Z", col)
+        p.path("M-10,-95 L10,-95 L13,-92 L-3,-92 Z", "black")
+    elif kind == "czapka":
+        p.path("M-8.5,-95 L-7,-106 L-12,-112 L12,-112 L7,-106 L8.5,-95 Z", col)
+    elif kind == "brodie":
+        p.ellipse(0, -95, 15.5, 3.2, col)
+        p.path("M-9,-95 Q-8,-104 0,-104 Q8,-104 9,-95 Z", col)
+    elif kind == "m1":
+        p.path("M-12,-87 Q-12,-106 0,-106 Q12,-106 12,-87 Q0,-90 -12,-87 Z", col)
+    elif kind == "beret":
+        p.path("M-10,-94 Q-10,-102 2,-102 Q14,-101 12,-94 Q0,-96 -10,-94 Z", col)
+    elif kind == "hood":
+        p.path("M-10.5,-86 Q-12,-104 0,-104 Q12,-104 10.5,-86 L7,-91 Q0,-95 -7,-91 Z", col)
+    elif kind == "turban":
+        p.path("M-11,-90 Q-12,-104 0,-106 Q12,-104 11,-90 Q0,-95 -11,-90 Z", col)
+        p.circle(0, -96, 2.4, "gold", ink=False)
+    elif kind == "straw":
+        p.ellipse(0, -96, 16, 4.2, col)
+        p.path("M-8,-97 Q-7,-107 0,-107 Q7,-107 8,-97 Z", col)
+    elif kind == "slouch":
+        p.ellipse(0, -96, 15, 4, col)
+        p.path("M-8,-97 Q-7,-106 0,-106 Q7,-106 8,-97 Z", col)
+    elif kind == "hardhat":
+        p.ellipse(0, -94, 13, 3, col)
+        p.path("M-9.5,-94 Q-9,-106 0,-106 Q9,-106 9.5,-94 Z", col)
+    elif kind == "cap":
+        p.path("M-10,-93 Q-10,-101 0,-101 Q10,-101 10,-93 Z", col)
+        p.path("M-10,-94 L10,-94 L12,-91 L-6,-91 Z", "black")
+    elif kind == "mitre":
+        p.path("M-9,-93 L-8,-106 Q0,-118 8,-106 L9,-93 Z", col)
     if plume is not None:
-        with colour(m, plume) as c:
-            m.capsule(hp + V(0, 0, 0.1), hp + V(0.045, 0.0, 0.22), 0.032, 0.02, c)
+        p.path("M-1,-104 Q2,-118 12,-117 Q6,-110 3,-103 Z", plume)
 
 
-# --- what they carry -------------------------------------------------------------------------------
-def spear(m, hand, length=1.15, lean=0.08, below=0.45, shaft=WOOD, tip=BRONZE, w=0.026):
-    hand = np.asarray(hand, float)
-    d = unit3([lean, 0, 1])
-    lo, hi = hand - d * below, hand + d * (length - below)
-    m.rod(lo, hi, w, shaft)
-    m.capsule(hi - d * 0.01, hi + d * 0.14, w * 1.15, 0.004, tip, gloss=0.6)
-    return hi
-
-
-def sword(m, hand, d=(0.15, 0.0, 1.0), length=0.38, blade=STEEL, guard=BRONZE, w=0.024):
-    hand = np.asarray(hand, float)
-    d = unit3(d)
-    side = unit3(np.cross(d, [0, 1, 0]))
-    m.rod(hand - side * 0.05, hand + side * 0.05, 0.022, guard)
-    m.capsule(hand + d * 0.02, hand + d * length, w, w * 0.4, blade, gloss=0.9)
-
-
-def round_shield(m, c, r, col=OWNER, rim=BRONZE, normal=(0.15, 1.0, 0.25), boss=IRON):
-    with colour(m, col) as cc:
-        m.disc(c, normal, r, cc)
-    nrm = unit3(normal)
-    e1 = unit3(np.cross(nrm, [0, 0, 1]))
-    e2 = np.cross(nrm, e1)
-    m.loop([np.asarray(c) + r * (math.cos(t) * e1 + math.sin(t) * e2) for t in np.linspace(0, 2 * math.pi, 20, endpoint=False)],
-           0.024, rim)
-    if boss is not None:
-        m.ball(np.asarray(c) + nrm * 0.02, r * 0.24, boss, gloss=0.6)
-
-
-def tall_shield(m, c, w, h, col=OWNER, rim=BRONZE, boss=BRONZE, curve=0.03):
-    """A tall rectangular or kite shield facing the viewer, centred at c."""
-    c = np.asarray(c, float)
-    pts = [c + V(-w / 2, -curve, h / 2), c + V(w / 2, -curve, h / 2), c + V(w / 2, -curve, -h / 2), c + V(-w / 2, -curve, -h / 2)]
-    with colour(m, col) as cc:
-        m.face([c + V(-w / 2, -curve, h / 2), c + V(0, 0, h / 2), c + V(0, 0, -h / 2), c + V(-w / 2, -curve, -h / 2)], cc)
-        m.face([c + V(0, 0, h / 2), c + V(w / 2, -curve, h / 2), c + V(w / 2, -curve, -h / 2), c + V(0, 0, -h / 2)], cc)
-    m.loop(pts, 0.02, rim)
-    if boss is not None:
-        m.ball(c + V(0, 0.02, 0), 0.04, boss, gloss=0.6)
-
-
-def kite_shield(m, c, w, h, col=OWNER, rim=IRON):
-    c = np.asarray(c, float)
-    top = [c + V(-w / 2, 0, h * 0.35), c + V(w / 2, 0, h * 0.35), c + V(w * 0.42, 0, -h * 0.05), c + V(0, 0, -h * 0.65),
-           c + V(-w * 0.42, 0, -h * 0.05)]
-    with colour(m, col) as cc:
-        m.face(top, cc)
-    m.loop(top, 0.02, rim)
-
-
-def bow_drawn(m, b, sleeve, recurve=False, col=DARK_WOOD):
-    """Arms drawing a bow toward the west, with the bow and arrow."""
-    hand_bow = b.sh_l + V(-0.32, 0.06, 0.02)
-    arm(m, b.sh_l, hand_bow, sleeve)
-    pts = []
-    for t in np.linspace(-1.0, 1.0, 11):
-        bend = -0.07 * (1 - t * t)
-        if recurve:
-            bend += 0.05 * max(0.0, abs(t) - 0.7) / 0.3
-        pts.append(hand_bow + V(bend + 0.02, 0.0, 0.32 * t))
-    for p, q in zip(pts[:-1], pts[1:]):
-        m.rod(p, q, 0.024, col)
-    hand_str = b.head + V(0.03, 0.05, -0.07)
-    m.rod(pts[0], hand_str, 0.007, LINEN)
-    m.rod(pts[-1], hand_str, 0.007, LINEN)
-    m.rod(hand_str, hand_bow + V(-0.07, 0, 0.0), 0.013, LINEN)
-    m.capsule(hand_bow + V(-0.06, 0, 0.0), hand_bow + V(-0.11, 0, 0.0), 0.016, 0.003, IRON)
-    arm(m, b.sh_r, hand_str, sleeve)
-
-
-def quiver(m, b):
-    m.capsule(b.sh_r + V(-0.02, -0.06, 0.1), b.sh_r + V(0.02, -0.07, -0.22), 0.045, 0.04, LEATHER)
-    for i in range(3):
-        m.rod(b.sh_r + V(-0.03 + 0.016 * i, -0.06, 0.1), b.sh_r + V(-0.05 + 0.016 * i, -0.06, 0.19), 0.011, LINEN)
-
-
-def long_gun(m, butt, muzzle, stock=DARK_WOOD, barrel=IRON, bayonet=False, w=0.03):
-    butt, muzzle = np.asarray(butt, float), np.asarray(muzzle, float)
-    mid = butt + (muzzle - butt) * 0.6
-    m.rod(butt, mid, w, stock)
-    m.rod(mid - (muzzle - butt) * 0.05, muzzle, w * 0.55, barrel)
-    if bayonet:
-        d = unit3(muzzle - butt)
-        m.capsule(muzzle, muzzle + d * 0.14, 0.009, 0.002, STEEL, gloss=0.8)
-
-
-def banner(m, base, height, w=0.24, hgt=0.16, pole=DARK_WOOD, finial=GOLD):
-    """A pole with a cloth in the owner's colour, flying east."""
-    base = np.asarray(base, float)
-    top = base + V(0, 0, height)
-    m.rod(base, top + V(0, 0, 0.03), 0.022, pole)
-    m.ball(top + V(0, 0, 0.04), 0.022, finial, gloss=0.5)
-    with m.civ():
-        m.face([top, top + V(w, 0.0, -0.025), top + V(w * 0.96, 0.0, -hgt - 0.025), top + V(0, 0, -hgt)], PAINT)
-
-
-def pennant(m, top, length=0.16, drop=0.03, h=0.06):
-    top = np.asarray(top, float)
-    with m.civ():
-        m.face([top, top + V(length, 0, -drop), top + V(0, 0, -h)], PAINT)
-
-
-# ============================================================================ horses
-def horse(m, x, y, col=HORSE, mane=HORSE2, z=0.0, barding=None, gait=0.0, s=1.0):
-    """A horse in profile facing west, about 1.0 long. Returns a function giving points on it
-    (dx forward, dz up) for the rider and harness. barding: a colour (or OWNER) for a caparison."""
-    P = lambda dx, dz, dy=0.0: np.array([x - dx * s, y + dy, z + dz * s])
-    far = col * 0.78
-    for dx, sw in ((0.27, 0.06 + gait), (-0.25, -0.05 - gait)):           # far legs
-        m.capsule(P(dx, 0.44, -0.035), P(dx + sw * 0.5, 0.22, -0.035), 0.044 * s, 0.032 * s, far)
-        m.capsule(P(dx + sw * 0.5, 0.22, -0.035), P(dx + sw, 0.04, -0.035), 0.03 * s, 0.026 * s, far)
-        m.ball(P(dx + sw, 0.03, -0.035), 0.03 * s, BLACK, ry=0.022 * s)
-    m.capsule(P(-0.38, 0.54), P(-0.48, 0.24, -0.01), 0.04 * s, 0.022 * s, mane)          # tail
-    m.capsule(P(-0.3, 0.5), P(0.27, 0.53), 0.14 * s, 0.13 * s, col)                      # body
-    m.capsule(P(0.25, 0.56), P(0.43, 0.83), 0.09 * s, 0.062 * s, col)                    # neck
-    m.capsule(P(0.41, 0.85), P(0.6, 0.72), 0.065 * s, 0.04 * s, col)                     # head
-    m.capsule(P(0.24, 0.66, -0.01), P(0.41, 0.9, -0.01), 0.034 * s, 0.026 * s, mane)     # mane
-    m.ball(P(0.44, 0.92), 0.024 * s, col * 0.8)                                         # ear
-    m.ball(P(0.5, 0.82, 0.04), 0.012 * s, BLACK)                                        # eye
+# ============================================================================ animals and wheels
+def horse(p, col="horse", mane="mane", x=0.0, barding=None, gait=0.0, hooves="black"):
+    """A horse in profile facing west, about 90 long and 75 tall at the ears, standing on y = 0."""
+    q = Shift(p, x, 0)
+    far = "darkhorse" if col != "darkhorse" else "black"
+    for top, knee, foot in (((-14, -30), (-17, -15), (-18 - gait, -3)), ((24, -32), (28, -17), (25 + gait, -3))):
+        q.stroke([top, knee, foot], 5.5, far)                                               # far legs
+    q.path("M31,-44 Q44,-40 42,-18 Q38,-28 30,-36 Z", mane)                                   # tail
+    q.path("M-22,-24 Q-31,-32 -29,-44 L-40,-58 L-52,-51 Q-57,-53 -54,-59 L-44,-71 Q-38,-74 -33,-70 "
+           "Q-24,-57 -12,-50 L18,-49 Q32,-50 33,-38 Q33,-30 28,-24 Q2,-18 -22,-24 Z", col)     # body, neck and head
+    q.poly([(-38, -70), (-36, -78), (-32, -70)], col)                                         # ear
+    q.path("M-33,-70 Q-23,-57 -12,-50 L-14,-47 Q-26,-55 -37,-66 Z", mane)                     # mane
+    q.circle(-44, -64, 1.4, "black", ink=False)
     if barding is not None:
-        with colour(m, barding) as c:
-            m.capsule(P(-0.27, 0.5, 0.025), P(0.25, 0.53, 0.025), 0.15 * s, 0.14 * s, c)
-            m.face([P(-0.36, 0.48, 0.12), P(0.31, 0.5, 0.12), P(0.29, 0.22, 0.12), P(-0.34, 0.22, 0.12)], c)
-            m.capsule(P(0.26, 0.6, 0.02), P(0.41, 0.84, 0.02), 0.095 * s, 0.07 * s, c)
-    for dx, sw in ((0.23, -0.03 - gait), (-0.21, 0.06 + gait)):          # near legs
-        m.capsule(P(dx, 0.44, 0.04), P(dx + sw * 0.5, 0.22, 0.04), 0.05 * s, 0.036 * s, col)
-        m.capsule(P(dx + sw * 0.5, 0.22, 0.04), P(dx + sw, 0.04, 0.04), 0.034 * s, 0.03 * s, col)
-        m.ball(P(dx + sw, 0.03, 0.04), 0.034 * s, BLACK, ry=0.025 * s)
-    return P
+        q.path("M-27,-46 Q-6,-54 30,-46 L33,-18 Q2,-10 -28,-18 Z", barding)
+        q.path("M-29,-44 L-40,-58 L-36,-61 L-25,-48 Z", barding)
+    for top, knee, foot in (((-20, -28), (-22, -15), (-21 - gait, -4)), ((18, -30), (23, -16), (20 + gait, -4))):
+        q.stroke([top, knee, foot], 6.5, col)                                                 # near legs
+        q.rect(foot[0] - 4, -6, 8, 6, hooves, rx=1.5)
 
 
-def rider(m, P, coat=OWNER, legs_col=None, hat=None, hat_col=IRON, plume=None, armour=None, skin=SKIN, beard=None,
-          cape=None):
-    """A rider on the horse made by horse(). Returns the rider's Body for adding arms and weapons."""
-    seat = P(-0.02, 0.6)
-    b = Body(seat[0], seat[1] + 0.02, seat[2] - 0.46)
-    lc = legs_col if legs_col is not None else LEATHER
-    if cape is not None:
-        with colour(m, cape) as c:
-            m.face([b.sh_l + V(0, -0.04, 0), b.sh_r + V(0.06, -0.04, 0), P(-0.32, 0.5, -0.04), P(-0.1, 0.42, -0.04)], c)
-    with colour(m, lc) as c:
-        m.capsule(b.hip_r + V(0, 0.06, 0), P(0.06, 0.38, 0.13), 0.05, 0.04, c)          # near leg down the flank
-    m.ball(P(0.08, 0.34, 0.14), 0.038, BLACK, ry=0.028)
-    with colour(m, coat) as c:
-        m.capsule(b.waist, b.chest, 0.1, 0.125, c)
-        m.capsule(b.sh_l + V(0.035, 0, 0), b.sh_r - V(0.035, 0, 0), 0.06, 0.06, c)
+def rider(p, coat=OWNER, legs="pants", boots="boots", x=0.0, armour=None):
+    """A rider sitting on horse(); returns the shoulder points and head centre for arms and hats."""
+    p.limb(4 + x, -52, 0 + x, -30, 7, legs)
+    p.rect(-5 + x, -32, 8, 9, boots, rx=2)
+    p.path("M%g,-74 Q%g,-80 %g,-81 L%g,-81 Q%g,-80 %g,-74 L%g,-48 L%g,-48 Z"
+           % (-9 + x, -10 + x, -4 + x, 10 + x, 16 + x, 15 + x, 12 + x, -8 + x), coat)
     if armour is not None:
-        m.capsule(b.waist + V(0, 0.015, 0.07), b.chest, 0.09, 0.113, armour, gloss=0.6)
-    head(m, b, skin, HAIR, beard)
-    if hat is not None:
-        helmet(m, b, hat_col, hat, plume=plume)
-    return b
+        p.path("M%g,-72 L%g,-72 L%g,-52 L%g,-52 Z" % (-6 + x, 12 + x, 10 + x, -5 + x), armour)
+    p.rect(-0.2 + x, -88, 6.4, 8, "skin", rx=2)
+    p.circle(3 + x, -93, 9, "skin")
+    return (-8 + x, -74), (14 + x, -74), (3 + x, -93)
 
 
-# ============================================================================ wheels, guns and vehicles
-def wheel(m, c, r, col=DARK_WOOD, spokes=6, tyre=None, hub=IRON):
-    """A spoked wheel turning east-west (its face toward the viewer)."""
-    c = np.asarray(c, float)
-    e1, e2 = V(1, 0, 0), V(0, 0, 1)
-    m.disc(c, (0, 1, 0), r, col * 0.55)
-    m.loop([c + r * (math.cos(t) * e1 + math.sin(t) * e2) for t in np.linspace(0, 2 * math.pi, 20, endpoint=False)],
-           r * 0.24, tyre if tyre is not None else col)
+def head_at(p, cx, cy, hat_kind=None, hat_col="iron", hair_col="hair", plume=None):
+    """Hair and hat for a head at (cx, cy), using the standing figure's shapes moved there."""
+    dx, dy = cx, cy + 89
+    q = Shift(p, dx, dy)
+    if hair_col:
+        hair(q, hair_col)
+    if hat_kind:
+        hat(q, hat_kind, hat_col, plume)
+
+
+class Shift:
+    """A pen whose drawing is moved by (dx, dy) and optionally scaled about the origin."""
+
+    def __init__(self, pen, dx, dy, s=1.0):
+        self.pen, self.dx, self.dy, self.s = pen, dx, dy, s
+
+    def _p(self, pts):
+        return [(self.dx + self.s * x, self.dy + self.s * y) for x, y in pts]
+
+    def owner(self):
+        return self.pen.owner()
+
+    def fill(self, pts, col, **kw):
+        self.pen.fill(self._p(pts), col, **kw)
+
+    def path(self, d, col, **kw):
+        self.fill(path_points(d), col, **kw)
+
+    def ellipse(self, cx, cy, rx, ry, col, rot=0.0, **kw):
+        self.fill(ellipse_points(cx, cy, rx, ry, rot), col, **kw)
+
+    def circle(self, cx, cy, r, col, **kw):
+        self.fill(ellipse_points(cx, cy, r, r), col, **kw)
+
+    def rect(self, x, y, w, h, col, rx=0.0, rot=0.0, **kw):
+        self.fill(rect_points(x, y, w, h, rx, rot), col, **kw)
+
+    def poly(self, pts, col, **kw):
+        self.fill(pts, col, **kw)
+
+    def stroke(self, pts, w, col, **kw):
+        self.pen.stroke(self._p(pts), w * self.s, col, **kw)
+
+    def limb(self, x1, y1, x2, y2, w, col, **kw):
+        self.stroke([(x1, y1), (x2, y2)], w, col, **kw)
+
+    def curve(self, d, w, col, **kw):
+        self.stroke(path_points(d), w, col, **kw)
+
+    def thin(self, x1, y1, x2, y2, w, col):
+        self.stroke([(x1, y1), (x2, y2)], w, col, ink=False, shade=False)
+
+    def shadow(self, cx, cy, rx, ry, alpha=0.34):
+        (x, y), = self._p([(cx, cy)])
+        self.pen.shadow(x, y, rx * self.s, ry * self.s, alpha)
+
+    def glow(self, cx, cy, r, col, alpha=0.5):
+        (x, y), = self._p([(cx, cy)])
+        self.pen.glow(x, y, r * self.s, col, alpha)
+
+
+def wheel(p, cx, cy, r, col="darkwood", spokes=6, hub="iron", tyre=None):
+    p.circle(cx, cy, r, tyre or col)
+    p.circle(cx, cy, r * 0.74, col, ink=False, shade=False)
     for i in range(spokes):
-        t = math.pi * i / spokes
-        d = r * 0.86 * (math.cos(t) * e1 + math.sin(t) * e2)
-        m.rod(c - d, c + d, max(r * 0.12, 0.012), col)
-    m.ball(c + V(0, 0.01, 0), r * 0.22, hub, gloss=0.5)
+        a = math.pi * i / spokes
+        dx, dy = math.cos(a) * r * 0.72, math.sin(a) * r * 0.72
+        p.limb(cx - dx, cy - dy, cx + dx, cy + dy, max(1.2, r * 0.14), col, ink=False)
+    p.circle(cx, cy, max(1.5, r * 0.22), hub)
 
 
-def solid_wheel(m, c, r, col=C(.12, .12, .12), hub=C(.4, .42, .38)):
-    c = np.asarray(c, float)
-    m.disc(c, (0, 1, 0), r, col)
-    m.disc(c + V(0, 0.005, 0), (0, 1, 0), r * 0.55, hub)
-    m.ball(c + V(0, 0.01, 0), r * 0.2, hub * 0.8)
+def tyre(p, cx, cy, r, col="black", hub="darkgrey"):
+    p.circle(cx, cy, r, col)
+    p.circle(cx, cy, r * 0.5, hub)
 
 
-def tracks(m, x0, x1, y, h, w, col=C(.17, .17, .16), wheels=6):
-    """A caterpillar track running east-west with its road wheels."""
-    m.side_prism([(x0, h * 0.55), (x0 + h * 0.5, 0.0), (x1 - h * 0.5, 0.0), (x1, h * 0.55), (x1 - h * 0.25, h), (x0 + h * 0.25, h)],
-                 y - w / 2, y + w / 2, col, top=col * 1.2)
-    for i in range(wheels):
-        t = x0 + h * 0.5 + (x1 - x0 - h) * i / max(1, wheels - 1)
-        m.disc((t, y + w / 2 + 0.004, h * 0.42), (0, 1, 0), h * 0.3, col * 1.9, gloss=0.2)
-
-
-def truck(m, x0, x1, y, w, col, cab=0.22, h=0.16, bed_h=0.1, wheels=3, tyre=C(.1, .1, .1)):
-    """A truck heading west: cab at x0, flat bed behind. Returns the bed height."""
-    for i in range(wheels):
-        solid_wheel(m, (x0 + 0.1 + (x1 - x0 - 0.2) * i / max(1, wheels - 1), y - w / 2, 0.075), 0.075, tyre)
-    m.block(((x0 + x1) / 2, y, 0.08), (x1 - x0, w * 0.9, 0.05), C(.15, .15, .15))
-    m.side_prism([(x0, 0.13), (x0 + 0.02, 0.13 + h * 0.6), (x0 + cab * 0.45, 0.13 + h), (x0 + cab, 0.13 + h), (x0 + cab, 0.13)],
-                 y - w / 2, y + w / 2, col)
-    m.face([(x0 + 0.03, y + w / 2 + 0.002, 0.13 + h * 0.62), (x0 + cab * 0.42, y + w / 2 + 0.002, 0.13 + h * 0.95),
-            (x0 + cab * 0.85, y + w / 2 + 0.002, 0.13 + h * 0.95), (x0 + cab * 0.85, y + w / 2 + 0.002, 0.13 + h * 0.62)],
-           C(.25, .32, .38), gloss=0.6)
-    m.block((x0 + cab + (x1 - x0 - cab) / 2, y, 0.13), (x1 - x0 - cab, w, bed_h), col * 0.9)
-    for i in range(wheels):
-        solid_wheel(m, (x0 + 0.1 + (x1 - x0 - 0.2) * i / max(1, wheels - 1), y + w / 2, 0.075), 0.075, tyre)
-    return 0.13 + bed_h
-
-
-def barrel(m, a, b, r, col, gloss=0.3, muzzle=True):
-    m.capsule(a, b, r, r * 0.85, col, gloss)
-    if muzzle:
-        d = unit3(np.subtract(b, a))
-        m.capsule(np.asarray(b, float) - d * 0.03, np.asarray(b, float) + d * 0.01, r * 1.15, r * 1.15, col * 0.8, gloss)
-
-
-def side_mark(m, x0, x1, y, z0, z1):
-    """A painted panel in the owner's colour on a vehicle's near side."""
-    with m.civ():
-        m.face([(x0, y, z0), (x1, y, z0), (x1, y, z1), (x0, y, z1)], PAINT)
-
-
-# ============================================================================ ships and water
-def wake(m, x0, x1, y, w=0.08, spray=True):
-    """Shadow and foam around a hull, so ships sit in the water."""
-    u0, v0 = m.gnd(x0, y)
-    u1, v1 = m.gnd(x1, y)
-    ri.blob(m.cv, m.P, (u0 + u1) / 2 + 0.03 * m.s, (v0 + v1) / 2 + 0.01, abs(u1 - u0) / 2 + 0.05 * m.s, w * m.s * 1.5,
-            C(.02, .06, .08), alpha=0.28, flat=True)
-    ri.blob(m.cv, m.P, (u0 + u1) / 2, (v0 + v1) / 2 + 0.01, abs(u1 - u0) / 2 + 0.03 * m.s, w * m.s * 1.05,
-            C(.85, .92, .95), alpha=0.45, flat=True)
-    if spray:
-        ri.blob(m.cv, m.P, u0 + 0.01 * m.s, v0 + 0.005, 0.035 * m.s, w * m.s * 0.6, C(.95, .98, 1.0), alpha=0.45, flat=True)
-
-
-def hull(m, x0, x1, y, w, h, col, deck=None, bow=0.18, stern=0.04, rail=None, stripe=None, sheer=0.0, boot=None):
-    """A ship's hull pointing west (bow at x0), from the waterline (z=0) up to the deck (z=h)."""
-    deck = col * 1.15 if deck is None else deck
-    hw = w / 2
-    outline = [(x0, y), (x0 + bow, y - hw), (x1 - stern, y - hw), (x1, y - hw * 0.7), (x1, y + hw * 0.7),
-               (x1 - stern, y + hw), (x0 + bow, y + hw)]
-    m.face([(x0, y, 0.0), (x0 + bow, y + hw, 0.0), (x0 + bow, y + hw, h), (x0 - 0.02, y, h + sheer)], col)
-    m.face([(x0 + bow, y + hw, 0.0), (x1 - stern, y + hw, 0.0), (x1 - stern, y + hw, h), (x0 + bow, y + hw, h)], col)
-    m.face([(x1 - stern, y + hw, 0.0), (x1, y + hw * 0.7, 0.0), (x1, y + hw * 0.7, h + sheer * 0.5), (x1 - stern, y + hw, h)], col)
-    if boot is not None:   # waterline band
-        m.face([(x0 + bow * 0.3, y + hw * 0.3, 0.0), (x1 - stern, y + hw + 0.002, 0.0), (x1 - stern, y + hw + 0.002, h * 0.22),
-                (x0 + bow * 0.3, y + hw * 0.3, h * 0.22)], boot)
-    if stripe is not None:
-        with m.civ():
-            m.face([(x0 + bow * 0.5, y + hw * 0.5 + 0.002, h * 0.6), (x1 - stern, y + hw + 0.002, h * 0.6),
-                    (x1 - stern, y + hw + 0.002, h * 0.6 + stripe), (x0 + bow * 0.5, y + hw * 0.5 + 0.002, h * 0.6 + stripe)], PAINT)
-    top = [(px, py, h) for px, py in outline]
-    for i in range(1, len(top) - 1):
-        m.face([top[0], top[i], top[i + 1]], deck, light=shade_normal([0, 0, 1]))
-    for dy in (-hw / 3, hw / 3):                                                                    # deck seams
-        m.rod((x0 + bow * 0.8, y + dy, h + 0.001), (x1 - stern * 1.5, y + dy, h + 0.001), 0.006, deck * 0.8)
-    m.rod((x0 + bow * 0.4, y + hw * 0.6, h), (x0 + bow, y + hw, h), 0.016, col * 0.75)              # gunwale
-    m.rod((x0 + bow, y + hw, h), (x1 - stern, y + hw, h), 0.016, rail if rail is not None else col * 0.75)
-
-
-def mast(m, x, y, z0, h, col=DARK_WOOD, w=0.022):
-    m.rod((x, y, z0), (x, y, z0 + h), w, col)
-
-
-def square_sail(m, x, y, z0, z1, w, col=OWNER, belly=0.035, yard=DARK_WOOD):
-    """A square sail across the ship, filled toward the viewer."""
-    m.rod((x - w / 2 - 0.02, y, z1 + 0.01), (x + w / 2 + 0.02, y, z1 + 0.01), 0.015, yard)
-    with colour(m, col) as c:
-        m.face([(x - w / 2, y, z1), (x, y + belly, z1), (x, y + belly * 1.6, z0), (x - w / 2 * 0.94, y + belly, z0)], c)
-        m.face([(x, y + belly, z1), (x + w / 2, y, z1), (x + w / 2 * 0.94, y + belly, z0), (x, y + belly * 1.6, z0)], c)
-
-
-def lateen_sail(m, x, y, z0, z1, w, col=OWNER):
-    """A triangular sail on a slanted yard, the long edge toward the bow (west)."""
-    a, b, c = (x - w * 0.6, y + 0.01, z0 + 0.02), (x + w * 0.25, y, z1), (x + w * 0.45, y + 0.02, z0)
-    m.rod((x - w * 0.68, y, z0 - 0.01), (x + w * 0.3, y, z1 + 0.04), 0.014, DARK_WOOD)
-    with colour(m, col) as cc:
-        m.face([a, b, c], cc)
-
-
-def ensign(m, x, y, z, w=0.13, h=0.08, pole=0.18):
-    """A flagstaff with a flag in the owner's colour."""
-    m.rod((x, y, z), (x, y, z + pole), 0.012, DARK_WOOD)
-    with m.civ():
-        m.face([(x, y, z + pole), (x + w, y, z + pole - 0.01), (x + w, y, z + pole - h - 0.01), (x, y, z + pole - h)], PAINT)
-
-
-def turret(m, x, y, z, r, col, guns=2, length=0.22, facing=-1, elev=0.06):
-    """A gun turret with its barrels pointing west (facing -1) or east (+1)."""
-    m.side_prism([(x - r, z), (x + r, z), (x + r * 0.8, z + r * 0.55), (x - r * 0.7, z + r * 0.6)], y - r * 0.75, y + r * 0.75, col)
-    for i in range(guns):
-        dy = (i - (guns - 1) / 2) * r * 0.45
-        start = V(x + facing * r * 0.8, y + dy, z + r * 0.3)
-        barrel(m, start, start + V(facing * length, 0, elev), r * 0.14, col * 0.9)
-
-
-def funnel(m, x, y, z, h, r, col=C(.25, .25, .26), band=None, smoke_n=4):
-    m.capsule((x, y, z), (x, y, z + h), r, r * 0.95, col)
-    if band is not None:
-        with colour(m, band) as c:
-            m.capsule((x, y, z + h * 0.7), (x, y, z + h * 0.85), r * 1.02, r * 1.02, c)
-    m.ball((x, y, z + h), r * 0.8, BLACK, ry=r * 0.4)
-    for k in range(smoke_n):
-        m.ball((x + 0.05 * (k + 1), y - 0.01 * k, z + h + 0.05 + 0.05 * k), r * (1.0 + 0.4 * k), C(.62, .62, .62),
-               alpha=0.55 - 0.1 * k)
+def tracks(p, x0, x1, y, h, col="track", wheel_col="olivedark", n=6):
+    """A caterpillar track in side view, bottom on y."""
+    p.path("M%g,%g Q%g,%g %g,%g L%g,%g Q%g,%g %g,%g Q%g,%g %g,%g L%g,%g Q%g,%g %g,%g Z"
+           % (x0, y - h / 2, x0, y - h, x0 + h / 2, y - h, x1 - h / 2, y - h, x1, y - h, x1, y - h / 2,
+              x1, y, x1 - h / 2, y, x0 + h / 2, y, x0, y, x0, y - h / 2), col)
+    for i in range(n):
+        cx = x0 + h / 2 + (x1 - x0 - h) * i / (n - 1)
+        p.circle(cx, y - h / 2, h * 0.34, wheel_col)
 
 
 # ============================================================================ units
 UNITS = {}
 
 
-def unit(name, civilian=False, scale=FIG, at=None, wide=False):
-    """Register a unit. wide: a low unit (ship, vehicle) that may reach toward the middle of the hex,
-    under where the flags sit."""
+def unit(name, civilian=False, scale=1.0, at=None, wide=False):
+    """Register a unit. wide: a low unit (ship, vehicle) that may reach toward the middle of the
+    hex, under where the military flag sits."""
     def deco(fn):
         UNITS[name] = dict(fn=fn, civilian=civilian, scale=scale, at=at, wide=wide and not civilian)
         return fn
     return deco
 
 
-def armband(m, sh, hand):
-    """A band in the owner's colour round the upper arm."""
-    sh, hand = np.asarray(sh, float), np.asarray(hand, float)
-    with m.civ():
-        m.capsule(sh + (hand - sh) * 0.18, sh + (hand - sh) * 0.36, 0.046, 0.044, PAINT)
+def ground(p, w=24, x=3):
+    p.shadow(x, 0, w, 4.5)
 
 
-def scarf(m, b):
-    with m.civ():
-        m.capsule(b.neck + V(-0.065, 0.02, -0.03), b.neck + V(0.065, 0.02, -0.03), 0.04, 0.04, PAINT)
+# --- what they carry -----------------------------------------------------------------------------
+def spear_up(p, x, top, bottom=-2, shaft="wood", tip="bronze", w=3.2):
+    p.rect(x - w / 2, top, w, bottom - top, shaft, rx=1.4)
+    p.path("M%g,%g L%g,%g L%g,%g Z" % (x, top - 12, x + w / 2 + 2.5, top + 1, x - w / 2 - 2.5, top + 1), tip)
 
 
-def pack(m, b, col, w=0.2, h=0.26):
-    m.block(b.chest + V(0, -0.1, -h + 0.02), (w, 0.09, h), col)
+def bow(p, recurve=False, col="darkwood"):
+    """A bow drawn toward the west, string to the right hand at (-5, -80), with its arrow."""
+    if recurve:
+        top, bot = (-40, -107), (-40, -45)
+        p.curve("M-40,-107 Q-31,-104 -36,-98 Q-52,-76 -36,-54 Q-31,-48 -40,-45", 3.4, col)
+    else:
+        top, bot = (-36, -106), (-36, -46)
+        p.curve("M-36,-106 Q-52,-76 -36,-46", 3.4, col)
+    p.thin(top[0], top[1], -5, -80, 0.9, "linen")
+    p.thin(-5, -80, bot[0], bot[1], 0.9, "linen")
+    p.thin(-5, -80, -47, -77, 1.4, "linen")
+    p.path("M-47,-79.5 L-53,-77 L-47,-74.5 Z", "iron", ink=False)
 
 
-# --- ancient and classical foot ----------------------------------------------------------------------
+def quiver(p):
+    p.rect(8, -86, 8, 27, "leather", rx=3, rot=20)
+    for dx in (0, 4):
+        p.thin(13 + dx, -86, 15 + dx, -95, 1.6, "linen")
+
+
+def rifle(p, a, b, col="darkwood", barrel="iron", bayonet=False, w=4.0):
+    """A long gun from butt a to muzzle b."""
+    (x0, y0), (x1, y1) = a, b
+    mx, my = x0 + (x1 - x0) * 0.62, y0 + (y1 - y0) * 0.62
+    p.limb(x0, y0, mx, my, w, col)
+    p.limb(mx - (x1 - x0) * 0.05, my - (y1 - y0) * 0.05, x1, y1, w * 0.5, barrel)
+    if bayonet:
+        ln = math.hypot(x1 - x0, y1 - y0)
+        dx, dy = (x1 - x0) / ln, (y1 - y0) / ln
+        p.limb(x1, y1, x1 + dx * 11, y1 + dy * 11, 1.3, "steel", ink=False)
+
+
+def round_shield(p, cx, cy, r, face=OWNER, rim="bronze", boss="bronze"):
+    p.circle(cx, cy, r, rim)
+    p.circle(cx, cy, r * 0.82, face)
+    if boss:
+        p.circle(cx, cy, r * 0.22, boss)
+
+
+def banner(p, x, ground_y, top, w=18, h=12, pole="darkwood"):
+    p.rect(x - 1.3, top, 2.6, ground_y - top, pole, rx=1)
+    p.circle(x, top - 1.5, 2.4, "gold")
+    p.path("M%g,%g L%g,%g L%g,%g L%g,%g Z" % (x + 1.3, top + 1, x + w, top + 3, x + w - 1, top + h + 3, x + 1.3, top + h), OWNER)
+
+
+def sword_up(p, hx, hy, tx, ty, w=3.4, blade="steel", guard="bronze"):
+    """A sword held at (hx, hy) with its point at (tx, ty)."""
+    ln = math.hypot(tx - hx, ty - hy)
+    dx, dy = (tx - hx) / ln, (ty - hy) / ln
+    nx, ny = -dy, dx
+    bx, by = hx + dx * 3, hy + dy * 3
+    p.poly([(bx + nx * w / 2, by + ny * w / 2), (tx - dx * 5 + nx * w * 0.4, ty - dy * 5 + ny * w * 0.4), (tx, ty),
+            (tx - dx * 5 - nx * w * 0.4, ty - dy * 5 - ny * w * 0.4), (bx - nx * w / 2, by - ny * w / 2)], blade)
+    p.limb(hx + dx * 2 + nx * 5, hy + dy * 2 + ny * 5, hx + dx * 2 - nx * 5, hy + dy * 2 - ny * 5, 2.4, guard)
+
+
+# --- ancient and classical foot -----------------------------------------------------------------------
 @unit("Scout")
-def u_scout(m):
-    ground(m)
-    with m.civ():
-        m.capsule(V(0.0, -0.05, 0.74), V(0.0, -0.05, 0.22), 0.14, 0.21, PAINT)          # cloak behind
-    b = figure(m, legs_col=CLOTH, coat=LEATHER, belt=DARK_LEATHER, hat="hood", hat_col=OWNER)
-    hand = b.sh_r + V(0.15, 0.07, -0.08)
-    m.rod(hand + V(-0.015, 0, -0.63), hand + V(0.02, 0, 0.38), 0.03, WOOD)            # walking staff
-    arm(m, b.sh_r, hand, LEATHER)
-    arm(m, b.sh_l, b.head + V(-0.06, 0.08, 0.05), LEATHER)                           # shading the eyes
+def u_scout(p):
+    ground(p)
+    p.path("M-15,-74 L15,-74 L22,-24 Q0,-18 -22,-24 Z", OWNER)                       # cloak behind
+    figure(p, tunic="leather", pants="cloth", belt="darkwood")
+    hat(p, "hood", OWNER)
+    p.rect(19, -104, 3.2, 104, "wood", rx=1.5, rot=3)                                  # walking staff
+    arm(p, 13, -72, 20, -56, "leather")
+    arm(p, -13, -72, -7, -92, "leather")                                                # shading the eyes
 
 
 @unit("Warrior")
-def u_warrior(m):
-    ground(m)
-    b = Body()
-    hand = b.sh_l + V(-0.05, -0.03, 0.28)
-    m.capsule(hand + V(0.01, 0, -0.05), hand + V(-0.04, 0, 0.32), 0.028, 0.06, DARK_WOOD)   # club raised behind
-    arm(m, b.sh_l, hand, SKIN)
-    figure(m, b, legs_col=SKIN, coat=SKIN, skirt=OWNER, skirt_len=0.19, hair=C(.12, .09, .06), beard=C(.14, .1, .07))
-    m.capsule(b.sh_l + V(0.02, 0.035, 0.0), b.waist + V(0.1, 0.035, 0.0), 0.022, 0.022, C(.72, .66, .55))
-    arm(m, b.sh_r, b.sh_r + V(0.08, 0.06, -0.26), SKIN)
-    round_shield(m, b.sh_r + V(0.12, 0.13, -0.27), 0.17, col=C(.52, .38, .24), rim=DARK_WOOD, boss=None)
+def u_warrior(p):
+    ground(p)
+    p.limb(-13, -72, -24, -94, 7, "skin")                                               # arm raised with the club
+    p.path("M-27,-92 L-21,-92 L-26,-126 Q-31,-131 -35,-125 Z", "darkwood")
+    figure(p, tunic=OWNER, bare=True)
+    hair(p)
+    beard(p)
+    p.circle(-24, -94, 4, "skin")
+    arm(p, 13, -72, 19, -50, "skin")
+    round_shield(p, 22, -50, 15, face="wood", rim="darkwood", boss="leather")
 
 
 @unit("Archer")
-def u_archer(m):
-    ground(m)
-    b = Body()
-    quiver(m, b)
-    figure(m, b, legs_col=CLOTH, coat=OWNER, skirt=OWNER, skirt_len=0.15, belt=LEATHER)
-    bow_drawn(m, b, OWNER)
+def u_archer(p):
+    ground(p)
+    quiver(p)
+    figure(p, tunic=OWNER)
+    hat(p, "hood", "cloth")
+    p.limb(-13, -72, -34, -76, 6.5, OWNER)
+    bow(p)
+    arm(p, 13, -72, -5, -80, OWNER)
+    p.circle(-34, -76, 3.8, "skin")
 
 
 @unit("Composite Bowman")
-def u_composite_bowman(m):
-    ground(m)
-    b = Body()
-    quiver(m, b)
-    figure(m, b, legs_col=C(.38, .3, .22), coat=OWNER, skirt=OWNER, skirt_len=0.17, armour=BRONZE * 0.85,
-           belt=LEATHER, hat="cone", hat_col=BRONZE)
-    bow_drawn(m, b, OWNER, recurve=True, col=C(.28, .18, .1))
+def u_composite_bowman(p):
+    ground(p)
+    quiver(p)
+    figure(p, tunic=OWNER, pants="cloth")
+    p.path("M-13,-73 L13,-73 L12,-50 L-12,-50 Z", "bronze")                              # scale armour
+    for y in (-67, -61, -55):
+        p.thin(-12, y, 12, y, 1.0, "leather")
+    hat(p, "cone", "bronze")
+    p.limb(-13, -72, -36, -76, 6.5, OWNER)
+    bow(p, recurve=True)
+    arm(p, 13, -72, -5, -80, OWNER)
+    p.circle(-36, -76, 3.8, "skin")
 
 
 @unit("Spearman")
-def u_spearman(m):
-    ground(m)
-    b = Body()
-    hand = b.sh_r + V(0.12, 0.06, -0.18)
-    spear(m, hand, length=1.25, lean=0.06, below=0.5)
-    figure(m, b, legs_col=SKIN, coat=LINEN, skirt=LINEN, skirt_len=0.15, armour=BRONZE, hat="crest", hat_col=BRONZE)
-    for f in (b.foot_l, b.foot_r):
-        m.capsule(f + V(0, 0.012, 0.15), f + V(0, 0.012, 0.3), 0.05, 0.05, BRONZE, gloss=0.5)   # greaves
-    arm(m, b.sh_r, hand, SKIN)
-    arm(m, b.sh_l, b.sh_l + V(-0.03, 0.09, -0.2), SKIN)
-    round_shield(m, b.chest + V(-0.06, 0.14, -0.13), 0.23)
+def u_spearman(p):
+    ground(p)
+    spear_up(p, 20, -124)
+    figure(p, tunic="linen", pants="skin", boots="leather")
+    p.path("M-13,-73 L13,-73 L12,-50 L-12,-50 Z", "bronze")                              # cuirass
+    for x in (-6, 6):
+        p.rect(x - 4.8, -30, 9.6, 16, "bronze", rx=3)                                    # greaves
+    hat(p, "crest", "bronze")
+    p.path("M-12,-100 Q-4,-120 13,-106 Q2,-110 -12,-100 Z", OWNER)                       # crest
+    arm(p, 13, -72, 20, -58, "skin")
+    arm(p, -13, -72, -15, -56, "skin")
+    round_shield(p, -8, -56, 20)
 
 
 @unit("Swordsman")
-def u_swordsman(m):
-    ground(m)
-    b = figure(m, legs_col=C(.45, .36, .28), coat=OWNER, skirt=OWNER, skirt_len=0.16, armour=IRON, belt=LEATHER,
-               hat="round", hat_col=IRON, plume=OWNER)
-    hand = b.sh_r + V(0.17, 0.06, 0.0)
-    arm(m, b.sh_r, hand, OWNER)
-    sword(m, hand, d=(0.2, 0, 1), length=0.38)
-    arm(m, b.sh_l, b.sh_l + V(-0.02, 0.1, -0.2), OWNER)
-    tall_shield(m, b.chest + V(-0.11, 0.15, -0.12), 0.21, 0.44)
+def u_swordsman(p):
+    ground(p)
+    figure(p, tunic=OWNER, pants="cloth")
+    p.path("M-13,-73 L13,-73 L12,-50 L-12,-50 Z", "iron")                                # lorica
+    for y in (-66, -60, -55):
+        p.thin(-12, y, 12, y, 1.0, "darkgrey")
+    hat(p, "round", "iron", plume=OWNER)
+    arm(p, 13, -72, 25, -78, OWNER)
+    sword_up(p, 25, -80, 30, -118)
+    arm(p, -13, -72, -14, -56, OWNER)
+    p.rect(-31, -79, 23, 46, "bronze", rx=4)                                              # scutum
+    p.rect(-29, -77, 19, 42, OWNER, rx=3)
+    p.circle(-19.5, -56, 4, "bronze")
 
 
-# --- medieval foot -----------------------------------------------------------------------------------
+# --- medieval foot ---------------------------------------------------------------------------------------
 @unit("Pikeman")
-def u_pikeman(m):
-    ground(m)
-    b = Body()
-    hand = b.sh_r + V(0.11, 0.07, -0.14)
-    spear(m, hand, length=1.8, lean=0.025, below=0.62, tip=STEEL, w=0.025)
-    figure(m, b, legs_col=OWNER, boots=BLACK, coat=OWNER, armour=STEEL, belt=LEATHER, hat="morion", hat_col=STEEL)
-    arm(m, b.sh_r, hand, OWNER)
-    arm(m, b.sh_l, hand + V(-0.02, 0.0, 0.24), OWNER)
+def u_pikeman(p):
+    ground(p)
+    spear_up(p, 19, -160, tip="steel", w=3.0)
+    figure(p, tunic=OWNER, pants=OWNER, boots="black")
+    p.path("M-12,-73 L12,-73 L11,-50 L-11,-50 Z", "steel")                               # breastplate
+    hat(p, "morion", "steel")
+    arm(p, 13, -72, 19, -58, OWNER)
+    arm(p, -13, -72, 18, -86, OWNER)
 
 
 @unit("Longswordsman")
-def u_longswordsman(m):
-    ground(m)
-    b = figure(m, legs_col=STEEL, boots=STEEL, coat=STEEL, hat="great", hat_col=STEEL)
-    with m.civ():                                                                    # surcoat over the armour
-        m.capsule(b.waist + V(0, 0.022, -0.2), b.chest + V(0, 0.022, -0.02), 0.135, 0.1, PAINT)
-    hand = b.sh_r + V(0.12, 0.09, 0.04)
-    arm(m, b.sh_l, hand + V(-0.06, 0.02, -0.06), STEEL, skin=STEEL)
-    sword(m, hand, d=(0.32, 0, 1), length=0.6, w=0.03)
-    arm(m, b.sh_r, hand, STEEL, skin=STEEL)
+def u_longswordsman(p):
+    ground(p)
+    figure(p, tunic="steel", pants="steel", boots="steel", skirt=False, belt=None)
+    p.path("M-12,-74 L12,-74 L15,-30 L-15,-30 Z", OWNER)                                 # surcoat
+    p.rect(-13.5, -52, 27, 4.5, "leather", rx=1.5)
+    hat(p, "great", "steel")
+    p.limb(-13, -72, 10, -82, 6.5, "steel")
+    sword_up(p, 12, -84, 42, -134, w=4.4)
+    arm(p, 13, -72, 13, -82, "steel", hand="steel")
 
 
 @unit("Crossbowman")
-def u_crossbowman(m):
-    ground(m)
-    b = figure(m, legs_col=CLOTH, coat=OWNER, skirt=OWNER, skirt_len=0.17, belt=LEATHER, hat="kettle", hat_col=IRON)
-    top = b.chest + V(0.2, 0.14, 0.28)                       # crossbow held upright, the bow across the top
-    m.rod(top + V(0, 0, -0.62), top + V(0, 0, 0.02), 0.042, WOOD)
-    prod = [top + V(0.22 * t, 0.0, -0.07 * t * t) for t in np.linspace(-1, 1, 9)]
-    for p, q in zip(prod[:-1], prod[1:]):
-        m.rod(p, q, 0.026, IRON)
-    m.rod(prod[0], top + V(0, 0.005, -0.14), 0.007, LINEN)
-    m.rod(prod[-1], top + V(0, 0.005, -0.14), 0.007, LINEN)
-    arm(m, b.sh_r, top + V(0.0, 0.0, -0.42), OWNER)
-    arm(m, b.sh_l, top + V(-0.02, 0.0, -0.2), OWNER)
+def u_crossbowman(p):
+    ground(p)
+    figure(p, tunic=OWNER, pants="cloth")
+    hat(p, "kettle", "iron")
+    p.limb(-13, -72, -24, -64, 6.5, OWNER)
+    p.rect(-38, -67.5, 46, 5.5, "wood", rx=2)                                            # crossbow, aimed west
+    p.curve("M-32,-86 Q-25,-66 -32,-48", 3.2, "iron")
+    p.thin(-32, -86, -15, -66, 0.9, "linen")
+    p.thin(-15, -66, -32, -48, 0.9, "linen")
+    p.thin(-15, -67, -42, -67, 1.4, "linen")
+    p.circle(-24, -64, 3.8, "skin")
+    arm(p, 13, -72, 5, -62, OWNER)
 
 
-# --- gunpowder foot --------------------------------------------------------------------------------------
+# --- gunpowder foot -------------------------------------------------------------------------------------
 @unit("Musketman")
-def u_musketman(m):
-    ground(m)
-    b = figure(m, legs_col=WHITE * 0.95, boots=BLACK, coat=OWNER, skirt=OWNER, skirt_len=0.13, hair=C(.85, .83, .8),
-               hat="tricorne", hat_col=BLACK)
-    m.rod(b.sh_l + V(0.02, 0.07, 0.0), b.waist + V(0.1, 0.07, -0.02), 0.026, WHITE)            # cross belts
-    m.rod(b.sh_r + V(-0.02, 0.07, 0.0), b.waist + V(-0.1, 0.07, -0.02), 0.026, WHITE)
-    hand_hi, hand_lo = b.sh_r + V(0.0, 0.09, 0.06), b.waist + V(0.08, 0.1, 0.04)
-    long_gun(m, hand_lo + V(0.02, 0, -0.1), hand_hi + V(0.06, 0, 0.5), w=0.032)                 # musket on the shoulder
-    arm(m, b.sh_r, hand_lo, OWNER)
-    arm(m, b.sh_l, b.sh_l + V(-0.03, 0.06, -0.26), OWNER)
+def u_musketman(p):
+    ground(p)
+    figure(p, tunic=OWNER, pants="white", boots="black", belt=None, long_coat=True)
+    p.limb(-12, -74, 10, -50, 2.4, "white")                                               # cross belts
+    p.limb(12, -74, -10, -50, 2.4, "white")
+    hair(p, "grey_hair")
+    rifle(p, (17, -50), (25, -122))                                                       # musket on the shoulder
+    arm(p, 13, -72, 17, -54, OWNER)
+    arm(p, -13, -72, -16, -50, OWNER)
+    hat(p, "tricorne", "black")
 
 
 @unit("Rifleman")
-def u_rifleman(m):
-    ground(m)
-    navy = C(.22, .24, .32)
-    b = figure(m, legs_col=navy, boots=BLACK, coat=OWNER, skirt=OWNER, skirt_len=0.1, belt=DARK_LEATHER,
-               hat="kepi", hat_col=OWNER)
-    hand = b.chest + V(0.06, 0.13, -0.05)
-    long_gun(m, hand + V(-0.17, 0, -0.12), hand + V(0.22, 0, 0.62), bayonet=True)               # rifle at port arms
-    arm(m, b.sh_r, hand + V(0.1, 0, 0.12), OWNER)
-    arm(m, b.sh_l, hand + V(-0.09, 0, -0.05), OWNER)
+def u_rifleman(p):
+    ground(p)
+    figure(p, tunic=OWNER, pants="navy", boots="black", long_coat=True)
+    hat(p, "kepi", OWNER)
+    rifle(p, (-16, -44), (20, -118), bayonet=True)                                        # at port arms
+    arm(p, 13, -72, 8, -88, OWNER)
+    arm(p, -13, -72, -9, -56, OWNER)
 
 
 @unit("Great War Infantry")
-def u_great_war_infantry(m):
-    ground(m)
-    b = Body()
-    pack(m, b, C(.4, .37, .26))
-    figure(m, b, legs_col=OWNER, boots=DARK_LEATHER, coat=OWNER, skirt=OWNER, skirt_len=0.22, belt=DARK_LEATHER,
-           hat="brodie", hat_col=C(.36, .38, .3))
-    for f in (b.foot_l, b.foot_r):
-        m.capsule(f + V(0, 0.012, 0.08), f + V(0, 0.012, 0.26), 0.05, 0.05, KHAKI)                # puttees
-    hand = b.chest + V(0.06, 0.13, -0.05)
-    long_gun(m, hand + V(-0.17, 0, -0.12), hand + V(0.22, 0, 0.62), bayonet=True)
-    arm(m, b.sh_r, hand + V(0.1, 0, 0.12), OWNER)
-    arm(m, b.sh_l, hand + V(-0.09, 0, -0.05), OWNER)
+def u_great_war_infantry(p):
+    ground(p)
+    p.rect(-12, -80, 24, 27, "khaki", rx=3)                                               # pack
+    figure(p, tunic=OWNER, pants=OWNER, long_coat=True)
+    for x in (-6, 6):
+        p.rect(x - 5, -24, 10, 13, "khaki", rx=2)                                         # puttees
+    hat(p, "brodie", "olivedark")
+    rifle(p, (-16, -44), (20, -118), bayonet=True)
+    arm(p, 13, -72, 8, -88, OWNER)
+    arm(p, -13, -72, -9, -56, OWNER)
 
 
-def modern_soldier(m, uniform, helmet_col, gun=BLACK, kit=None):
-    ground(m)
-    b = Body()
-    pack(m, b, kit if kit is not None else uniform * 0.85)
-    figure(m, b, legs_col=uniform, boots=C(.15, .12, .1), coat=uniform * 1.06, belt=C(.45, .42, .3), hat="m1",
-           hat_col=helmet_col)
-    scarf(m, b)
-    with m.civ():
-        m.capsule(b.head + V(-0.09, 0.0, 0.035), b.head + V(0.09, 0.0, 0.035), 0.024, 0.024, PAINT)   # helmet band
-    hand = b.chest + V(0.06, 0.13, -0.04)
-    m.rod(hand + V(-0.14, 0, -0.1), hand + V(0.18, 0, 0.42), 0.036, gun)                        # rifle held ready
-    m.rod(hand + V(0.0, 0.0, 0.08), hand + V(0.02, 0, -0.06), 0.03, gun)
-    lh, rh = hand + V(-0.08, 0, -0.04), hand + V(0.09, 0, 0.12)
-    arm(m, b.sh_l, lh, uniform)
-    armband(m, b.sh_l, lh)
-    arm(m, b.sh_r, rh, uniform)
-    return b
+def modern_soldier(p, uniform, helmet, kit="olivedark", gun="black"):
+    ground(p)
+    p.rect(-12, -80, 24, 30, kit, rx=3)                                                   # pack
+    figure(p, tunic=uniform, pants=uniform, skirt=False, belt="khaki")
+    p.rect(-8, -80, 16, 5, OWNER, rx=2)                                                   # scarf
+    hat(p, "m1", helmet)
+    p.rect(-11.5, -94, 23, 3.6, OWNER, rx=1.5)                                            # helmet band
+    p.limb(-16, -50, 16, -98, 4.6, gun)                                                   # rifle held ready
+    p.rect(-4, -74, 5, 9, gun, rot=-34)
+    arm(p, -13, -72, -9, -58, uniform)
+    p.limb(-13.2, -69, -12, -65, 7.6, OWNER)                                              # armband
+    arm(p, 13, -72, 8, -84, uniform)
 
 
 @unit("Infantry")
-def u_infantry(m):
-    modern_soldier(m, OLIVE, OLIVE * 0.9, gun=DARK_WOOD)
+def u_infantry(p):
+    modern_soldier(p, "olive", "olivedark", gun="darkwood")
 
 
 @unit("Marine")
-def u_marine(m):
-    b = modern_soldier(m, C(.3, .33, .22), C(.42, .38, .26))
-    for dx, dz in ((-0.05, 0.05), (0.04, 0.0), (0.0, -0.08)):                                    # camouflage
-        m.ball(b.chest + V(dx, 0.11, dz), 0.04, C(.22, .2, .14), ry=0.03)
+def u_marine(p):
+    modern_soldier(p, "camo", "sand")
+    for x, y in ((-6, -66), (5, -58), (-2, -36), (7, -20)):                               # camouflage
+        p.ellipse(x, y, 4, 2.6, "olivedark", ink=False)
 
 
 @unit("Paratrooper")
-def u_paratrooper(m):
-    m.shadow(0.12, 0.02, 0.22, 0.06, alpha=0.22)
-    lift = 0.22
-    b = Body(z=lift)
-    canopy = [V(1.1 * math.cos(t) * 0.42, 0.0, 1.62 + 0.18 * math.sin(t)) for t in np.linspace(math.pi * 0.05, math.pi * 0.95, 9)]
-    for p in (canopy[0], canopy[3], canopy[5], canopy[-1]):                                       # rigging lines
-        m.rod(p, b.sh_l if p[0] < 0 else b.sh_r, 0.006, LINEN * 0.8)
-    figure(m, b, legs_col=OLIVE, boots=C(.15, .12, .1), coat=OLIVE * 1.05, belt=C(.45, .42, .3), hat="m1", hat_col=OLIVE * 0.9)
-    arm(m, b.sh_l, b.sh_l + V(-0.03, 0.05, 0.3), OLIVE)
-    arm(m, b.sh_r, b.sh_r + V(0.03, 0.05, 0.3), OLIVE)
-    with m.civ():                                                                               # the canopy
-        for p, q in zip(canopy[:-1], canopy[1:]):
-            m.face([p, q, q + V(0, 0.0, -0.1), p + V(0, 0.0, -0.1)], PAINT)
-        m.face([canopy[0] + V(0, 0, -0.1), canopy[4] + V(0, 0, 0.05), canopy[-1] + V(0, 0, -0.1)], PAINT)
-    for p in canopy[1:-1:2]:
-        m.rod(p + V(0, 0.005, -0.1), p + V(0, 0.005, 0.0), 0.008, PAINT * 0.6)
-
-
-# --- mounted -------------------------------------------------------------------------------------------------
-MOUNT = 0.84     # horses are drawn smaller than figures, so horse and rider fit beside the flag
-VEHICLE = 1.08
-
-
-@unit("Horseman", scale=MOUNT)
-def u_horseman(m):
-    m.shadow(0.02, 0.02, 0.5, 0.08)
-    P = horse(m, 0.0, 0.0)
-    b = rider(m, P, coat=OWNER, legs_col=SKIN, hat="round", hat_col=BRONZE)
-    hand = b.sh_r + V(0.06, 0.09, -0.12)
-    m.rod(hand + V(0.18, 0, -0.07), hand + V(-0.46, 0, 0.14), 0.022, WOOD)                     # javelin held forward
-    m.capsule(hand + V(-0.45, 0, 0.135), hand + V(-0.56, 0, 0.17), 0.02, 0.003, BRONZE, gloss=0.5)
-    arm(m, b.sh_r, hand, SKIN)
-    arm(m, b.sh_l, P(0.28, 0.66, 0.02), SKIN)
-
-
-@unit("Chariot Archer", scale=0.76)
-def u_chariot_archer(m):
-    m.shadow(0.0, 0.02, 0.62, 0.1)
-    P = horse(m, -0.22, 0.0, col=C(.55, .4, .26))
-    wheel(m, (0.42, -0.14, 0.2), 0.2)
-    m.rod(P(-0.2, 0.42), (0.3, 0.0, 0.3), 0.024, DARK_WOOD)                                       # draught pole
-    b = Body(0.42, 0.0, 0.2)
-    figure(m, b, legs_col=CLOTH, coat=OWNER, belt=LEATHER, hat="cone", hat_col=BRONZE)
-    bow_drawn(m, b, OWNER)
-    with m.civ():
-        m.side_prism([(0.24, 0.2), (0.6, 0.2), (0.6, 0.42), (0.32, 0.56)], -0.13, 0.13, PAINT)       # the car
-    wheel(m, (0.42, 0.15, 0.2), 0.2)
-
-
-@unit("Knight", scale=MOUNT)
-def u_knight(m):
-    m.shadow(0.02, 0.02, 0.52, 0.09)
-    P = horse(m, 0.0, 0.0, col=C(.66, .64, .62), mane=C(.3, .28, .26), barding=OWNER)
-    b = rider(m, P, coat=STEEL, legs_col=STEEL, hat="great", hat_col=STEEL, plume=OWNER, armour=STEEL)
-    hand = b.sh_r + V(0.1, 0.07, -0.14)
-    top = hand + V(0.06, 0, 0.82)
-    m.rod(hand + V(-0.02, 0, -0.32), top, 0.034, WOOD)                                           # lance, upright
-    m.capsule(top, top + V(0.01, 0, 0.1), 0.02, 0.004, STEEL, gloss=0.6)
-    pennant(m, top + V(0, 0, -0.04), 0.2, 0.05, 0.09)
-    arm(m, b.sh_r, hand, STEEL, skin=STEEL)
-    kite_shield(m, b.chest + V(-0.14, 0.12, -0.08), 0.2, 0.32)
-
-
-@unit("Lancer", scale=MOUNT)
-def u_lancer(m):
-    m.shadow(0.02, 0.02, 0.5, 0.08)
-    P = horse(m, 0.0, 0.0, col=C(.32, .2, .12), gait=0.05)
-    b = rider(m, P, coat=OWNER, legs_col=C(.2, .2, .26), hat="czapka", hat_col=OWNER)
-    hand = b.sh_r + V(0.04, 0.09, -0.1)
-    tip = hand + V(-0.7, 0, 0.58)
-    m.rod(hand + V(0.2, 0, -0.17), tip, 0.026, WOOD)                                               # lance couched forward
-    m.capsule(tip, tip + V(-0.08, 0, 0.065), 0.018, 0.003, STEEL, gloss=0.6)
-    pennant(m, tip + V(0.09, 0, -0.06), 0.16, -0.02, 0.07)
-    arm(m, b.sh_r, hand, OWNER)
-    arm(m, b.sh_l, P(0.28, 0.66, 0.02), OWNER)
-
-
-@unit("Cavalry", scale=MOUNT)
-def u_cavalry(m):
-    m.shadow(0.02, 0.02, 0.5, 0.08)
-    P = horse(m, 0.0, 0.0, col=C(.2, .14, .1), mane=C(.08, .06, .05), gait=0.08)
-    b = rider(m, P, coat=OWNER, legs_col=C(.2, .2, .26), hat="slouch", hat_col=C(.3, .26, .2))
-    hand = b.sh_r + V(0.14, 0.05, 0.22)
-    arm(m, b.sh_r, hand, OWNER)
-    sword(m, hand, d=(-0.25, 0, 1), length=0.42, guard=GOLD)                                         # sabre raised
-    arm(m, b.sh_l, P(0.28, 0.66, 0.02), OWNER)
-
-
-
-
-# --- siege and guns ------------------------------------------------------------------------------------------
-GUN = C(.36, .38, .3)        # olive gun metal
-GUN_GREY = C(.44, .46, .44)
-
-
-@unit("Catapult", scale=VEHICLE, wide=True)
-def u_catapult(m):
-    m.shadow(0.04, 0.02, 0.44, 0.12)
-    for x in (-0.24, 0.24):
-        wheel(m, (x, -0.13, 0.11), 0.11)
-    m.block((0.0, 0.0, 0.11), (0.64, 0.26, 0.06), WOOD)
-    for y in (-0.11, 0.11):
-        m.side_prism([(-0.06, 0.17), (0.06, 0.17), (0.02, 0.48), (-0.02, 0.48)], y - 0.025, y + 0.025, DARK_WOOD)
-    m.rod((0.0, -0.13, 0.46), (0.0, 0.13, 0.46), 0.045, DARK_WOOD)                                # crossbar
-    m.rod((0.22, 0.0, 0.18), (-0.2, 0.0, 0.62), 0.045, WOOD)                                      # throwing arm
-    m.ball((-0.22, 0.0, 0.64), 0.075, LEATHER)
-    m.ball((-0.22, 0.0, 0.69), 0.055, C(.52, .5, .47))                                              # the stone
-    side_mark(m, 0.1, 0.3, 0.131, 0.11, 0.17)
-    for x in (-0.24, 0.24):
-        wheel(m, (x, 0.14, 0.11), 0.11)
-    banner(m, (0.28, 0.06, 0.17), 0.46, w=0.15, hgt=0.11)
-
-
-@unit("Trebuchet", scale=VEHICLE, wide=True)
-def u_trebuchet(m):
-    m.shadow(0.06, 0.02, 0.46, 0.13)
-    for y in (-0.15,):
-        m.block((0.0, y, 0.0), (0.72, 0.05, 0.05), DARK_WOOD)
-        m.rod((-0.26, y, 0.05), (0.0, y, 0.72), 0.045, WOOD)
-        m.rod((0.26, y, 0.05), (0.0, y, 0.72), 0.045, WOOD)
-    m.rod((0.0, -0.17, 0.72), (0.0, 0.17, 0.72), 0.045, DARK_WOOD)                                # axle
-    m.rod((-0.2, 0.0, 0.62), (0.42, 0.0, 1.2), 0.04, WOOD)                                        # the long arm, raised east
-    m.rod((0.42, 0.0, 1.2), (0.4, 0.0, 0.92), 0.008, LINEN)                                       # sling with its stone
-    m.ball((0.4, 0.0, 0.9), 0.05, C(.52, .5, .47))
-    m.rod((-0.2, 0.0, 0.62), (-0.2, 0.0, 0.5), 0.02, IRON)
-    with m.civ():                                                                                # counterweight box
-        m.block((-0.2, 0.0, 0.22), (0.2, 0.2, 0.28), PAINT)
-    m.loop([V(-0.3, 0.101, 0.22), V(-0.1, 0.101, 0.22), V(-0.1, 0.101, 0.5), V(-0.3, 0.101, 0.5)], 0.016, IRON)
-    for y in (0.15,):
-        m.block((0.0, y, 0.0), (0.72, 0.05, 0.05), DARK_WOOD)
-        m.rod((-0.26, y, 0.05), (0.0, y, 0.72), 0.045, WOOD)
-        m.rod((0.26, y, 0.05), (0.0, y, 0.72), 0.045, WOOD)
-
-
-@unit("Cannon", scale=VEHICLE, wide=True)
-def u_cannon(m):
-    m.shadow(0.08, 0.02, 0.44, 0.1)
-    wheel(m, (0.02, -0.15, 0.17), 0.17)
-    m.side_prism([(-0.12, 0.16), (0.46, 0.02), (0.5, 0.07), (0.02, 0.3), (-0.12, 0.29)], -0.08, 0.08, WOOD)   # carriage
-    side_mark(m, -0.06, 0.12, 0.082, 0.19, 0.25)
-    barrel(m, (0.14, 0.0, 0.31), (-0.44, 0.0, 0.37), 0.062, BRONZE, gloss=0.6)
-    m.ball((0.16, 0.0, 0.31), 0.06, BRONZE, gloss=0.6)
-    wheel(m, (0.02, 0.15, 0.17), 0.17)
-    for x, y in ((0.32, 0.16), (0.38, 0.17), (0.35, 0.12)):                                       # shot
-        m.ball((x, y, 0.03), 0.032, BLACK, gloss=0.4)
-
-
-@unit("Artillery", scale=VEHICLE, wide=True)
-def u_artillery(m):
-    m.shadow(0.1, 0.02, 0.46, 0.11)
-    with m.turned(-0.8):                                                                          # aimed toward the viewer
-        wheel(m, (0.0, -0.17, 0.18), 0.18, col=GUN * 0.9, tyre=C(.2, .2, .2), spokes=7)
-        m.rod((0.04, 0.0, 0.2), (0.6, 0.0, 0.03), 0.06, GUN)                                         # trail
-        m.capsule((0.08, 0.0, 0.3), (-0.5, 0.0, 0.36), 0.05, 0.042, GUN, gloss=0.2)                  # barrel and recoil gear
-        m.capsule((0.04, 0.0, 0.25), (-0.22, 0.0, 0.28), 0.055, 0.055, GUN * 0.85)
-        with m.civ():                                                                            # gun shield
-            m.face([(-0.06, -0.16, 0.12), (-0.06, 0.16, 0.12), (-0.06, 0.16, 0.48), (-0.06, -0.16, 0.48)], PAINT)
-        m.loop([V(-0.065, -0.16, 0.12), V(-0.065, 0.16, 0.12), V(-0.065, 0.16, 0.48), V(-0.065, -0.16, 0.48)], 0.014, GUN * 0.7)
-        wheel(m, (0.0, 0.17, 0.18), 0.18, col=GUN * 0.9, tyre=C(.2, .2, .2), spokes=7)
-
-
-@unit("Gatling Gun", scale=VEHICLE, wide=True)
-def u_gatling_gun(m):
-    m.shadow(0.06, 0.02, 0.42, 0.1)
-    wheel(m, (0.0, -0.14, 0.16), 0.16)
-    b = Body(0.34, -0.02, 0.0)
-    figure(m, b, legs_col=C(.22, .24, .32), boots=BLACK, coat=OWNER, belt=DARK_LEATHER, hat="kepi", hat_col=OWNER)
-    m.rod((0.04, 0.0, 0.18), (0.3, 0.0, 0.02), 0.05, WOOD)                                         # trail
-    for dz, dy in ((0.0, -0.025), (0.035, 0.0), (0.0, 0.025), (-0.03, 0.0)):                      # the barrel cluster
-        m.rod((0.12, dy, 0.34 + dz), (-0.4, dy, 0.38 + dz), 0.02, BRONZE * 0.9, gloss=0.5)
-    m.capsule((0.14, 0.0, 0.35), (0.0, 0.0, 0.36), 0.07, 0.07, BRONZE, gloss=0.6)
-    m.disc((-0.3, 0.0, 0.38), (1.0, 0.25, 0.3), 0.055, BRONZE * 0.8)
-    m.ball((0.06, 0.0, 0.47), 0.05, BRONZE * 0.8)                                                  # magazine
-    arm(m, b.sh_l, (0.16, 0.05, 0.4), OWNER)
-    arm(m, b.sh_r, (0.22, 0.08, 0.36), OWNER)
-    wheel(m, (0.0, 0.14, 0.16), 0.16)
-
-
-@unit("Machine Gun", scale=VEHICLE, wide=True)
-def u_machine_gun(m):
-    m.shadow(0.04, 0.02, 0.4, 0.11)
-    b = Body(0.12, -0.04, -0.3)
-    figure(m, b, legs_col=OWNER, coat=OWNER, belt=DARK_LEATHER, hat="brodie", hat_col=C(.36, .38, .3))
-    m.rod((-0.16, 0.0, 0.0), (-0.12, 0.0, 0.3), 0.022, GUN)                                         # tripod
-    m.rod((-0.04, -0.06, 0.0), (-0.12, 0.0, 0.3), 0.022, GUN)
-    m.capsule((0.0, 0.0, 0.33), (-0.48, 0.0, 0.35), 0.045, 0.04, GUN, gloss=0.2)                  # water jacket
-    m.rod((-0.48, 0.0, 0.35), (-0.55, 0.0, 0.355), 0.02, BLACK)
-    m.block((0.04, 0.0, 0.29), (0.1, 0.08, 0.09), GUN * 0.8)
-    arm(m, b.sh_l, (0.0, 0.03, 0.36), OWNER)
-    arm(m, b.sh_r, (0.06, 0.06, 0.33), OWNER)
-    for i, x in enumerate(np.linspace(-0.4, 0.34, 7)):                                            # sandbags in front
-        m.ball((x, 0.14 + 0.02 * math.sin(i), 0.07), 0.075, C(.62, .55, .4), ry=0.05)
-    for x in np.linspace(-0.34, 0.28, 6):
-        m.ball((x, 0.15, 0.17), 0.072, C(.66, .59, .43), ry=0.048)
-
-
-@unit("Anti-Aircraft Gun", scale=VEHICLE, wide=True)
-def u_anti_aircraft_gun(m):
-    m.shadow(0.08, 0.02, 0.46, 0.13)
-    m.block((0.0, 0.0, 0.0), (0.8, 0.07, 0.06), GUN * 0.8)                                        # outriggers
-    m.block((0.0, 0.0, 0.0), (0.07, 0.42, 0.06), GUN * 0.8)
-    m.capsule((0.0, 0.0, 0.06), (0.0, 0.0, 0.16), 0.15, 0.15, GUN)                                # turntable
-    for y in (-0.05, 0.05):                                                                       # twin barrels
-        barrel(m, (0.06, y, 0.3), (-0.42, y, 0.92), 0.03, GUN * 0.85)
-    m.block((0.05, 0.0, 0.16), (0.24, 0.2, 0.18), GUN)
-    with m.civ():
-        m.face([(-0.04, 0.105, 0.18), (0.16, 0.105, 0.18), (0.16, 0.105, 0.33), (-0.04, 0.105, 0.33)], PAINT)
-    m.ball((0.12, 0.13, 0.36), 0.035, BLACK)                                                       # sight
-
-
-@unit("Anti-Tank Gun", scale=VEHICLE, wide=True)
-def u_anti_tank_gun(m):
-    m.shadow(0.1, 0.02, 0.48, 0.1)
-    with m.turned(-0.8):
-        solid_wheel(m, (0.0, -0.15, 0.12), 0.12)
-        m.rod((0.02, -0.03, 0.12), (0.62, -0.16, 0.02), 0.04, GUN)                                  # split trail
-        m.rod((0.02, 0.03, 0.12), (0.62, 0.16, 0.02), 0.04, GUN)
-        m.capsule((0.1, 0.0, 0.22), (-0.6, 0.0, 0.25), 0.032, 0.028, GUN, gloss=0.2)
-        m.capsule((-0.58, 0.0, 0.25), (-0.66, 0.0, 0.25), 0.04, 0.04, GUN * 0.8)                     # muzzle brake
-        with m.civ():
-            m.face([(-0.08, -0.2, 0.06), (-0.08, 0.2, 0.06), (-0.03, 0.17, 0.38), (-0.03, -0.17, 0.38)], PAINT)
-        solid_wheel(m, (0.0, 0.15, 0.12), 0.12)
-
-
-@unit("Rocket Artillery", scale=VEHICLE, wide=True)
-def u_rocket_artillery(m):
-    m.shadow(0.06, 0.02, 0.5, 0.13)
-    bed = truck(m, -0.46, 0.4, 0.0, 0.26, OLIVE, cab=0.24)
-    side_mark(m, -0.42, -0.26, 0.131, 0.16, 0.24)
-    # the launcher: a box of tubes tilted up toward the front
-    a, b = math.radians(28), 0.5
-    base = (0.34, bed)
-    prof = [base, (base[0] - b * math.cos(a), bed + b * math.sin(a)), (base[0] - b * math.cos(a) + 0.08, bed + b * math.sin(a) + 0.14),
-            (base[0] + 0.08, bed + 0.14)]
-    m.side_prism(prof, -0.12, 0.12, OLIVE * 0.95)
-    fx, fz = prof[1]
-    for i in range(3):
-        for j in range(2):
-            m.disc((fx + 0.02 + 0.025 * j, -0.08 + 0.08 * i, fz + 0.035 + 0.05 * j), (-math.sin(a), 0, math.cos(a) * 0.4 + 0.6),
-                   0.022, BLACK)
-
-
-@unit("Mobile SAM", scale=VEHICLE, wide=True)
-def u_mobile_sam(m):
-    m.shadow(0.06, 0.02, 0.48, 0.13)
-    tracks(m, -0.38, 0.38, -0.13, 0.12, 0.09, wheels=5)
-    m.block((0.0, 0.0, 0.09), (0.74, 0.26, 0.14), OLIVE)
-    tracks(m, -0.38, 0.38, 0.13, 0.12, 0.09, wheels=5)
-    side_mark(m, -0.3, -0.12, 0.131, 0.13, 0.21)
-    m.block((0.12, 0.0, 0.23), (0.2, 0.18, 0.08), OLIVE * 0.9)
-    for y in (-0.06, 0.06):                                                                       # missiles on their rails
-        a0 = V(0.2, y, 0.32)
-        d = unit3([-1.0, 0.0, 0.7])
-        m.rod(a0 - d * 0.02, a0 + d * 0.5, 0.03, OLIVE * 0.7)
-        m.capsule(a0 + d * 0.02 + V(0, 0, 0.04), a0 + d * 0.52 + V(0, 0, 0.04), 0.035, 0.035, WHITE)
-        m.capsule(a0 + d * 0.5 + V(0, 0, 0.04), a0 + d * 0.62 + V(0, 0, 0.04), 0.035, 0.004, C(.7, .15, .1))
-    m.capsule((0.3, 0.0, 0.31), (0.3, 0.0, 0.42), 0.012, 0.012, GUN)                               # radar
-    m.disc((0.3, 0.0, 0.46), (0.2, 0.4, 0.6), 0.07, C(.6, .62, .6))
-
-
-# --- armour ----------------------------------------------------------------------------------------------------
-TRACK = C(.17, .17, .16)
-
-
-@unit("Landship", scale=VEHICLE, wide=True)
-def u_landship(m):
-    m.shadow(0.08, 0.02, 0.52, 0.14)
-    rhomb = [(-0.5, 0.26), (-0.32, 0.0), (0.34, 0.0), (0.46, 0.18), (0.36, 0.44), (-0.28, 0.44)]
-    m.side_prism(rhomb, -0.17, -0.09, TRACK, top=TRACK * 1.3)
-    m.block((0.0, 0.0, 0.12), (0.62, 0.2, 0.26), C(.42, .4, .3))
-    m.side_prism(rhomb, 0.09, 0.17, TRACK, top=TRACK * 1.3)
-    with m.civ():                                                                                # the sponson
-        m.side_prism([(-0.12, 0.12), (0.12, 0.12), (0.1, 0.32), (-0.1, 0.32)], 0.17, 0.27, PAINT)
-    barrel(m, (-0.1, 0.24, 0.22), (-0.32, 0.27, 0.22), 0.028, C(.3, .3, .26))
-    for x in (0.52, 0.62):                                                                        # steering tail wheels
-        solid_wheel(m, (x, 0.06, 0.08), 0.08, col=C(.32, .28, .2))
-    m.rod((0.4, 0.05, 0.14), (0.62, 0.05, 0.08), 0.02, C(.32, .28, .2))
-
-
-@unit("Tank", scale=VEHICLE, wide=True)
-def u_tank(m):
-    m.shadow(0.06, 0.03, 0.47, 0.14)
-    tracks(m, -0.36, 0.36, -0.15, 0.14, 0.1)
-    m.block((0.0, 0.0, 0.09), (0.7, 0.3, 0.12), OLIVE)
-    tracks(m, -0.36, 0.36, 0.15, 0.14, 0.1)
-    m.block((0.02, 0.0, 0.2), (0.6, 0.28, 0.06), OLIVE * 1.05)
-    ring = [(-0.14, -0.11), (0.1, -0.12), (0.17, 0.0), (0.1, 0.12), (-0.14, 0.11), (-0.19, 0.0)]
-    m.prism(ring, 0.26, 0.3, OLIVE)
-    with m.civ():                                                                                # turret band
-        m.prism(ring, 0.3, 0.34, PAINT)
-    m.prism(ring, 0.34, 0.39, OLIVE)
-    barrel(m, (-0.14, 0.0, 0.33), (-0.6, 0.0, 0.35), 0.022, OLIVE * 0.85)
-    m.ball((0.04, -0.03, 0.41), 0.04, OLIVE * 0.9)
-
-
-@unit("Modern Armor", scale=VEHICLE, wide=True)
-def u_modern_armor(m):
-    sand = C(.6, .55, .42)
-    m.shadow(0.06, 0.03, 0.5, 0.14)
-    tracks(m, -0.4, 0.38, -0.16, 0.12, 0.1, wheels=7)
-    m.side_prism([(-0.44, 0.1), (-0.36, 0.2), (0.4, 0.2), (0.42, 0.08), (-0.36, 0.08)], -0.17, 0.17, sand)
-    tracks(m, -0.4, 0.38, 0.16, 0.12, 0.1, wheels=7)
-    m.block((0.0, 0.17, 0.11), (0.76, 0.03, 0.09), sand * 0.92)                                     # side skirt
-    m.prism([(-0.22, -0.13), (0.16, -0.14), (0.2, 0.0), (0.16, 0.14), (-0.22, 0.13), (-0.3, 0.05), (-0.3, -0.05)],
-            0.2, 0.31, sand)
-    with m.civ():
-        m.face([(-0.2, 0.131, 0.22), (0.14, 0.141, 0.22), (0.14, 0.141, 0.29), (-0.2, 0.131, 0.29)], PAINT)
-    barrel(m, (-0.28, 0.0, 0.26), (-0.82, 0.0, 0.27), 0.022, sand * 0.85)
-    m.capsule((-0.5, 0.0, 0.265), (-0.6, 0.0, 0.266), 0.032, 0.032, sand * 0.8)                       # fume extractor
-    m.block((0.06, -0.05, 0.31), (0.08, 0.06, 0.05), sand * 0.85)
-
-
-@unit("Mechanized Infantry", scale=VEHICLE, wide=True)
-def u_mechanized_infantry(m):
-    m.shadow(0.06, 0.03, 0.48, 0.14)
-    tracks(m, -0.36, 0.36, -0.15, 0.12, 0.09, wheels=6)
-    m.side_prism([(-0.42, 0.12), (-0.3, 0.3), (0.38, 0.3), (0.38, 0.08), (-0.34, 0.08)], -0.16, 0.16, OLIVE)
-    tracks(m, -0.36, 0.36, 0.15, 0.12, 0.09, wheels=6)
-    side_mark(m, 0.06, 0.3, 0.161, 0.15, 0.25)
-    m.prism([(-0.12, -0.09), (0.08, -0.09), (0.12, 0.0), (0.08, 0.09), (-0.12, 0.09)], 0.3, 0.38, OLIVE * 0.9)
-    barrel(m, (-0.1, 0.0, 0.34), (-0.42, 0.0, 0.35), 0.014, OLIVE * 0.7)
-    b = Body(0.24, 0.0, 0.0)
-    b.head = V(0.24, 0.0, 0.38)
-    m.ball(b.head + V(0, 0, -0.03), 0.06, OLIVE * 0.8)                                               # commander in the hatch
-    helmet(m, b, OLIVE * 0.85, "m1")
-
-
-@unit("Helicopter Gunship", scale=VEHICLE, wide=True)
-def u_helicopter_gunship(m):
-    m.shadow(0.18, 0.04, 0.5, 0.1, alpha=0.24)
-    z = 0.5
-    body = C(.3, .34, .26)
-    m.rod((-0.1, -0.08, z - 0.12), (0.12, -0.08, z - 0.12), 0.016, BLACK)                             # far skid
-    m.capsule((0.1, 0.0, z + 0.03), (0.62, 0.0, z + 0.08), 0.04, 0.022, body)                        # tail boom
-    m.face([(0.58, 0.0, z + 0.05), (0.66, 0.0, z + 0.08), (0.7, 0.0, z + 0.24), (0.64, 0.0, z + 0.24)], body)
-    m.capsule((-0.3, 0.0, z), (0.14, 0.0, z + 0.03), 0.075, 0.1, body, gloss=0.2)                   # fuselage
-    m.capsule((-0.28, 0.02, z + 0.06), (-0.12, 0.02, z + 0.1), 0.05, 0.06, C(.2, .28, .32), gloss=0.8)   # canopy
-    with m.civ():
-        m.capsule((0.24, 0.0, z + 0.05), (0.36, 0.0, z + 0.065), 0.045, 0.04, PAINT)
-    m.rod((-0.08, 0.13, z - 0.03), (0.06, 0.13, z - 0.03), 0.03, body * 0.8)                         # stub wing and rockets
-    m.capsule((-0.12, 0.15, z - 0.07), (0.08, 0.15, z - 0.07), 0.03, 0.03, C(.25, .25, .25))
-    m.rod((-0.1, 0.08, z - 0.12), (0.12, 0.08, z - 0.12), 0.016, BLACK)                               # near skid
-    m.rod((-0.05, 0.08, z - 0.12), (-0.05, 0.04, z - 0.04), 0.012, BLACK)
-    m.rod((0.08, 0.08, z - 0.12), (0.08, 0.04, z - 0.04), 0.012, BLACK)
-    m.capsule((-0.04, 0.0, z + 0.1), (-0.04, 0.0, z + 0.17), 0.02, 0.02, C(.2, .2, .2))              # rotor mast
-    rot = (-0.04, 0.0, z + 0.17)
-    m.face([V(*rot) + 0.52 * V(math.cos(t), math.sin(t) * 0.9, 0) for t in np.linspace(0, 2 * math.pi, 24, endpoint=False)],
-           C(.75, .78, .8), alpha=0.18)                                                            # spinning blur
-    for t in (0.35, 0.35 + math.pi / 2, 0.35 + math.pi, 0.35 + 1.5 * math.pi):
-        m.rod(rot, V(*rot) + 0.52 * V(math.cos(t), math.sin(t) * 0.9, 0), 0.02, C(.12, .12, .12))
-
-
-@unit("Giant Death Robot", scale=0.86)
-def u_giant_death_robot(m):
-    metal = C(.32, .33, .36)
-    m.shadow(0.1, 0.02, 0.36, 0.1)
-    for x, yo in ((-0.12, -0.02), (0.12, 0.02)):                                                       # legs
-        m.block((x, yo + 0.03, 0.0), (0.16, 0.22, 0.06), metal * 0.8)
-        m.capsule((x, yo, 0.06), (x + 0.02, yo, 0.32), 0.07, 0.06, metal)
-        m.ball((x + 0.02, yo + 0.02, 0.33), 0.075, metal * 1.1, gloss=0.4)
-        m.capsule((x + 0.02, yo, 0.33), (x * 0.6, yo, 0.58), 0.065, 0.075, metal)
-    m.block((0.0, 0.0, 0.55), (0.3, 0.2, 0.12), metal * 0.85)
-    m.prism([(-0.26, -0.12), (0.26, -0.12), (0.3, 0.06), (0.2, 0.15), (-0.2, 0.15), (-0.3, 0.06)], 0.66, 1.1, metal)
-    with m.civ():
-        m.face([(-0.2, 0.152, 0.72), (0.2, 0.152, 0.72), (0.2, 0.152, 1.0), (-0.2, 0.152, 1.0)], PAINT)
-    m.ball((0.0, 0.16, 0.86), 0.06, C(.15, .15, .16))
-    m.block((0.0, 0.0, 1.1), (0.16, 0.14, 0.1), metal * 0.9)                                            # head
-    m.ball((0.0, 0.08, 1.15), 0.03, C(1.0, .2, .1), gloss=0.9)
-    m.ball((0.0, 0.08, 1.15), 0.06, C(1.0, .3, .1), alpha=0.35)
-    for sx in (-1, 1):                                                                                  # arms ending in guns
-        m.ball((0.33 * sx, 0.0, 1.0), 0.09, metal * 1.1, gloss=0.4)
-        m.capsule((0.34 * sx, 0.02, 0.98), (0.38 * sx, 0.06, 0.66), 0.065, 0.055, metal)
-        barrel(m, (0.38 * sx, 0.08, 0.66), (0.36 * sx, 0.3, 0.46), 0.055, C(.2, .2, .22))
-
-
-
-
-# --- ships ---------------------------------------------------------------------------------------------------------
-SHIP = 1.15
-AT_SEA = (0.54, 0.34)
-CIV_SEA = (-0.6, 0.3)
-TIMBER = C(.38, .26, .15)
-NAVY = C(.5, .53, .56)
-NAVY_DECK = C(.36, .38, .4)
-
-
-def oars(m, xs, y, z, dy, length=0.16, col=WOOD):
-    for x in xs:
-        m.rod((x, y, z), (x - 0.05, y + dy * length, -0.01), 0.013, col)
-
-
-@unit("Trireme", scale=SHIP, at=AT_SEA, wide=True)
-def u_trireme(m):
-    wake(m, -0.52, 0.42, 0.02, 0.12)
-    oars(m, np.linspace(-0.24, 0.24, 7), -0.07, 0.1, -1)
-    hull(m, -0.48, 0.42, 0.0, 0.17, 0.12, TIMBER, deck=C(.42, .32, .2), bow=0.12, sheer=0.06)
-    m.capsule((-0.48, 0.0, 0.03), (-0.57, 0.0, 0.02), 0.022, 0.012, BRONZE, gloss=0.6)                 # ram
-    m.capsule((0.38, 0.0, 0.12), (0.45, 0.0, 0.27), 0.024, 0.01, TIMBER)                             # curled stern
-    mast(m, -0.02, 0.0, 0.12, 0.62)
-    square_sail(m, -0.02, 0.0, 0.3, 0.68, 0.44)
-    oars(m, np.linspace(-0.24, 0.24, 7), 0.085, 0.08, 1)
-    m.ball((-0.42, 0.083, 0.08), 0.022, WHITE)                                                         # painted eye
-    m.ball((-0.415, 0.093, 0.08), 0.01, BLACK)
-
-
-@unit("Galley", scale=SHIP, at=AT_SEA, wide=True)
-def u_galley(m):
-    wake(m, -0.44, 0.36, 0.02, 0.1)
-    oars(m, np.linspace(-0.18, 0.18, 5), -0.06, 0.09, -1)
-    hull(m, -0.4, 0.36, 0.0, 0.15, 0.1, C(.3, .22, .14), deck=C(.4, .3, .19), bow=0.1, sheer=0.08)
-    m.capsule((-0.4, 0.0, 0.1), (-0.46, 0.0, 0.26), 0.026, 0.014, C(.3, .22, .14))                 # high prow
-    mast(m, 0.0, 0.0, 0.1, 0.55)
-    square_sail(m, 0.0, 0.0, 0.26, 0.6, 0.38)
-    oars(m, np.linspace(-0.18, 0.18, 5), 0.075, 0.07, 1)
-    for x in (-0.1, 0.1, 0.24):                                                                       # shields along the side
-        m.disc((x, 0.08, 0.09), (0, 1, 0.2), 0.04, C(.55, .42, .26))
-
-
-@unit("Galleass", scale=SHIP, at=AT_SEA, wide=True)
-def u_galleass(m):
-    wake(m, -0.54, 0.44, 0.02, 0.13)
-    oars(m, np.linspace(-0.26, 0.26, 8), -0.08, 0.1, -1)
-    hull(m, -0.5, 0.44, 0.0, 0.2, 0.14, TIMBER, deck=C(.44, .34, .22), bow=0.16, sheer=0.04, stripe=0.03)
-    m.block((-0.36, 0.0, 0.14), (0.14, 0.18, 0.08), TIMBER * 1.1)                                       # forecastle with guns
-    for y in (-0.05, 0.05):
-        barrel(m, (-0.36, y, 0.19), (-0.5, y, 0.2), 0.016, BRONZE)
-    m.block((0.36, 0.0, 0.14), (0.14, 0.18, 0.12), TIMBER * 1.1)
-    for x, h in ((-0.2, 0.62), (0.04, 0.72), (0.26, 0.5)):
-        mast(m, x, 0.0, 0.14, h)
-        lateen_sail(m, x, 0.02, 0.24, 0.14 + h, 0.36 if h > 0.6 else 0.26)
-    oars(m, np.linspace(-0.26, 0.26, 8), 0.095, 0.08, 1)
-
-
-@unit("Caravel", scale=SHIP, at=AT_SEA, wide=True)
-def u_caravel(m):
-    wake(m, -0.46, 0.4, 0.02, 0.12)
-    hull(m, -0.42, 0.4, 0.0, 0.2, 0.15, C(.42, .3, .18), deck=C(.46, .36, .23), bow=0.16, sheer=0.07)
-    m.block((0.3, 0.0, 0.15), (0.18, 0.2, 0.1), C(.42, .3, .18) * 1.1)                                    # sterncastle
-    m.rod((-0.42, 0.0, 0.17), (-0.56, 0.0, 0.26), 0.016, DARK_WOOD)
-    for x, h, w in ((-0.18, 0.62, 0.32), (0.06, 0.78, 0.4), (0.3, 0.6, 0.3)):
-        mast(m, x, 0.0, 0.15, h)
-        lateen_sail(m, x, 0.02, 0.26, 0.15 + h, w, col=OWNER)
-    m.face([(-0.42, 0.0, 0.18), (-0.18, 0.0, 0.7), (-0.2, 0.0, 0.22)], LINEN)                             # jib
-    pennant(m, V(0.06, 0.0, 0.95), 0.16)
-
-
-@unit("Privateer", scale=SHIP, at=AT_SEA, wide=True)
-def u_privateer(m):
-    wake(m, -0.48, 0.42, 0.02, 0.12)
-    hull(m, -0.44, 0.42, 0.0, 0.19, 0.14, C(.1, .09, .08), deck=C(.5, .42, .3), bow=0.16, sheer=0.04)
+def u_paratrooper(p):
+    p.shadow(10, 0, 18, 3.5, 0.22)
+    q = Shift(p, 0, -26)
+    for x, sx in ((-46, -13), (-24, -13), (24, 13), (46, 13)):                            # rigging lines
+        p.thin(x, -150, sx, -98 - 26, 0.8, "rope")
+    figure(q, tunic="olive", pants="olive", skirt=False, belt="khaki")
+    hat(q, "m1", "olivedark")
+    arm(q, -13, -72, -16, -98, "olive")
+    arm(q, 13, -72, 16, -98, "olive")
+    p.path("M-50,-148 Q-44,-190 0,-194 Q44,-190 50,-148 Q37,-142 25,-148 Q12,-142 0,-148 Q-12,-142 -25,-148 "
+           "Q-37,-142 -50,-148 Z", OWNER)                                                  # the canopy
+    for x in (-25, 0, 25):
+        p.thin(x, -148, x * 0.6, -190, 0.8, "darkgrey")
+
+
+# --- mounted ---------------------------------------------------------------------------------------------------
+@unit("Horseman")
+def u_horseman(p):
+    ground(p, 40, 0)
+    horse(p)
+    ls, rs, hd = rider(p, coat=OWNER, legs="skin", boots="leather")
+    head_at(p, *hd, hat_kind="round", hat_col="bronze")
+    p.limb(34, -76, -38, -104, 2.6, "wood")                                               # javelin, raised
+    p.path("M-38,-106.5 L-46,-107 L-38,-101.5 Z", "bronze")
+    arm(p, *rs, 17, -86, "skin")
+    arm(p, *ls, -20, -66, "skin")
+
+
+@unit("Chariot Archer", wide=True)
+def u_chariot_archer(p):
+    ground(p, 56, -4)
+    horse(p, x=-34, col="horse")
+    p.limb(-20, -40, 16, -32, 2.6, "darkwood")                                            # draught pole
+    q = Shift(p, 32, -20, 0.86)
+    figure(q, tunic=OWNER, pants="cloth")
+    hat(q, "cone", "bronze")
+    q.limb(-13, -72, -34, -76, 6.5, OWNER)
+    bow(q)
+    arm(q, 13, -72, -5, -80, OWNER)
+    q.circle(-34, -76, 3.8, "skin")
+    p.path("M14,-46 L48,-46 L46,-18 L18,-18 Z", OWNER)                                    # the car
+    p.rect(12, -48, 38, 4, "bronze", rx=2)
+    wheel(p, 34, -16, 16)
+
+
+@unit("Knight")
+def u_knight(p):
+    ground(p, 40, 0)
+    horse(p, col="greyhorse", mane="iron", barding=OWNER)
+    ls, rs, hd = rider(p, coat="steel", legs="steel", boots="steel")
+    head_at(p, *hd, hair_col=None, hat_kind="great", hat_col="steel", plume=OWNER)
+    p.rect(20, -132, 3.4, 104, "wood", rx=1.5)                                            # lance, upright
+    p.path("M21.7,-144 L24.6,-131 L18.8,-131 Z", "steel")
+    p.poly([(23.4, -129), (42, -124), (23.4, -118)], OWNER)
+    arm(p, *rs, 21.7, -66, "steel", hand="steel")
+    p.path("M-22,-80 L-3,-80 L-3,-64 Q-5,-50 -12.5,-44 Q-20,-50 -22,-64 Z", OWNER)         # kite shield
+
+
+@unit("Lancer")
+def u_lancer(p):
+    ground(p, 40, 0)
+    horse(p, col="horse", gait=2)
+    ls, rs, hd = rider(p, coat=OWNER, legs="navy", boots="black")
+    head_at(p, *hd, hat_kind="czapka", hat_col=OWNER)
+    p.limb(34, -60, -60, -104, 2.8, "wood")                                               # lance, couched forward
+    p.path("M-60,-107 L-70,-109 L-61,-101 Z", "steel")
+    p.poly([(-52, -101), (-36, -98), (-41, -91), (-53, -96)], OWNER)
+    arm(p, *rs, 16, -66, OWNER)
+    arm(p, *ls, -20, -66, OWNER)
+
+
+@unit("Cavalry")
+def u_cavalry(p):
+    ground(p, 40, 0)
+    horse(p, col="darkhorse", mane="black", gait=3)
+    ls, rs, hd = rider(p, coat=OWNER, legs="navy", boots="black")
+    head_at(p, *hd, hat_kind="slouch", hat_col="leather")
+    arm(p, *rs, 22, -102, OWNER)
+    p.curve("M22,-104 Q16,-122 2,-134", 2.6, "steel")                                     # sabre raised
+    p.limb(19, -101, 25, -105, 2.2, "gold")
+    arm(p, *ls, -20, -66, OWNER)
+
+
+# --- siege and guns, side on, facing west -----------------------------------------------------------------
+@unit("Catapult", wide=True)
+def u_catapult(p):
+    ground(p, 46, 2)
+    p.rect(-44, -30, 88, 10, "wood", rx=2)
+    p.poly([(-8, -30), (8, -30), (3, -70), (-3, -70)], "darkwood")
+    p.rect(-11, -74, 22, 6, "darkwood", rx=2)
+    p.limb(32, -32, -28, -84, 5, "wood")                                                    # throwing arm
+    p.ellipse(-30, -86, 8, 5, "leather")
+    p.circle(-30, -92, 6, "stone")
+    banner(p, 40, -30, -78)
+    wheel(p, -26, -13, 13)
+    wheel(p, 26, -13, 13)
+
+
+@unit("Trebuchet", wide=True)
+def u_trebuchet(p):
+    ground(p, 46, 2)
+    p.rect(-44, -12, 88, 8, "darkwood", rx=2)
+    p.poly([(-34, -12), (-26, -12), (2, -92), (-2, -92)], "wood")                          # frame
+    p.poly([(34, -12), (26, -12), (-2, -92), (2, -92)], "wood")
+    p.limb(-24, -74, 44, -148, 4.4, "wood")                                                 # the long arm, raised
+    p.thin(44, -148, 42, -116, 1.0, "rope")
+    p.circle(42, -112, 5, "stone")
+    p.limb(-24, -74, -24, -64, 2.2, "iron")
+    p.rect(-38, -64, 28, 26, OWNER, rx=2)                                                   # counterweight box
+    p.rect(-38, -64, 28, 5, "iron", rx=1)
+    p.circle(0, -90, 4, "iron")
+
+
+@unit("Cannon", wide=True)
+def u_cannon(p):
+    ground(p, 46, 4)
+    p.path("M-8,-30 L46,-6 L47,-12 L-2,-40 Z", "wood")                                      # trail
+    p.path("M-4,-38 L16,-29 L14,-25 L-6,-34 Z", OWNER)
+    p.path("M14,-46 Q20,-40 14,-34 L-46,-37 L-48,-35 L-48,-46 L-46,-44 Z", "bronze")          # barrel
+    p.rect(-50, -47.5, 5, 14, "bronze", rx=1.5)
+    wheel(p, 0, -19, 19)
+    for x, y in ((30, -4), (36, -4), (33, -9)):
+        p.circle(x, y, 3.2, "black")
+
+
+@unit("Artillery", wide=True)
+def u_artillery(p):
+    ground(p, 48, 4)
+    p.limb(4, -22, 50, -4, 6, "olivedark")                                                  # trail
+    p.rect(-58, -52, 64, 4.4, "olive", rx=2)                                                 # barrel
+    p.rect(-62, -53.5, 6, 7.4, "olivedark", rx=1)
+    p.rect(-26, -50, 34, 8, "olivedark", rx=2)                                              # recoil gear
+    p.path("M-12,-64 L4,-66 L6,-24 L-10,-22 Z", "olive")                                    # gun shield
+    p.path("M-9,-58 L2,-59 L3,-48 L-8,-47 Z", OWNER)
+    wheel(p, 0, -20, 20, col="olivedark", spokes=7, tyre="black")
+
+
+@unit("Gatling Gun", wide=True)
+def u_gatling_gun(p):
+    ground(p, 46, 6)
+    q = Shift(p, 34, 0, 0.9)
+    figure(q, tunic=OWNER, pants="navy", boots="black")
+    hat(q, "kepi", OWNER)
+    p.limb(4, -22, 26, -4, 5, "wood")
+    for dy in (-2.4, 0, 2.4):
+        p.limb(10, -44 + dy, -40, -48 + dy, 2.2, "bronze")                                  # the barrels
+    p.rect(-6, -52, 22, 14, "bronze", rx=3)
+    p.ellipse(-34, -48, 3, 6, "bronze")
+    p.rect(-2, -60, 8, 8, "bronze", rx=2)                                                     # magazine
+    arm(q, -13, -72, -24, -56, OWNER)
+    arm(q, 13, -72, -16, -60, OWNER)
+    wheel(p, 0, -18, 18)
+
+
+@unit("Machine Gun", wide=True)
+def u_machine_gun(p):
+    ground(p, 44, 4)
+    q = Shift(p, 14, 18, 1.0)                                                                # the gunner, kneeling behind
+    q.path("M-15,-70 Q-16,-76 -9,-77 L9,-77 Q16,-76 15,-70 L13,-40 L-13,-40 Z", OWNER)
+    q.rect(-3.2, -84, 6.4, 8, "skin", rx=2)
+    q.circle(0, -89, 9.5, "skin")
+    hat(q, "brodie", "olivedark")
+    p.limb(-6, -40, -16, -4, 2.4, "iron")                                                   # tripod
+    p.limb(-6, -40, 4, -4, 2.4, "iron")
+    p.rect(-52, -48, 50, 8, "olivedark", rx=3)                                               # water-cooled gun
+    p.rect(-60, -46, 9, 3.6, "black", rx=1)
+    p.rect(-6, -50, 12, 10, "iron", rx=2)
+    arm(q, -13, -72, -18, -60, OWNER)
+    arm(q, 13, -72, -6, -64, OWNER)
+    for i, x in enumerate(range(-48, 46, 13)):                                               # sandbags in front
+        p.rect(x, -14, 14, 10, "sand", rx=4)
+    for x in range(-42, 40, 13):
+        p.rect(x, -24, 14, 10, "khaki", rx=4)
+
+
+@unit("Anti-Aircraft Gun", wide=True)
+def u_anti_aircraft_gun(p):
+    ground(p, 46, 2)
+    p.rect(-44, -22, 88, 8, "olivedark", rx=2)                                                # platform
+    for x in (-30, 30):
+        tyre(p, x, -9, 9)
+    p.rect(-14, -32, 28, 10, "olive", rx=3)                                                    # turntable
+    for d in (0, 6):
+        p.limb(-4 + d, -46 - d * 0.6, -40 + d, -104 - d * 0.6, 3.6, "olivedark")              # twin barrels
+        p.rect(-44 + d, -110 - d * 0.6, 7, 7, "olivedark", rx=1.5, rot=-32)
+    p.rect(-18, -58, 30, 24, OWNER, rx=3, rot=-32)                                             # cradle
+    p.circle(-3, -46, 4, "iron")
+    p.rect(12, -46, 12, 14, "olive", rx=2)                                                     # gunner's seat
+
+
+@unit("Anti-Tank Gun", wide=True)
+def u_anti_tank_gun(p):
+    ground(p, 44, 6)
+    p.limb(6, -16, 44, -4, 4.4, "olivedark")                                                 # trail
+    p.rect(-54, -36, 62, 4.4, "olive", rx=2)                                                  # long barrel
+    p.rect(-58, -38.5, 7, 9.4, "olivedark", rx=1.5)                                           # muzzle brake
+    p.path("M-14,-58 L8,-60 L10,-12 L-16,-10 Z", OWNER)                                      # sloped shield
+    p.path("M-14,-58 L8,-60 L8,-55 L-14,-53 Z", "olivedark")
+    tyre(p, 0, -13, 13)
+
+
+@unit("Rocket Artillery", wide=True)
+def u_rocket_artillery(p):
+    ground(p, 50, 2)
+    p.rect(-46, -24, 92, 8, "black", rx=2)                                                   # chassis
+    p.path("M-48,-24 L-48,-46 Q-46,-54 -38,-54 L-24,-54 L-24,-24 Z", "olive")                 # cab
+    p.path("M-44,-46 L-40,-51 L-28,-51 L-28,-44 Z", "glass")
+    p.rect(-44, -38, 14, 9, OWNER, rx=1.5)                                                   # door panel
+    p.rect(-24, -32, 70, 8, "olive", rx=1)                                                    # bed
+    p.path("M44,-32 L-18,-62 L-14,-72 L48,-42 Z", "olivedark")                                # launcher, raised
     for i in range(4):
-        x = -0.18 + 0.12 * i
-        m.face([(x, 0.096, 0.06), (x + 0.04, 0.096, 0.06), (x + 0.04, 0.096, 0.09), (x, 0.096, 0.09)], C(.5, .1, .08))
-    m.rod((-0.44, 0.0, 0.15), (-0.62, 0.0, 0.24), 0.016, DARK_WOOD)
-    m.face([(-0.6, 0.0, 0.24), (-0.14, 0.0, 0.86), (-0.16, 0.0, 0.2)], C(.3, .3, .3))                    # jib
-    for x, h in ((-0.12, 0.82), (0.18, 0.86)):
-        mast(m, x, 0.0, 0.14, h)
-        square_sail(m, x, 0.0, 0.3, 0.3 + h * 0.36, 0.3, col=C(.3, .3, .3))
-        square_sail(m, x, 0.0, 0.32 + h * 0.38, 0.2 + h * 0.76, 0.24, col=C(.3, .3, .3))
-    m.face([(0.18, 0.0, 0.32), (0.5, 0.0, 0.3), (0.18, 0.0, 0.85)], C(.32, .32, .32))                     # spanker
-    ensign(m, 0.42, 0.0, 0.14, w=0.14, h=0.09, pole=0.22)
+        p.circle(-14 + 2.4 * i, -66 + 2.2 * i, 1.7, "black", ink=False)
+    for x in (-36, 8, 30):
+        tyre(p, x, -10, 10)
 
 
-@unit("Frigate", scale=SHIP, at=AT_SEA, wide=True)
-def u_frigate(m):
-    wake(m, -0.5, 0.44, 0.02, 0.12)
-    hull(m, -0.46, 0.44, 0.0, 0.2, 0.16, C(.15, .12, .1), deck=C(.47, .38, .27), bow=0.16, sheer=0.04, stripe=0.04)
-    for i in range(6):                                                                                   # gun ports
-        x = -0.24 + 0.1 * i
-        m.face([(x, 0.101, 0.065), (x + 0.04, 0.101, 0.065), (x + 0.04, 0.101, 0.095), (x, 0.101, 0.095)], BLACK)
-    m.rod((-0.46, 0.0, 0.16), (-0.66, 0.0, 0.24), 0.016, DARK_WOOD)                                       # bowsprit
-    for x, h in ((-0.24, 0.85), (0.04, 0.95), (0.3, 0.75)):
-        mast(m, x, 0.0, 0.16, h)
-        square_sail(m, x, 0.0, 0.3, 0.3 + h * 0.4, 0.28, col=WHITE)
-        square_sail(m, x, 0.0, 0.32 + h * 0.42, 0.22 + h * 0.8, 0.22, col=WHITE)
-    pennant(m, V(0.04, 0.0, 1.11), 0.2)
-    ensign(m, 0.44, 0.0, 0.16, w=0.14, h=0.09, pole=0.22)
+@unit("Mobile SAM", wide=True)
+def u_mobile_sam(p):
+    ground(p, 50, 2)
+    tracks(p, -44, 44, 0, 16)
+    p.path("M-48,-16 L-40,-30 L44,-30 L46,-16 Z", "olive")
+    p.rect(-30, -28, 26, 8, OWNER, rx=1.5)
+    p.rect(8, -40, 22, 10, "olivedark", rx=2)
+    for dy in (0, 7):                                                                         # missiles
+        p.limb(24, -44 - dy, -24, -84 - dy, 5.6, "white")
+        p.path("M-24,%g L-32,%g L-26,%g Z" % (-87 - dy, -95 - dy, -81 - dy), "red")
+    p.limb(36, -40, 36, -54, 2, "iron")
+    p.ellipse(36, -58, 8, 4, "grey", rot=-20)
 
 
-@unit("Ironclad", scale=SHIP, at=AT_SEA, wide=True)
-def u_ironclad(m):
-    wake(m, -0.5, 0.42, 0.02, 0.12)
-    hull(m, -0.46, 0.42, 0.0, 0.2, 0.08, C(.14, .14, .15), deck=C(.32, .3, .28), bow=0.14, boot=C(.4, .16, .12))
-    funnel(m, 0.12, 0.0, 0.08, 0.28, 0.05, col=C(.18, .18, .19), smoke_n=4)
-    m.capsule((-0.14, 0.0, 0.08), (-0.14, 0.0, 0.2), 0.12, 0.12, C(.22, .22, .23))                        # turret
-    with m.civ():
-        m.capsule((-0.14, 0.0, 0.16), (-0.14, 0.0, 0.2), 0.122, 0.122, PAINT)
-    for y in (-0.04, 0.04):
-        barrel(m, (-0.2, y, 0.14), (-0.36, y, 0.145), 0.022, C(.15, .15, .15))
-    mast(m, 0.3, 0.0, 0.08, 0.4, col=C(.2, .2, .2))
-    ensign(m, 0.4, 0.0, 0.08, w=0.12, h=0.08, pole=0.2)
+# --- armour --------------------------------------------------------------------------------------------------------
+@unit("Landship", wide=True)
+def u_landship(p):
+    ground(p, 50, 4)
+    p.path("M-52,-30 L-36,0 L36,0 L50,-22 L38,-50 L-30,-50 Z", "track")                       # the rhomboid track
+    for t in range(14):                                                                       # tread links
+        x = -36 + t * 5.4
+        p.thin(x, -50, x - 1, -46, 1.2, "darkgrey")
+        p.thin(x, -4, x - 1, 0, 1.2, "darkgrey")
+    p.path("M-42,-30 L-32,-8 L32,-8 L42,-22 L33,-42 L-26,-42 Z", "khaki")
+    for x in range(-22, 30, 8):
+        p.circle(x, -38, 1.0, "darkwood", ink=False)
+    p.path("M-16,-34 L12,-34 L16,-26 L12,-14 L-16,-14 L-20,-24 Z", OWNER)                     # sponson
+    p.rect(-34, -26, 16, 3.6, "darkgrey", rx=1.5)
+    for x in (52, 62):                                                                        # steering tail wheels
+        tyre(p, x, -8, 8, col="darkwood", hub="leather")
 
 
-@unit("Destroyer", scale=SHIP, at=AT_SEA, wide=True)
-def u_destroyer(m):
-    wake(m, -0.54, 0.44, 0.02, 0.1)
-    hull(m, -0.5, 0.44, 0.0, 0.16, 0.1, NAVY, deck=NAVY_DECK, bow=0.2, sheer=0.04, boot=C(.18, .18, .2), stripe=0.025)
-    turret(m, -0.3, 0.0, 0.1, 0.06, NAVY, guns=1, length=0.16)
-    m.block((-0.14, 0.0, 0.1), (0.14, 0.12, 0.14), NAVY * 1.05)                                           # bridge
-    m.block((-0.15, 0.0, 0.24), (0.08, 0.1, 0.05), C(.2, .24, .28))
-    mast(m, -0.08, 0.0, 0.24, 0.3, col=NAVY * 0.8, w=0.016)
-    for x in (0.04, 0.16):
-        funnel(m, x, 0.0, 0.1, 0.16, 0.035, col=NAVY * 0.9, smoke_n=2)
-    turret(m, 0.32, 0.0, 0.1, 0.06, NAVY, guns=1, length=0.14, facing=1)
-    ensign(m, 0.42, 0.0, 0.1, w=0.12, h=0.07, pole=0.18)
+@unit("Tank", wide=True)
+def u_tank(p):
+    ground(p, 50, 2)
+    tracks(p, -48, 48, 0, 22, wheel_col="olivedark")
+    p.path("M-50,-22 L-44,-34 L44,-34 L50,-22 Z", "olive")
+    p.path("M-24,-34 L-20,-50 L18,-50 L24,-34 Z", "olive")
+    p.rect(-21.5, -45, 42, 5.5, OWNER)                                                        # turret band
+    p.rect(-64, -46, 44, 4.6, "olivedark", rx=2)                                               # gun
+    p.rect(4, -66, 1.4, 16, "black", ink=False)
+    p.poly([(5.4, -66), (16, -63), (5.4, -60)], OWNER)
 
 
-@unit("Battleship", scale=SHIP, at=AT_SEA, wide=True)
-def u_battleship(m):
-    wake(m, -0.56, 0.46, 0.02, 0.14)
-    hull(m, -0.52, 0.46, 0.0, 0.24, 0.12, NAVY, deck=NAVY_DECK, bow=0.22, sheer=0.03, boot=C(.2, .2, .22), stripe=0.03)
-    turret(m, -0.34, 0.0, 0.12, 0.08, NAVY, guns=2, length=0.2)
-    turret(m, -0.2, 0.0, 0.16, 0.08, NAVY, guns=2, length=0.2, elev=0.04)
-    m.block((-0.2, 0.0, 0.12), (0.1, 0.16, 0.04), NAVY)
-    m.prism([(-0.1, -0.07), (0.04, -0.07), (0.06, 0.07), (-0.1, 0.07)], 0.12, 0.42, NAVY * 1.05)         # tower
-    m.block((-0.03, 0.0, 0.42), (0.1, 0.1, 0.06), NAVY * 0.95)
-    mast(m, -0.03, 0.0, 0.48, 0.2, col=NAVY * 0.8, w=0.016)
-    funnel(m, 0.12, 0.0, 0.12, 0.2, 0.05, col=NAVY * 0.9, smoke_n=2)
-    turret(m, 0.32, 0.0, 0.12, 0.08, NAVY, guns=2, length=0.2, facing=1)
-    ensign(m, 0.44, 0.0, 0.12, w=0.13, h=0.08, pole=0.2)
+@unit("Modern Armor", wide=True)
+def u_modern_armor(p):
+    ground(p, 54, 2)
+    tracks(p, -50, 50, 0, 20, wheel_col="iron", n=7)
+    p.path("M-56,-18 L-46,-30 L52,-30 L54,-18 Z", "sand")
+    p.rect(-46, -24, 96, 8, "sand", rx=1)                                                     # side skirt
+    p.path("M-28,-30 L-36,-38 L-30,-46 L22,-46 L28,-30 Z", "sand")                             # angular turret
+    p.rect(-24, -42, 44, 5, OWNER)
+    p.rect(-84, -42, 50, 4, "khaki", rx=2)                                                     # long gun
+    p.rect(-62, -43.5, 10, 7, "khaki", rx=2)
+    p.rect(6, -52, 10, 6, "khaki", rx=1.5)
 
 
-@unit("Submarine", scale=SHIP, at=AT_SEA, wide=True)
-def u_submarine(m):
-    wake(m, -0.46, 0.42, 0.02, 0.09)
-    hull(m, -0.46, 0.42, 0.0, 0.12, 0.05, C(.22, .24, .25), deck=C(.3, .32, .32), bow=0.18, stern=0.12)
-    m.prism([(-0.06, -0.035), (0.1, -0.035), (0.13, 0.0), (0.1, 0.035), (-0.06, 0.035)], 0.05, 0.19, C(.24, .26, .27))
-    with m.civ():
-        m.face([(-0.06, 0.036, 0.12), (0.1, 0.036, 0.12), (0.1, 0.036, 0.17), (-0.06, 0.036, 0.17)], PAINT)
-    mast(m, 0.02, 0.0, 0.19, 0.12, col=C(.2, .2, .2), w=0.014)
-    barrel(m, (-0.2, 0.0, 0.08), (-0.3, 0.0, 0.1), 0.014, C(.2, .2, .2))                               # deck gun
-    m.block((-0.2, 0.0, 0.05), (0.05, 0.05, 0.04), C(.24, .26, .27))
+@unit("Mechanized Infantry", wide=True)
+def u_mechanized_infantry(p):
+    ground(p, 50, 2)
+    tracks(p, -46, 46, 0, 18)
+    p.path("M-52,-18 L-40,-44 L46,-44 L48,-18 Z", "olive")
+    p.rect(8, -36, 30, 12, OWNER, rx=1.5)                                                      # side panel
+    p.path("M-18,-44 L-14,-54 L8,-54 L12,-44 Z", "olivedark")                                  # small turret
+    p.rect(-48, -52, 34, 2.6, "black", rx=1)                                                   # autocannon
+    p.circle(28, -50, 6, "skin")                                                                # commander in the hatch
+    head_at(p, 28, -50, hair_col=None, hat_kind="m1", hat_col="olivedark")
 
 
-@unit("Nuclear Submarine", scale=SHIP, at=AT_SEA, wide=True)
-def u_nuclear_submarine(m):
-    wake(m, -0.52, 0.44, 0.02, 0.1)
-    black = C(.1, .1, .11)
-    m.capsule((-0.5, 0.0, 0.0), (0.38, 0.0, 0.0), 0.085, 0.07, black, gloss=0.4)                      # rounded hull, half under
-    m.face([(0.4, 0.0, 0.0), (0.48, 0.0, 0.0), (0.5, 0.0, 0.12), (0.44, 0.0, 0.1)], black)             # rudder
-    m.prism([(-0.22, -0.03), (-0.04, -0.03), (0.0, 0.0), (-0.04, 0.03), (-0.22, 0.03)], 0.05, 0.25, black * 1.3)
-    m.rod((-0.15, -0.14, 0.2), (-0.15, 0.14, 0.2), 0.022, black * 1.3)                                  # dive planes
-    with m.civ():
-        m.face([(-0.22, 0.031, 0.17), (-0.04, 0.031, 0.17), (-0.04, 0.031, 0.22), (-0.22, 0.031, 0.22)], PAINT)
+@unit("Helicopter Gunship", wide=True)
+def u_helicopter_gunship(p):
+    p.shadow(4, 0, 40, 4, 0.22)
+    p.limb(-20, -34, 20, -34, 2, "black")                                                      # skids
+    p.limb(-12, -34, -10, -44, 1.8, "black")
+    p.limb(12, -34, 10, -44, 1.8, "black")
+    p.path("M14,-56 L70,-58 L72,-52 L14,-48 Z", "camo")                                       # tail boom
+    p.path("M64,-58 L72,-80 L78,-80 L74,-54 Z", "camo")
+    p.circle(72, -64, 7, "grey", alpha=0.45, ink=False)
+    p.rect(42, -59, 12, 9, OWNER, rx=1.5)
+    p.path("M-36,-50 Q-38,-66 -20,-70 L18,-70 Q26,-62 22,-46 L-28,-42 Q-36,-44 -36,-50 Z", "camo")   # fuselage
+    p.path("M-33,-52 Q-33,-64 -20,-66 L-14,-66 L-16,-50 Z", "glass")
+    p.rect(-10, -48, 24, 5, "olivedark", rx=2)                                                  # stub wing
+    p.rect(-6, -46, 14, 6, "darkgrey", rx=2.5)                                                  # rockets
+    p.rect(-3, -76, 6, 6, "darkgrey", rx=1)                                                     # rotor mast
+    p.ellipse(0, -78, 50, 3.2, "grey", alpha=0.3, ink=False)                                   # spinning blades
+    p.limb(-48, -78, 48, -78, 1.8, "black", ink=False)
 
 
-@unit("Carrier", scale=SHIP, at=AT_SEA, wide=True)
-def u_carrier(m):
-    wake(m, -0.58, 0.5, 0.02, 0.16)
-    hull(m, -0.56, 0.5, 0.0, 0.3, 0.12, NAVY, deck=C(.3, .31, .32), bow=0.16, stern=0.02, boot=C(.2, .2, .22))
-    m.rod((-0.48, 0.0, 0.122), (0.46, 0.0, 0.122), 0.008, WHITE)                                        # centre line
-    for x in (-0.36, -0.2, 0.32):                                                                      # parked aircraft
-        m.face([(x - 0.06, 0.0, 0.125), (x + 0.06, 0.0, 0.125), (x + 0.04, 0.0, 0.125), (x - 0.04, -0.07, 0.125)], C(.5, .52, .5))
-        m.rod((x - 0.07, -0.03, 0.128), (x + 0.07, -0.03, 0.128), 0.025, C(.55, .57, .55))
-        m.rod((x, -0.07, 0.128), (x, 0.03, 0.128), 0.02, C(.55, .57, .55))
-    m.block((0.06, 0.11, 0.12), (0.22, 0.06, 0.16), NAVY * 1.05)                                       # the island, starboard
-    with m.civ():
-        m.face([(-0.05, 0.141, 0.2), (0.17, 0.141, 0.2), (0.17, 0.141, 0.26), (-0.05, 0.141, 0.26)], PAINT)
-    mast(m, 0.08, 0.11, 0.28, 0.16, col=NAVY * 0.8, w=0.016)
-    m.disc((0.08, 0.11, 0.42), (0.3, 0.5, 0.5), 0.04, C(.7, .72, .72))
+@unit("Giant Death Robot", wide=True, scale=0.82)
+def u_giant_death_robot(p):
+    ground(p, 36, 4)
+    for x in (-14, 14):                                                                         # legs
+        p.rect(x - 11, -8, 22, 8, "darkgrey", rx=2)
+        p.rect(x - 6, -48, 12, 40, "iron", rx=3)
+        p.circle(x, -48, 7, "grey")
+    p.rect(-18, -64, 36, 14, "darkgrey", rx=3)
+    p.path("M-30,-118 L30,-118 L34,-96 L24,-62 L-24,-62 L-34,-96 Z", "iron")                     # torso
+    p.path("M-20,-112 L20,-112 L22,-96 L16,-72 L-16,-72 L-22,-96 Z", OWNER)
+    p.circle(0, -92, 7, "darkgrey")
+    p.rect(-10, -132, 20, 14, "darkgrey", rx=3)                                                 # head
+    p.glow(0, -125, 7, "red", 0.6)
+    p.circle(0, -125, 2.6, "red", ink=False)
+    for sx in (-1, 1):                                                                          # arms ending in guns
+        p.circle(sx * 36, -112, 9, "grey")
+        p.limb(sx * 38, -110, sx * 42, -78, 9, "iron")
+        p.rect(sx * 42 - 6, -80, 12, 20, "darkgrey", rx=3)
+        p.rect(sx * 42 - 2.5, -60, 5, 14, "black", rx=1.5)
 
 
-@unit("Missile Cruiser", scale=SHIP, at=AT_SEA, wide=True)
-def u_missile_cruiser(m):
-    wake(m, -0.56, 0.46, 0.02, 0.12)
-    hull(m, -0.52, 0.46, 0.0, 0.2, 0.11, NAVY, deck=NAVY_DECK, bow=0.24, sheer=0.04, boot=C(.2, .2, .22), stripe=0.025)
-    m.block((-0.3, 0.0, 0.11), (0.12, 0.12, 0.03), C(.3, .3, .32))                                       # missile cells
-    for i in range(3):
-        for j in range(2):
-            m.face([(-0.34 + 0.03 * i, -0.03 + 0.04 * j, 0.142), (-0.32 + 0.03 * i, -0.03 + 0.04 * j, 0.142),
-                    (-0.32 + 0.03 * i, -0.01 + 0.04 * j, 0.142), (-0.34 + 0.03 * i, -0.01 + 0.04 * j, 0.142)], BLACK)
-    turret(m, -0.42, 0.0, 0.11, 0.045, NAVY, guns=1, length=0.1)
-    m.prism([(-0.16, -0.08), (0.12, -0.08), (0.16, 0.0), (0.12, 0.08), (-0.16, 0.08)], 0.11, 0.3, NAVY * 1.05)
-    m.prism([(-0.1, -0.05), (0.06, -0.05), (0.08, 0.0), (0.06, 0.05), (-0.1, 0.05)], 0.3, 0.4, NAVY)
-    mast(m, -0.02, 0.0, 0.4, 0.2, col=NAVY * 0.8, w=0.016)
-    m.ball((-0.02, 0.0, 0.62), 0.04, WHITE)                                                              # radar dome
-    m.block((0.28, 0.0, 0.11), (0.12, 0.12, 0.08), NAVY * 0.95)
-    for y in (-0.03, 0.03):                                                                             # launcher aft
-        m.capsule((0.26, y, 0.22), (0.36, y, 0.26), 0.022, 0.022, WHITE)
-    ensign(m, 0.44, 0.0, 0.11, w=0.12, h=0.07, pole=0.18)
+# --- ships, side on, bow to the west -------------------------------------------------------------------------
+def water(p, x0, x1, w=6):
+    p.shadow((x0 + x1) / 2 + 4, 1, (x1 - x0) / 2 + 6, w * 0.8, 0.3)
+    p.ellipse((x0 + x1) / 2, 0, (x1 - x0) / 2 + 4, w, "foam", ink=False, shade=False, alpha=0.85)
 
 
-# --- civilians -------------------------------------------------------------------------------------------------------
+def hull(p, x0, x1, h, col="hull", stripe=False, rake=10, stern_h=None, keel=None):
+    """A hull from bow x0 to stern x1, deck at -h, waterline at 0."""
+    sh = h if stern_h is None else stern_h
+    p.path("M%g,%g L%g,%g Q%g,0 %g,0 L%g,0 Q%g,%g %g,%g Z"
+           % (x0, -h, x0 + rake, -2, x0 + rake + 4, x0 + rake + 12, x1 - 8, x1, -2, x1 + 2, -sh), col)
+    if stripe:
+        p.path("M%g,%g L%g,%g L%g,%g L%g,%g Z" % (x0 + 3, -h + 3, x1, -sh + 3, x1, -sh + 7, x0 + 5, -h + 7), OWNER)
+
+
+def mast(p, x, top, deck, col="darkwood", w=2.4):
+    p.rect(x - w / 2, top, w, deck - top, col, rx=1)
+
+
+def square_sail(p, x, top, bottom, w, col=OWNER):
+    p.rect(x - w / 2 - 3, top - 2, w + 6, 2.6, "darkwood", rx=1)
+    p.path("M%g,%g L%g,%g Q%g,%g %g,%g L%g,%g Q%g,%g %g,%g Z"
+           % (x - w / 2, top, x + w / 2, top, x + w / 2 + 3, (top + bottom) / 2, x + w / 2, bottom,
+              x - w / 2, bottom, x - w / 2 + 3, (top + bottom) / 2, x - w / 2, top), col)
+
+
+def lateen(p, x, top, bottom, w, col=OWNER):
+    p.limb(x - w * 0.7, bottom + 4, x + w * 0.3, top - 3, 2, "darkwood")
+    p.path("M%g,%g L%g,%g Q%g,%g %g,%g Z" % (x - w * 0.62, bottom + 2, x + w * 0.26, top, x + w * 0.5, (top + bottom) / 2,
+                                            x + w * 0.42, bottom), col)
+
+
+def oars(p, x0, x1, n, deck):
+    for i in range(n):
+        x = x0 + (x1 - x0) * i / (n - 1)
+        p.limb(x, deck + 2, x - 7, 6, 1.6, "wood")
+
+
+def ensign(p, x, deck, h=26, w=14):
+    p.rect(x - 1, deck - h, 2, h, "darkwood", rx=0.8)
+    p.rect(x + 1, deck - h, w, w * 0.65, OWNER)
+
+
+def pennant(p, x, y, w=18):
+    p.poly([(x, y), (x + w, y + 2.5), (x, y + 5)], OWNER)
+
+
+def funnel(p, x, deck, h, w, col="black", smoke=3):
+    p.rect(x - w / 2, deck - h, w, h, col, rx=1.5)
+    for i in range(smoke):
+        p.circle(x + 6 + 7 * i, deck - h - 6 - 4 * i, 5 + 2 * i, "grey", alpha=0.6 - 0.15 * i, ink=False)
+
+
+def turret(p, x, deck, w, col="navygrey", guns=2, length=22, facing=-1):
+    p.path("M%g,%g L%g,%g L%g,%g L%g,%g Z" % (x - w / 2, deck, x + w / 2, deck, x + w / 2 - 3, deck - 9, x - w / 2 + 2, deck - 9), col)
+    for i in range(guns):
+        y = deck - 6 + 2.6 * i - 1.3 * (guns - 1)
+        x0 = x - w / 2 + 1 if facing < 0 else x + w / 2 - 1
+        p.rect(min(x0, x0 + facing * length), y - 1.2, length, 2.4, "darkgrey", rx=1)
+
+
+@unit("Trireme", at=AT_SEA, wide=True)
+def u_trireme(p):
+    water(p, -56, 56)
+    oars(p, -30, 34, 8, -12)
+    hull(p, -54, 54, 14, col="hull", rake=12, stern_h=24)
+    p.path("M-54,-14 L-66,-4 L-54,-6 Z", "bronze")                                          # ram
+    p.circle(-44, -9, 2.4, "white", ink=False)
+    p.circle(-44.6, -9, 1.2, "black", ink=False)
+    mast(p, 0, -86, -14)
+    square_sail(p, 0, -82, -32, 40)
+
+
+@unit("Galley", at=AT_SEA, wide=True)
+def u_galley(p):
+    water(p, -48, 48)
+    oars(p, -24, 28, 6, -11)
+    hull(p, -44, 46, 12, col="darkwood", rake=10, stern_h=20)
+    p.curve("M-44,-12 Q-52,-26 -44,-34", 3.6, "darkwood")                                   # high prow
+    for x in (-24, -8, 8, 24):
+        p.circle(x, -14, 5.5, "wood")
+    mast(p, 2, -78, -12)
+    square_sail(p, 2, -74, -30, 36)
+
+
+@unit("Galleass", at=AT_SEA, wide=True)
+def u_galleass(p):
+    water(p, -62, 62)
+    oars(p, -36, 40, 10, -14)
+    hull(p, -60, 60, 16, col="hull", stripe=True, rake=12, stern_h=24)
+    p.rect(-52, -26, 22, 10, "darkwood", rx=1.5)                                            # forecastle with guns
+    p.rect(-64, -22, 14, 3.4, "bronze", rx=1)
+    for x, top, w in ((-24, -82, 46), (8, -94, 52), (38, -70, 34)):
+        mast(p, x, top, -16)
+        lateen(p, x, top + 6, -26, w)
+
+
+@unit("Caravel", at=AT_SEA, wide=True)
+def u_caravel(p):
+    water(p, -52, 52)
+    hull(p, -50, 50, 16, col="wood", rake=12, stern_h=30)
+    p.rect(28, -38, 24, 12, "darkwood", rx=1.5)                                              # sterncastle
+    p.limb(-50, -18, -64, -28, 2, "darkwood")
+    for x, top, w in ((-22, -84, 40), (6, -98, 50), (32, -74, 32)):
+        mast(p, x, top, -16)
+        lateen(p, x, top + 6, -26, w)
+    pennant(p, 7, -100)
+
+
+@unit("Privateer", at=AT_SEA, wide=True)
+def u_privateer(p):
+    water(p, -54, 54)
+    hull(p, -52, 52, 18, col="black", rake=12, stern_h=24)
+    for x in range(-30, 40, 14):
+        p.rect(x, -12, 5, 4, "red", ink=False)
+    p.limb(-52, -20, -72, -32, 2, "darkwood")
+    p.poly([(-70, -32), (-24, -96), (-22, -22)], "darksail")                                 # jib
+    for x, top in ((-14, -104), (22, -108)):
+        mast(p, x, top, -18)
+        square_sail(p, x, top + 8, top + 48, 30, "darksail")
+        square_sail(p, x, top + 52, -26, 36, "darksail")
+    ensign(p, 50, -24, 30, 16)
+
+
+@unit("Frigate", at=AT_SEA, wide=True)
+def u_frigate(p):
+    water(p, -58, 58)
+    hull(p, -56, 56, 24, col="hull", stripe=True, rake=12, stern_h=30)
+    for x in range(-36, 46, 14):
+        p.rect(x, -14, 5, 4, "black", ink=False)
+    p.limb(-56, -24, -76, -36, 2.2, "darkwood")                                             # bowsprit
+    p.poly([(-56, -26), (-32, -88), (-34, -30)], "sail")                                     # jib
+    for x, h in ((-30, 86), (2, 100), (32, 78)):
+        mast(p, x, -24 - h, -24)
+        square_sail(p, x, -24 - h * 0.88 + 4, -24 - h * 0.52, 23, "sail")
+        square_sail(p, x, -24 - h * 0.48, -34, 30, "sail")
+    pennant(p, 3.2, -126, 20)
+    ensign(p, 55, -30, 24, 16)
+
+
+@unit("Ironclad", at=AT_SEA, wide=True)
+def u_ironclad(p):
+    water(p, -56, 56)
+    hull(p, -54, 54, 10, col="black", rake=8)
+    p.rect(-38, -26, 26, 16, "darkgrey", rx=6)                                               # turret
+    p.rect(-38, -22, 26, 5, OWNER)
+    p.rect(-52, -20, 16, 3.4, "black", rx=1)
+    funnel(p, 10, -10, 26, 9)
+    mast(p, 34, -48, -10, col="darkgrey", w=2)
+    ensign(p, 52, -10, 24, 14)
+
+
+@unit("Destroyer", at=AT_SEA, wide=True)
+def u_destroyer(p):
+    water(p, -62, 62)
+    hull(p, -60, 60, 14, col="navygrey", stripe=True, rake=16)
+    turret(p, -38, -14, 12, guns=1, length=16)
+    p.rect(-24, -32, 20, 18, "navygrey", rx=2)                                               # bridge
+    p.rect(-22, -30, 16, 4, "glass", ink=False)
+    mast(p, -14, -58, -32, col="darkgrey", w=2)
+    funnel(p, 6, -14, 18, 7, col="darkgrey", smoke=2)
+    funnel(p, 20, -14, 16, 7, col="darkgrey", smoke=1)
+    turret(p, 42, -14, 12, guns=1, length=14, facing=1)
+    ensign(p, 58, -14, 22, 13)
+
+
+@unit("Battleship", at=AT_SEA, wide=True)
+def u_battleship(p):
+    water(p, -66, 66)
+    hull(p, -64, 64, 16, col="navygrey", stripe=True, rake=18)
+    turret(p, -44, -16, 16, guns=2, length=26)
+    turret(p, -24, -24, 16, guns=2, length=26)
+    p.rect(-32, -24, 16, 8, "navygrey", rx=1)
+    p.path("M-12,-16 L-8,-62 L4,-62 L8,-16 Z", "navygrey")                                   # tower
+    p.rect(-10, -66, 14, 6, "darkgrey", rx=1.5)
+    mast(p, -3, -84, -66, col="darkgrey", w=2)
+    funnel(p, 18, -16, 22, 9, col="darkgrey", smoke=2)
+    turret(p, 44, -16, 16, guns=2, length=24, facing=1)
+    ensign(p, 62, -16, 24, 14)
+
+
+@unit("Submarine", at=AT_SEA, wide=True)
+def u_submarine(p):
+    water(p, -56, 56, 5)
+    p.path("M-56,-4 Q-50,-10 -40,-10 L44,-10 Q54,-8 56,-2 L56,0 L-56,0 Z", "darkgrey")
+    p.path("M-8,-10 L-6,-30 L16,-30 L20,-10 Z", "darkgrey")                                    # conning tower
+    p.rect(-6, -26, 23, 5, OWNER)
+    mast(p, 6, -42, -30, col="black", w=1.6)
+    p.rect(-30, -15, 4, 5, "darkgrey", rx=1)                                                   # deck gun
+    p.rect(-40, -15, 12, 2, "black", rx=1)
+
+
+@unit("Nuclear Submarine", at=AT_SEA, wide=True)
+def u_nuclear_submarine(p):
+    water(p, -66, 66, 5)
+    p.path("M-66,0 Q-64,-14 -46,-14 L50,-12 Q60,-10 64,0 Z", "black")
+    p.path("M54,-6 L64,-22 L68,-22 L66,0 Z", "black")                                          # rudder
+    p.path("M-30,-14 L-28,-40 L-6,-40 L-2,-14 Z", "black")                                     # sail
+    p.rect(-29, -34, 25, 6, OWNER)
+    p.rect(-40, -32, 48, 2.6, "black", rx=1)                                                   # dive planes
+
+
+@unit("Carrier", at=AT_SEA, wide=True)
+def u_carrier(p):
+    water(p, -68, 68)
+    hull(p, -66, 66, 16, col="navygrey", rake=14)
+    p.rect(-70, -20, 138, 5, "darkgrey", rx=1)                                                 # flight deck
+    p.limb(-64, -18, 64, -18, 0.8, "white", ink=False)
+    for x in (-52, -36, -20):                                                                  # parked jets
+        p.poly([(x - 8, -21), (x + 8, -21), (x + 5, -25), (x - 4, -25)], "grey")
+    p.rect(26, -44, 22, 24, "navygrey", rx=2)                                                   # the island
+    p.rect(26, -38, 22, 6, OWNER)
+    mast(p, 37, -62, -44, col="darkgrey", w=2)
+    p.ellipse(37, -63, 6, 2.4, "grey")
+
+
+@unit("Missile Cruiser", at=AT_SEA, wide=True)
+def u_missile_cruiser(p):
+    water(p, -64, 64)
+    hull(p, -62, 62, 16, col="navygrey", stripe=True, rake=18)
+    turret(p, -46, -16, 10, guns=1, length=12)
+    p.rect(-34, -20, 18, 4, "darkgrey", rx=1)                                                  # missile cells
+    p.path("M-12,-16 L-6,-40 L24,-40 L30,-16 Z", "navygrey")                                    # superstructure
+    p.path("M-2,-40 L2,-54 L16,-54 L20,-40 Z", "navygrey")
+    p.rect(-8, -36, 30, 4, "glass", ink=False)
+    mast(p, 9, -74, -54, col="darkgrey", w=2)
+    p.circle(9, -76, 5, "white")                                                                # radar dome
+    p.rect(36, -24, 16, 8, "darkgrey", rx=1.5)                                                  # launcher
+    p.limb(38, -26, 52, -34, 3, "white")
+    ensign(p, 60, -16, 22, 13)
+
+
+# --- civilians --------------------------------------------------------------------------------------------------
 @unit("Worker", civilian=True)
-def u_worker(m):
-    ground(m)
-    b = figure(m, legs_col=C(.4, .34, .26), coat=OWNER, belt=LEATHER, hat="slouch", hat_col=C(.78, .66, .38))
-    hand = b.sh_l + V(-0.13, 0.08, -0.2)
-    m.rod(hand + V(0.03, 0, 0.2), hand + V(-0.05, 0, -0.44), 0.026, WOOD)                                 # shovel
-    m.face([hand + V(-0.1, 0, -0.42), hand + V(0.0, 0, -0.42), hand + V(-0.01, 0, -0.6), hand + V(-0.09, 0, -0.6)], STEEL)
-    arm(m, b.sh_l, hand, OWNER)
-    arm(m, b.sh_r, hand + V(0.04, 0.0, 0.16), OWNER)
+def u_worker(p):
+    ground(p)
+    p.rect(-30, -66, 3.2, 60, "wood", rx=1.4, rot=-10)                                        # shovel
+    p.path("M-26,-8 L-16,-8 Q-17,6 -21,8 Q-26,6 -26,-8 Z", "metal")
+    figure(p, tunic=OWNER, pants="cloth")
+    hair(p)
+    hat(p, "straw", "straw")
+    arm(p, -13, -72, -24, -54, OWNER)
+    arm(p, 13, -72, -20, -40, OWNER)
 
 
 @unit("Settler", civilian=True)
-def u_settler(m):
-    ground(m, x=-0.1, rx=0.36)
-    cart = V(-0.36, -0.04, 0.0)                                                                      # a handcart with the family's goods
-    wheel(m, cart + V(0.0, -0.12, 0.13), 0.13)
-    m.block(cart + V(0.0, 0.0, 0.14), (0.36, 0.24, 0.06), WOOD)
-    with m.civ():
-        m.side_prism([(cart[0] - 0.17, 0.2), (cart[0] - 0.12, 0.38), (cart[0] + 0.12, 0.4), (cart[0] + 0.17, 0.2)],
-                     cart[1] - 0.12, cart[1] + 0.12, PAINT)
-    m.rod(cart + V(0.18, 0.0, 0.18), cart + V(0.36, 0.05, 0.3), 0.022, WOOD)                       # handles
-    wheel(m, cart + V(0.0, 0.13, 0.13), 0.13)
-    b = Body(0.12, 0.0)
-    m.ball(b.chest + V(0.0, -0.1, -0.02), 0.13, C(.62, .54, .38), ry=0.12)                          # bedroll on his back
-    figure(m, b, legs_col=C(.38, .32, .24), coat=OWNER, belt=LEATHER, hat="slouch", hat_col=C(.45, .34, .2),
-           beard=C(.3, .2, .12))
-    hand = b.sh_r + V(0.04, 0.08, 0.06)
-    arm(m, b.sh_r, hand, OWNER)
-    m.rod(hand + V(-0.04, 0, -0.08), hand + V(0.1, 0, 0.36), 0.022, WOOD)                          # axe over the shoulder
-    m.face([hand + V(0.07, 0, 0.3), hand + V(0.17, 0, 0.36), hand + V(0.16, 0, 0.26), hand + V(0.09, 0, 0.25)], STEEL)
-    arm(m, b.sh_l, cart + V(0.36, 0.06, 0.3), OWNER)
+def u_settler(p):
+    ground(p, 40, -20)
+    wheel(p, -34, -14, 14)                                                                     # handcart
+    p.rect(-58, -32, 46, 8, "wood", rx=2)
+    p.path("M-58,-32 Q-56,-58 -35,-60 Q-14,-58 -12,-32 Z", OWNER)
+    p.limb(-12, -30, 6, -50, 2.8, "wood")
+    p.ellipse(10, -66, 12, 11, "linen")                                                        # bedroll
+    figure(p, tunic=OWNER, pants="cloth")
+    hat(p, "slouch", "leather")
+    beard(p)
+    arm(p, -13, -72, 4, -51, OWNER)
+    p.rect(15, -106, 3, 44, "wood", rx=1.3, rot=12)                                            # axe over the shoulder
+    p.path("M20,-110 L30,-112 L30,-100 L22,-101 Z", "metal")
+    arm(p, 13, -72, 16, -84, OWNER)
 
 
-@unit("Work Boats", civilian=True, scale=SHIP, at=CIV_SEA, wide=True)
-def u_work_boats(m):
-    wake(m, -0.3, 0.3, 0.02, 0.08)
-    hull(m, -0.3, 0.3, 0.0, 0.16, 0.08, C(.45, .32, .18), deck=C(.55, .42, .26), bow=0.1, sheer=0.04, stripe=0.02)
-    mast(m, 0.04, 0.0, 0.08, 0.42)
-    lateen_sail(m, 0.04, 0.02, 0.14, 0.5, 0.3)
-    f = m.sub((-0.14, 0.0, 0.08), 0.6)                                                                # the fisherman
-    b = figure(f, legs_col=CLOTH, coat=C(.7, .5, .2), hat="slouch", hat_col=C(.78, .66, .38))
-    arm(f, b.sh_r, b.sh_r + V(0.12, 0.06, -0.06), C(.7, .5, .2))
-    arm(f, b.sh_l, b.sh_l + V(-0.08, 0.06, -0.12), C(.7, .5, .2))
-    pts = [V(0.16 + 0.11 * math.cos(t), 0.14 + 0.035 * math.sin(t), 0.0) for t in np.linspace(0, 2 * math.pi, 12, endpoint=False)]
-    m.loop(pts, 0.009, C(.8, .76, .6))                                                                  # net in the water
-    m.rod((-0.04, 0.06, 0.4), pts[5], 0.007, C(.8, .76, .6))
+@unit("Work Boats", civilian=True, at=CIV_SEA)
+def u_work_boats(p):
+    water(p, -40, 40)
+    q = Shift(p, -14, -12, 0.62)                                                               # the fisherman
+    figure(q, tunic="straw", pants="cloth")
+    hat(q, "straw", "straw")
+    arm(q, 13, -72, 26, -60, "straw")
+    arm(q, -13, -72, -16, -54, "straw")
+    hull(p, -38, 38, 12, col="wood", stripe=True, rake=8, stern_h=16)
+    mast(p, 12, -70, -12)
+    lateen(p, 12, -66, -20, 30)
+    for i in range(5):                                                                         # net in the water
+        p.thin(4 + i * 4, -18, 14 + i * 6, 2, 0.8, "rope")
+    p.thin(4, -18, 40, -18, 0.8, "rope")
 
 
-def robed(m, robe, sash=None, hair=HAIR, beard=None, hat=None, hat_col=None, skin=SKIN):
-    ground(m)
-    b = figure(m, robe=robe, coat=robe, boots=DARK_LEATHER, hair=hair, beard=beard, skin=skin,
-               hat=hat, hat_col=hat_col if hat_col is not None else robe)
-    if sash is not None:                                                                       # a stole
-        with colour(m, sash) as c:
-            for dx in (-0.055, 0.055):
-                m.capsule(b.neck + V(dx * 0.7, 0.05, -0.06), b.waist + V(dx, 0.1, -0.32), 0.03, 0.034, c)
-    return b
+def robed(p, robe, stole=None, hair_col="hair", beard_col=None, head=None, head_col=None):
+    ground(p)
+    figure(p, tunic=robe, robe=robe, belt=None)
+    if stole is not None:
+        for x in (-5, 5):
+            p.rect(x - 2.6, -78, 5.2, 50, stole, rx=1.5)
+    if hair_col:
+        hair(p, hair_col)
+    if beard_col:
+        p.path("M-7,-84 Q0,-68 7,-84 Q0,-80 -7,-84 Z", beard_col)
+    if head:
+        hat(p, head, head_col)
 
 
 @unit("Great Artist", civilian=True)
-def u_great_artist(m):
-    ground(m, x=-0.1, rx=0.3)
-    e = V(-0.3, -0.02, 0.0)                                                                             # easel and canvas
-    for dx in (-0.08, 0.08):
-        m.rod(e + V(dx, 0, 0), e + V(dx * 0.4, -0.02, 0.62), 0.018, WOOD)
-    m.face([e + V(-0.12, 0.02, 0.3), e + V(0.12, 0.02, 0.3), e + V(0.12, 0.0, 0.6), e + V(-0.12, 0.0, 0.6)], C(.95, .93, .86))
-    for dx, dz, col in ((-0.05, 0.5, C(.2, .45, .75)), (0.04, 0.42, C(.85, .55, .15)), (-0.03, 0.37, C(.3, .6, .25)),
-                        (0.06, 0.53, C(.75, .2, .2))):
-        m.ball(e + V(dx, 0.03, dz), 0.04, col, ry=0.03)
-    b = figure(m, Body(0.06, 0.0), legs_col=C(.25, .22, .2), coat=OWNER, belt=None, hat="beret", hat_col=C(.15, .12, .14),
-               beard=C(.3, .2, .12))
-    hand = e + V(0.15, 0.06, 0.48)
-    arm(m, b.sh_l, hand, OWNER)
-    m.rod(hand, hand + V(-0.06, 0, 0.04), 0.01, DARK_WOOD)                                               # brush
-    hp = b.sh_r + V(0.1, 0.1, -0.2)
-    arm(m, b.sh_r, hp, OWNER)
-    m.disc(hp + V(0.04, 0.03, 0.0), (0.0, 1.0, 0.6), 0.075, C(.72, .55, .35))                             # palette
-    for i, col in enumerate((C(.8, .2, .2), C(.2, .4, .8), C(.9, .8, .2))):
-        m.ball(hp + V(0.01 + 0.03 * i, 0.06, 0.02), 0.014, col)
+def u_great_artist(p):
+    ground(p, 34, -14)
+    for dx in (-36, -16):                                                                      # easel and canvas
+        p.limb(dx, 0, -26, -76, 2.2, "wood")
+    p.rect(-44, -76, 32, 26, "white", rx=1)
+    for x, y, c in ((-36, -68, "glass"), (-24, -64, "flame"), (-32, -58, "olive"), (-18, -70, "red")):
+        p.ellipse(x, y, 5, 3.4, c, ink=False)
+    figure(p, tunic=OWNER, pants="black")
+    hat(p, "beret", "black")
+    beard(p, "hair")
+    arm(p, -13, -72, -18, -64, OWNER)
+    p.limb(-18, -64, -24, -70, 1.4, "darkwood", ink=False)                                   # brush
+    arm(p, 13, -72, 18, -56, OWNER)
+    p.ellipse(22, -56, 9, 6, "wood", rot=-10)                                                  # palette
+    for i, c in enumerate(("red", "glass", "gold")):
+        p.circle(18 + 4 * i, -58 + i, 1.6, c, ink=False)
 
 
 @unit("Great Scientist", civilian=True)
-def u_great_scientist(m):
-    ground(m, x=-0.08, rx=0.3)
-    t = V(-0.3, -0.04, 0.0)                                                                             # telescope on a tripod
-    for dx, dy in ((-0.08, 0.04), (0.08, 0.04), (0.0, -0.06)):
-        m.rod(t + V(dx, dy, 0), t + V(0, 0, 0.5), 0.016, DARK_WOOD)
-    m.capsule(t + V(0.12, 0.0, 0.44), t + V(-0.22, 0.0, 0.78), 0.035, 0.05, BRONZE, gloss=0.7)
-    b = robed(m, OWNER, hair=C(.85, .85, .82), beard=C(.86, .86, .84))
-    arm(m, b.sh_l, t + V(0.04, 0.0, 0.52), OWNER)
-    hand = b.sh_r + V(0.06, 0.1, -0.2)
-    arm(m, b.sh_r, hand, OWNER)
-    m.block(hand + V(0.02, 0.03, -0.05), (0.1, 0.03, 0.13), C(.45, .18, .12), yaw=0.2)                    # book
+def u_great_scientist(p):
+    ground(p, 34, -14)
+    for dx in (-44, -24):                                                                      # telescope on its tripod
+        p.limb(dx, 0, -34, -56, 1.8, "darkwood")
+    p.limb(-14, -58, -56, -86, 6, "bronze")
+    p.circle(-14, -58, 3.4, "darkwood")
+    robed(p, OWNER, hair_col="grey_hair", beard_col="grey_hair")
+    arm(p, -13, -72, -18, -62, OWNER)
+    arm(p, 13, -72, 14, -56, OWNER)
+    p.rect(10, -62, 13, 16, "red", rx=1.5, rot=8)                                              # book
 
 
 @unit("Great Merchant", civilian=True)
-def u_great_merchant(m):
-    ground(m, x=-0.08, rx=0.3)
-    m.ball((-0.32, -0.04, 0.12), 0.13, C(.72, .62, .44), ry=0.11)                                          # sacks of goods
-    m.ball((-0.22, 0.04, 0.09), 0.1, C(.66, .56, .4), ry=0.09)
-    b = robed(m, OWNER, sash=GOLD, beard=C(.15, .1, .07), hat="turban", hat_col=WHITE)
-    chest = V(0.2, 0.12, 0.0)                                                                           # a chest of gold
-    m.block(chest, (0.2, 0.12, 0.1), C(.42, .26, .14))
-    for dx in (-0.06, -0.02, 0.02, 0.06):
-        m.ball(chest + V(dx, 0.0, 0.12), 0.028, GOLD, gloss=0.9)
-    m.ball(chest + V(0.0, -0.01, 0.15), 0.028, GOLD, gloss=0.9)
-    arm(m, b.sh_l, b.sh_l + V(-0.12, 0.08, -0.12), OWNER)
-    hand = b.sh_r + V(0.08, 0.09, -0.1)
-    arm(m, b.sh_r, hand, OWNER)
-    m.ball(hand + V(0.0, 0.02, 0.03), 0.03, GOLD, gloss=0.9)
+def u_great_merchant(p):
+    ground(p, 36, -10)
+    p.ellipse(-30, -12, 12, 12, "linen")                                                       # sacks of goods
+    p.ellipse(-20, -8, 9, 9, "straw")
+    robed(p, OWNER, stole="gold", beard_col="beard", head="turban", head_col="white")
+    p.rect(14, -16, 20, 14, "darkwood", rx=2)                                                  # a chest of gold
+    for x in (17, 22, 27, 32):
+        p.circle(x, -18, 2.6, "gold")
+    arm(p, -13, -72, -18, -56, OWNER)
+    arm(p, 13, -72, 18, -60, OWNER)
+    p.circle(18, -64, 2.6, "gold")
 
 
 @unit("Great Engineer", civilian=True)
-def u_great_engineer(m):
-    ground(m, x=-0.08, rx=0.3)
-    g = V(-0.32, -0.03, 0.27)                                                                             # a big cog
+def u_great_engineer(p):
+    ground(p, 36, -10)
     teeth = []
-    for i in range(24):
-        t = 2 * math.pi * i / 24
-        r = 0.26 if i % 2 else 0.21
-        teeth.append(g + V(r * math.cos(t), 0.0, r * math.sin(t)))
-    for i in range(0, 24, 2):
-        m.face([g, teeth[i], teeth[(i + 1) % 24], teeth[(i + 2) % 24]], C(.5, .5, .52), gloss=0.4)
-    m.disc(g + V(0, 0.01, 0), (0, 1, 0), 0.07, C(.3, .3, .32))
-    b = figure(m, legs_col=C(.3, .3, .34), boots=BLACK, coat=OWNER, belt=LEATHER, hat="hardhat", hat_col=C(.92, .72, .15))
-    hand = b.sh_r + V(0.06, 0.1, -0.18)
-    arm(m, b.sh_r, hand, OWNER)
-    m.capsule(hand + V(-0.02, 0.02, -0.02), hand + V(0.14, 0.02, -0.06), 0.03, 0.03, C(.35, .55, .85))     # rolled plans
-    arm(m, b.sh_l, b.sh_l + V(-0.1, 0.08, -0.2), OWNER)
-    m.rod(b.sh_l + V(-0.1, 0.08, -0.2), b.sh_l + V(-0.12, 0.08, -0.4), 0.022, STEEL, gloss=0.5)            # wrench
-    m.ball(b.sh_l + V(-0.12, 0.08, -0.42), 0.03, STEEL, gloss=0.5)
+    for i in range(24):                                                                        # a big cog
+        a = 2 * math.pi * i / 24
+        r = 24 if i % 4 in (0, 1) else 19
+        teeth.append((-32 + r * math.cos(a), -34 + r * math.sin(a)))
+    p.poly(teeth, "grey")
+    p.circle(-32, -34, 7, "darkgrey")
+    figure(p, tunic=OWNER, pants="navy", boots="black")
+    hat(p, "hardhat", "gold")
+    arm(p, 13, -72, 16, -56, OWNER)
+    p.rect(12, -58, 18, 6, "glass", rx=3, rot=-20)                                             # rolled plans
+    arm(p, -13, -72, -18, -54, OWNER)
+    p.limb(-18, -54, -22, -36, 3, "steel")                                                     # wrench
+    p.circle(-22, -34, 3.4, "steel")
 
 
 @unit("Great Prophet", civilian=True)
-def u_great_prophet(m):
-    ground(m)
-    b = Body()
-    halo = b.head + V(0, -0.04, 0.0)
-    m.face([halo + 0.2 * V(math.cos(t), 0, math.sin(t)) for t in np.linspace(0, 2 * math.pi, 20, endpoint=False)],
-           C(1.0, .9, .55), alpha=0.4)
-    m.face([halo + 0.13 * V(math.cos(t), 0, math.sin(t)) for t in np.linspace(0, 2 * math.pi, 20, endpoint=False)],
-           C(1.0, .95, .7), alpha=0.5)
-    hand = b.sh_r + V(0.14, 0.07, -0.08)
-    m.rod(hand + V(-0.01, 0, -0.64), hand + V(0.01, 0, 0.4), 0.03, WOOD)                                   # staff
-    m.capsule(hand + V(0.01, 0, 0.4), hand + V(0.07, 0, 0.46), 0.02, 0.02, WOOD)
-    robed(m, WHITE, sash=OWNER, hair=C(.85, .85, .82), beard=C(.88, .88, .86))
-    arm(m, b.sh_r, hand, WHITE)
-    arm(m, b.sh_l, b.sh_l + V(-0.16, 0.08, 0.12), WHITE)
+def u_great_prophet(p):
+    p.glow(0, -92, 20, "gold", 0.55)
+    p.circle(0, -92, 15, "gold", alpha=0.35, ink=False)
+    p.rect(19, -112, 3.2, 112, "wood", rx=1.5)                                                 # staff
+    p.curve("M20.6,-112 Q22,-122 30,-118", 3, "wood")
+    robed(p, "white", stole=OWNER, hair_col="grey_hair", beard_col="grey_hair")
+    arm(p, 13, -72, 20, -66, "white")
+    arm(p, -13, -72, -24, -84, "white")
 
 
 @unit("Great General", civilian=True)
-def u_great_general(m):
-    ground(m)
-    b = Body()
-    with m.civ():                                                                                     # cape behind
-        m.face([b.sh_l + V(-0.03, -0.05, 0.02), b.sh_r + V(0.03, -0.05, 0.02), V(0.17, -0.06, 0.12), V(-0.19, -0.06, 0.12)], PAINT)
-    navy = C(.14, .16, .28)
-    figure(m, b, legs_col=WHITE * 0.92, boots=BLACK, coat=navy, skirt=navy, skirt_len=0.15, belt=GOLD,
-           hair=C(.6, .58, .55), hat="bicorne", hat_col=BLACK, plume=OWNER)
-    for s in (b.sh_l + V(0.02, 0.02, 0.0), b.sh_r + V(-0.02, 0.02, 0.0)):
-        m.ball(s, 0.045, GOLD, gloss=0.6)                                                              # epaulettes
-    arm(m, b.sh_l, b.sh_l + V(-0.06, 0.07, -0.25), navy)
-    hand = b.sh_r + V(0.2, 0.04, 0.22)
-    arm(m, b.sh_r, hand, navy)
-    sword(m, hand, d=(0.2, 0, 1), length=0.36, guard=GOLD)
+def u_great_general(p):
+    ground(p)
+    p.path("M-15,-74 L15,-74 L24,-14 Q0,-8 -24,-14 Z", OWNER)                                  # cape behind
+    figure(p, tunic="navy", pants="white", boots="black", long_coat=True, belt="gold")
+    for x in (-12, 12):
+        p.ellipse(x, -74, 5, 2.6, "gold")                                                       # epaulettes
+    hair(p, "grey_hair")
+    hat(p, "bicorne", "black", plume=OWNER)
+    arm(p, -13, -72, -14, -50, "navy")
+    arm(p, 13, -72, 22, -100, "navy")
+    p.curve("M22,-102 Q16,-120 4,-132", 2.6, "steel")
+    p.limb(19, -99, 25, -103, 2.2, "gold")
 
 
-@unit("Great Admiral", civilian=True, scale=SHIP, at=CIV_SEA, wide=True)
-def u_great_admiral(m):
-    wake(m, -0.34, 0.34, 0.02, 0.09)
-    hull(m, -0.34, 0.34, 0.0, 0.18, 0.09, C(.92, .9, .86), deck=C(.6, .48, .32), bow=0.12, sheer=0.04, stripe=0.025)
-    ensign(m, 0.3, 0.0, 0.09, w=0.13, h=0.08, pole=0.24)
-    a = m.sub((-0.04, 0.0, 0.09), 0.78)                                                                  # the admiral
-    navy = C(.12, .14, .26)
-    b = figure(a, legs_col=WHITE * 0.92, boots=BLACK, coat=navy, skirt=navy, skirt_len=0.14, belt=GOLD,
-               hair=C(.6, .58, .55), hat="bicorne", hat_col=BLACK)
-    for p in (b.sh_l + V(0.02, 0.02, 0.0), b.sh_r + V(-0.02, 0.02, 0.0)):
-        a.ball(p, 0.04, GOLD, gloss=0.6)
-    hand = b.head + V(-0.1, 0.06, -0.02)
-    arm(a, b.sh_l, hand, navy)
-    a.capsule(hand + V(0.04, 0.0, 0.0), hand + V(-0.24, 0.0, 0.04), 0.024, 0.032, BRONZE, gloss=0.7)         # telescope
-    arm(a, b.sh_r, b.sh_r + V(0.06, 0.07, -0.25), navy)
+@unit("Great Admiral", civilian=True, at=CIV_SEA)
+def u_great_admiral(p):
+    water(p, -46, 46)
+    q = Shift(p, -6, -14, 0.8)
+    figure(q, tunic="navy", pants="white", boots="black", long_coat=True, belt="gold")
+    for x in (-12, 12):
+        q.ellipse(x, -74, 5, 2.6, "gold")
+    hair(q, "grey_hair")
+    hat(q, "bicorne", "black")
+    arm(q, -13, -72, -10, -86, "navy")
+    q.limb(-8, -88, -36, -92, 5, "bronze")                                                      # telescope
+    arm(q, 13, -72, 16, -52, "navy")
+    hull(p, -44, 44, 14, col="white", stripe=True, rake=8, stern_h=18)
+    ensign(p, 42, -18, 26, 14)
 
 
 @unit("Missionary", civilian=True)
-def u_missionary(m):
-    b = robed(m, C(.42, .3, .2), sash=OWNER, hair=HAIR)
-    m.capsule(b.waist + V(-0.11, 0.06, 0.02), b.waist + V(0.11, 0.06, 0.02), 0.016, 0.016, LINEN)      # rope belt
-    hand = b.chest + V(0.02, 0.14, -0.08)
-    m.block(hand + V(0.0, 0.0, -0.04), (0.13, 0.04, 0.16), C(.15, .1, .08))                               # book
-    m.rod(hand + V(0.0, 0.025, 0.02), hand + V(0.0, 0.025, 0.08), 0.012, GOLD)
-    m.rod(hand + V(-0.025, 0.025, 0.06), hand + V(0.025, 0.025, 0.06), 0.012, GOLD)
-    arm(m, b.sh_l, hand + V(-0.05, 0.0, 0.0), C(.42, .3, .2))
-    arm(m, b.sh_r, hand + V(0.05, 0.0, 0.0), C(.42, .3, .2))
+def u_missionary(p):
+    robed(p, "robe", stole=OWNER, hair_col="hair")
+    p.rect(-13, -52, 26, 3, "rope", rx=1.2)
+    p.rect(-6, -66, 13, 16, "black", rx=1.5)                                                    # book with a cross
+    p.limb(0.5, -62, 0.5, -54, 1.4, "gold", ink=False)
+    p.limb(-2.5, -59, 3.5, -59, 1.4, "gold", ink=False)
+    arm(p, -13, -72, -6, -58, "robe")
+    arm(p, 13, -72, 7, -58, "robe")
 
 
 @unit("Inquisitor", civilian=True)
-def u_inquisitor(m):
-    b = robed(m, C(.12, .1, .1), sash=OWNER, hair=None, hat="mitre", hat_col=OWNER)
-    hand = b.sh_r + V(0.14, 0.07, 0.02)
-    arm(m, b.sh_r, hand, C(.12, .1, .1))
-    m.rod(hand + V(-0.01, 0, -0.18), hand + V(0.01, 0, 0.16), 0.03, DARK_WOOD)                             # torch
-    m.ball(hand + V(0.01, 0, 0.21), 0.06, C(1.0, .55, .12), alpha=0.9)
-    m.ball(hand + V(0.01, 0, 0.25), 0.04, C(1.0, .85, .35))
-    m.ball(hand + V(0.01, 0, 0.22), 0.12, C(1.0, .6, .2), alpha=0.25)
-    arm(m, b.sh_l, b.sh_l + V(-0.06, 0.08, -0.24), C(.12, .1, .1))
+def u_inquisitor(p):
+    robed(p, "black_robe", stole=OWNER, hair_col=None, head="mitre", head_col=OWNER)
+    arm(p, 13, -72, 22, -84, "black_robe")
+    p.rect(20, -96, 4, 32, "darkwood", rx=1.5)                                                  # torch
+    p.glow(22, -104, 12, "flame", 0.6)
+    p.path("M17,-98 Q16,-110 22,-118 Q28,-110 27,-98 Z", "flame", ink=False)
+    arm(p, -13, -72, -16, -50, "black_robe")
 
 
-# --- spaceship parts, on a transporter -------------------------------------------------------------------------
-def transporter(m):
-    m.shadow(0.04, 0.02, 0.5, 0.13)
-    for x in (-0.28, 0.0, 0.28):
-        solid_wheel(m, (x, -0.13, 0.07), 0.07)
-    m.block((0.0, 0.0, 0.08), (0.78, 0.26, 0.06), C(.45, .46, .48))
-    with m.civ():
-        m.face([(-0.39, 0.131, 0.08), (0.39, 0.131, 0.08), (0.39, 0.131, 0.14), (-0.39, 0.131, 0.14)], PAINT)
-    for x in (-0.28, 0.0, 0.28):
-        solid_wheel(m, (x, 0.14, 0.07), 0.07)
-    return 0.14
+# --- spaceship parts, on a transporter ---------------------------------------------------------------------------------
+def transporter(p):
+    ground(p, 48, 2)
+    p.rect(-46, -24, 92, 10, "grey", rx=2)
+    p.rect(-46, -20, 92, 4, OWNER)
+    for x in (-32, 0, 32):
+        tyre(p, x, -9, 9)
+    return -24
 
 
-@unit("SS Booster", civilian=True, scale=VEHICLE, wide=True)
-def u_ss_booster(m):
-    z = transporter(m)
-    m.capsule((-0.34, 0.0, z + 0.13), (0.3, 0.0, z + 0.13), 0.13, 0.13, WHITE, gloss=0.3)
-    for x in (-0.2, 0.12):
-        m.capsule((x, 0.0, z + 0.13), (x + 0.03, 0.0, z + 0.13), 0.134, 0.134, BLACK)
-    m.capsule((-0.34, 0.0, z + 0.13), (-0.48, 0.0, z + 0.13), 0.12, 0.02, WHITE, gloss=0.3)
-    for dz in (0.2, -0.0):
-        m.face([(0.22, 0.0, z + 0.13 + dz), (0.36, 0.0, z + 0.13 + dz), (0.36, 0.0, z + 0.13 + dz + 0.08), (0.28, 0.0, z + 0.13 + dz + 0.08)],
-               C(.7, .15, .12))
+@unit("SS Booster", civilian=True)
+def u_ss_booster(p):
+    d = transporter(p)
+    p.rect(-40, d - 26, 76, 26, "white", rx=4)
+    p.path("M-40,%g L-56,%g L-40,%g Z" % (d - 26, d - 13, d), "white")
+    for x in (-24, 12):
+        p.rect(x, d - 26, 5, 26, "black")
+    p.path("M36,%g L46,%g L46,%g L36,%g Z" % (d - 26, d - 32, d + 4, d), "red")
 
 
-@unit("SS Cockpit", civilian=True, scale=VEHICLE, wide=True)
-def u_ss_cockpit(m):
-    z = transporter(m)
-    m.capsule((0.24, 0.0, z + 0.16), (-0.2, 0.0, z + 0.16), 0.17, 0.05, C(.85, .86, .88), gloss=0.4)
-    m.capsule((0.24, 0.0, z + 0.16), (0.3, 0.0, z + 0.16), 0.17, 0.17, C(.3, .3, .32))
-    for dx in (-0.04, 0.06):
-        m.ball((dx, 0.1, z + 0.22), 0.03, C(.15, .3, .45), gloss=0.9)
-    with m.civ():
-        m.capsule((0.12, 0.0, z + 0.16), (0.16, 0.0, z + 0.16), 0.15, 0.15, PAINT)
+@unit("SS Cockpit", civilian=True)
+def u_ss_cockpit(p):
+    d = transporter(p)
+    p.path("M30,%g L30,%g Q-6,%g -40,%g Q-6,%g 30,%g Z" % (d, d - 34, d - 34, d - 14, d + 4, d), "white")
+    p.rect(26, d - 34, 8, 34, "darkgrey", rx=2)
+    for x in (-6, 6):
+        p.circle(x, d - 22, 3.4, "glass")
+    p.rect(14, d - 32, 6, 30, OWNER)
 
 
-@unit("SS Engine", civilian=True, scale=VEHICLE, wide=True)
-def u_ss_engine(m):
-    z = transporter(m)
-    m.block((0.18, 0.0, z), (0.24, 0.24, 0.24), C(.5, .5, .54))
-    for y, dz in ((-0.06, 0.16), (0.06, 0.08), (0.06, 0.2)):
-        m.capsule((0.06, y, z + dz), (-0.3, y, z + dz), 0.05, 0.12, C(.3, .3, .32), gloss=0.5)            # nozzles
-        m.disc((-0.3, y + 0.0, z + dz), (-1, 0.3, 0.2), 0.11, C(.1, .1, .1))
-    with m.civ():
-        m.face([(0.06, 0.121, z + 0.04), (0.3, 0.121, z + 0.04), (0.3, 0.121, z + 0.1), (0.06, 0.121, z + 0.1)], PAINT)
+@unit("SS Engine", civilian=True)
+def u_ss_engine(p):
+    d = transporter(p)
+    p.rect(8, d - 34, 30, 34, "grey", rx=3)
+    p.rect(8, d - 26, 30, 6, OWNER)
+    for y in (d - 26, d - 10):
+        p.path("M8,%g L-36,%g L-36,%g L8,%g Z" % (y - 5, y - 12, y + 12, y + 5), "darkgrey")    # nozzles
+        p.ellipse(-36, y, 4, 12, "black")
 
 
-@unit("SS Stasis Chamber", civilian=True, scale=VEHICLE, wide=True)
-def u_ss_stasis_chamber(m):
-    z = transporter(m)
-    m.capsule((-0.3, 0.0, z + 0.13), (0.3, 0.0, z + 0.13), 0.13, 0.13, C(.6, .62, .66), gloss=0.5)
-    m.capsule((-0.22, 0.04, z + 0.15), (0.22, 0.04, z + 0.15), 0.1, 0.1, C(.35, .85, 1.0), alpha=0.85)   # glowing window
-    m.capsule((-0.16, 0.06, z + 0.16), (0.14, 0.06, z + 0.16), 0.04, 0.04, C(.8, .95, 1.0), alpha=0.8)
-    with m.civ():
-        for x in (-0.28, 0.24):
-            m.capsule((x, 0.0, z + 0.13), (x + 0.04, 0.0, z + 0.13), 0.135, 0.135, PAINT)
+@unit("SS Stasis Chamber", civilian=True)
+def u_ss_stasis_chamber(p):
+    d = transporter(p)
+    p.rect(-40, d - 32, 80, 32, "grey", rx=14)
+    p.glow(0, d - 16, 26, "glow", 0.5)
+    p.rect(-26, d - 26, 52, 20, "glow", rx=9, alpha=0.9)
+    p.ellipse(0, d - 16, 16, 4, "white", ink=False, alpha=0.8)
+    for x in (-34, 30):
+        p.rect(x, d - 32, 5, 32, OWNER)
 
 
-# --- embarked units ---------------------------------------------------------------------------------------------
-def longboat(m, cargo):
-    wake(m, -0.42, 0.36, 0.02, 0.1)
-    oars(m, np.linspace(-0.16, 0.16, 5), -0.06, 0.08, -1)
-    hull(m, -0.38, 0.36, 0.0, 0.16, 0.09, TIMBER, deck=C(.42, .32, .2), bow=0.12, sheer=0.07)
-    m.capsule((-0.38, 0.0, 0.09), (-0.44, 0.0, 0.22), 0.022, 0.012, TIMBER)
-    mast(m, 0.04, 0.0, 0.09, 0.52)
-    square_sail(m, 0.04, 0.0, 0.24, 0.56, 0.34)
-    cargo(m)
-    oars(m, np.linspace(-0.16, 0.16, 5), 0.075, 0.07, 1)
-
-
-def troops(m, xs, z, kind="ancient"):
-    for i, x in enumerate(xs):
-        t = m.sub((x, 0.02 * (i % 2), z), 0.62)
-        troop(t, kind)
-
-
-def troop(m, kind):
+# --- embarked units -------------------------------------------------------------------------------------------------------
+def troop(p, x, deck, kind):
     """A soldier standing in a boat, seen from the waist up."""
-    b = Body(0.0, 0.0, -0.5)
-    with colour(m, OWNER) as c:
-        m.capsule(b.waist + V(0, 0, 0.12), b.chest, 0.1, 0.12, c)
-        m.capsule(b.sh_l + V(0.035, 0, 0), b.sh_r - V(0.035, 0, 0), 0.06, 0.06, c)
-    head(m, b, hair=None)
+    q = Shift(p, x, deck + 30, 0.62)
+    q.path("M-15,-70 Q-16,-76 -9,-77 L9,-77 Q16,-76 15,-70 L13,-48 L-13,-48 Z", OWNER)
+    q.rect(-3.2, -84, 6.4, 8, "skin", rx=2)
+    q.circle(0, -89, 9.5, "skin")
     if kind == "ancient":
-        helmet(m, b, BRONZE, "round")
-        spear(m, b.sh_r + V(0.06, 0.04, -0.1), length=0.75, lean=0.03, below=0.2)
+        hat(q, "round", "bronze")
+        spear_up(q, 17, -130, -48)
     elif kind == "musket":
-        helmet(m, b, BLACK, "tricorne")
-        long_gun(m, b.sh_r + V(0.06, 0.04, -0.2), b.sh_r + V(0.1, 0.04, 0.42))
+        hat(q, "tricorne", "black")
+        rifle(q, (16, -50), (22, -120))
     else:
-        helmet(m, b, OLIVE * 0.9, "m1")
+        hat(q, "m1", "olivedark")
 
 
-def cargo_bundles(m, xs, z):
+def cargo(p, xs, deck):
     for i, x in enumerate(xs):
         if i % 2:
-            m.block((x, 0.0, z), (0.1, 0.1, 0.09), C(.55, .42, .26))
+            p.rect(x - 6, deck - 12, 12, 12, "wood", rx=1.5)
         else:
-            m.ball((x, 0.0, z + 0.05), 0.07, C(.72, .64, .46), ry=0.06)
+            p.ellipse(x, deck - 7, 8, 7, "linen")
 
 
-@unit("EmbarkedUnit-Military", scale=SHIP, at=AT_SEA, wide=True)
-def u_embarked_military(m):
-    longboat(m, lambda m: troops(m, (-0.22, -0.08, 0.2), 0.09))
+def longboat(p, load):
+    water(p, -48, 48)
+    oars(p, -22, 26, 5, -10)
+    load(p, -10)
+    hull(p, -46, 46, 10, col="wood", rake=10, stern_h=18)
+    p.curve("M-46,-10 Q-52,-22 -46,-28", 3, "wood")
+    mast(p, 6, -74, -10)
+    square_sail(p, 6, -70, -40, 32)
 
 
-@unit("EmbarkedUnit-Civilian", civilian=True, scale=SHIP, at=CIV_SEA, wide=True)
-def u_embarked_civilian(m):
-    longboat(m, lambda m: cargo_bundles(m, (-0.22, -0.1, 0.18, 0.28), 0.09))
+@unit("EmbarkedUnit-Military", at=AT_SEA, wide=True)
+def u_embarked_military(p):
+    longboat(p, lambda p, d: [troop(p, x, d, "ancient") for x in (-28, -14, 22)])
 
 
-def transport_ship(m, cargo):
-    wake(m, -0.46, 0.4, 0.02, 0.12)
-    hull(m, -0.42, 0.4, 0.0, 0.2, 0.15, C(.4, .28, .17), deck=C(.46, .36, .23), bow=0.16, sheer=0.07)
-    m.block((0.3, 0.0, 0.15), (0.18, 0.2, 0.1), C(.4, .28, .17) * 1.1)
-    for x, h in ((-0.16, 0.66), (0.1, 0.76)):
-        mast(m, x, 0.0, 0.15, h)
-        square_sail(m, x, 0.0, 0.32, 0.15 + h * 0.85, 0.3)
-    cargo(m)
-    ensign(m, 0.38, 0.0, 0.25, w=0.12, h=0.07, pole=0.18)
+@unit("EmbarkedUnit-Civilian", civilian=True, at=CIV_SEA)
+def u_embarked_civilian(p):
+    longboat(p, lambda p, d: cargo(p, (-30, -18, 22, 32), d))
 
 
-@unit("EmbarkedUnit-Military-Renaissance era", scale=SHIP, at=AT_SEA, wide=True)
-def u_embarked_military_renaissance(m):
-    transport_ship(m, lambda m: troops(m, (-0.3, -0.03, 0.2), 0.15, "musket"))
+def transport_ship(p, load):
+    water(p, -52, 52)
+    hull(p, -50, 50, 18, col="wood", rake=12, stern_h=28)
+    p.rect(30, -38, 20, 10, "darkwood", rx=1.5)
+    for x, top in ((-18, -86), (12, -92)):
+        mast(p, x, top, -18)
+        square_sail(p, x, top + 6, -44, 26)
+    load(p, -18)
+    ensign(p, 48, -38, 22, 13)
 
 
-@unit("EmbarkedUnit-Civilian-Renaissance era", civilian=True, scale=SHIP, at=CIV_SEA, wide=True)
-def u_embarked_civilian_renaissance(m):
-    transport_ship(m, lambda m: cargo_bundles(m, (-0.3, -0.04, 0.2), 0.15))
+@unit("EmbarkedUnit-Military-Renaissance era", at=AT_SEA, wide=True)
+def u_embarked_military_renaissance(p):
+    transport_ship(p, lambda p, d: [troop(p, x, d, "musket") for x in (-36, -2, 28)])
 
 
-def landing_craft(m, cargo):
-    wake(m, -0.44, 0.4, 0.02, 0.11)
-    grey = C(.46, .48, .46)
-    m.side_prism([(-0.42, 0.04), (-0.38, 0.16), (0.36, 0.16), (0.4, 0.04), (0.36, 0.0), (-0.38, 0.0)], -0.12, 0.12, grey,
-                 top=C(.3, .32, .3))
-    m.face([(-0.4, -0.12, 0.16), (-0.4, 0.12, 0.16), (-0.44, 0.12, 0.26), (-0.44, -0.12, 0.26)], grey * 0.95)   # bow ramp
-    cargo(m)
-    m.block((0.3, 0.0, 0.16), (0.1, 0.16, 0.12), grey)
-    with m.civ():
-        m.face([(-0.3, 0.121, 0.08), (0.2, 0.121, 0.08), (0.2, 0.121, 0.13), (-0.3, 0.121, 0.13)], PAINT)
-    ensign(m, 0.38, 0.0, 0.16, w=0.12, h=0.07, pole=0.18)
+@unit("EmbarkedUnit-Civilian-Renaissance era", civilian=True, at=CIV_SEA)
+def u_embarked_civilian_renaissance(p):
+    transport_ship(p, lambda p, d: cargo(p, (-36, -4, 26), d))
 
 
-@unit("EmbarkedUnit-Military-Modern era", scale=SHIP, at=AT_SEA, wide=True)
-def u_embarked_military_modern(m):
-    landing_craft(m, lambda m: troops(m, (-0.26, -0.1, 0.06, 0.2), 0.12, "modern"))
+def landing_craft(p, load):
+    water(p, -50, 50)
+    load(p, -16)
+    p.path("M-50,-20 L-44,0 L46,0 L50,-20 Z", "navygrey")
+    p.path("M-50,-20 L-58,-30 L-52,-32 L-44,-20 Z", "navygrey")                                   # bow ramp
+    p.rect(-40, -14, 70, 5, OWNER)
+    p.rect(34, -32, 14, 12, "navygrey", rx=1.5)
+    ensign(p, 48, -32, 20, 12)
 
 
-@unit("EmbarkedUnit-Civilian-Modern era", civilian=True, scale=SHIP, at=CIV_SEA, wide=True)
-def u_embarked_civilian_modern(m):
-    landing_craft(m, lambda m: cargo_bundles(m, (-0.26, -0.1, 0.06, 0.2), 0.16))
+@unit("EmbarkedUnit-Military-Modern era", at=AT_SEA, wide=True)
+def u_embarked_military_modern(p):
+    landing_craft(p, lambda p, d: [troop(p, x, d, "modern") for x in (-30, -16, -2, 12, 26)])
+
+
+@unit("EmbarkedUnit-Civilian-Modern era", civilian=True, at=CIV_SEA)
+def u_embarked_civilian_modern(p):
+    landing_craft(p, lambda p, d: cargo(p, (-30, -16, -2, 12, 26), d))
 
 
 # ============================================================================ rendering
-def save_layers(cv, L, name):
-    """Write the unit image, its empty "-1" placeholder and its "-2" owner-colour layer. All three
-    are cropped the same way, so they line up when Unciv scales each one to the hex width."""
+def placement(spec):
+    """Where to stand a unit and how big to draw it: centred on its side of the hex, clear of the
+    flags, shrunk if it is too wide for that side or too tall for the image."""
+    civilian = spec["civilian"]
+    u_mid, v0 = spec["at"] or (CIV if civilian else MIL)
+    probe = Pen(None)
+    spec["fn"](probe)
+    half = UNIT_W / 2
+    k = K * spec["scale"]
+    lo, hi = probe.lo[0] * k / half, probe.hi[0] * k / half
+    # The flags are discs in the middle of the hex, the military one in the upper half and the
+    # civilian one in the lower half. Low military units (ships, vehicles) can pass under the
+    # military flag; civilians stand at the same height as theirs, so they keep to the left.
+    room = (-0.95, -0.18) if civilian else (-0.14, 0.95) if spec["wide"] else (0.07, 0.95)
+    if hi - lo > room[1] - room[0]:
+        f = (room[1] - room[0]) / (hi - lo)
+        k, lo, hi = k * f, lo * f, hi * f
+    u0 = min(max(u_mid - (lo + hi) / 2, room[0] - lo), room[1] - hi)
+    ay = OVERHANG + (v0 + rt.S3 / 2) / rt.S3 * FOOT
+    if ay + k * probe.lo[1] < 2:
+        k = (ay - 2) / -probe.lo[1]
+    return (1 + u0) * half, ay, k
+
+
+def to_img(P):
+    a = P[..., 3:4]
+    rgb = np.where(a > 1e-6, P[..., :3] / np.maximum(a, 1e-6), 0.0)
+    return Image.fromarray((np.concatenate([np.clip(rgb, 0, 1), np.clip(a, 0, 1)], axis=-1) * 255 + 0.5).astype(np.uint8), "RGBA")
+
+
+def save(sheet, name):
+    """Write the unit image with a soft dark edge and its ground shadow, its empty "-1" placeholder
+    and its "-2" owner-colour layer, all cropped alike so they line up in the game."""
     def down(P):
-        p = cv.pad
-        P = P[p:P.shape[0] - p, p:P.shape[1] - p]
         h, w = P.shape[:2]
-        return P.reshape(h // SS, SS, w // SS, SS, 4).mean(axis=(1, 3))
+        return P.reshape(h // S, S, w // S, S, 4).mean(axis=(1, 3))
 
-    def to_img(P):
-        a = P[..., 3:4]
-        rgb = np.where(a > 1e-6, P[..., :3] / np.maximum(a, 1e-6), 0.0)
-        return (np.concatenate([np.clip(rgb, 0, 1), np.clip(a, 0, 1)], axis=-1) * 255 + 0.5).astype(np.uint8)
-
-    base, civ = down(L.base), down(L.civ)
+    base, civ, gnd = down(sheet.base), down(sheet.civ), down(sheet.ground)
+    a = Image.fromarray((np.clip(base[..., 3], 0, 1) * 255).astype(np.uint8))
+    edge = np.asarray(a.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(0.7)), np.float32) / 255 * 0.6
+    under = np.concatenate([np.zeros(edge.shape + (3,), np.float32), edge[..., None]], -1)
+    under = under + gnd * (1 - under[..., 3:4])
+    base = base + under * (1 - base[..., 3:4])
     rows = np.nonzero(base[..., 3].max(axis=1) > 0.5 / 255)[0]
     top = rows[0] if len(rows) else 0
-    top -= (base.shape[0] - top) % LAYER_SCALE      # keep the height divisible, so the layer's aspect matches
-    base, civ = base[max(top, 0):], civ[max(top, 0):]
     rel = "Units/" + name
-    write(Image.fromarray(to_img(base), "RGBA"), rel)
-    h, w = civ.shape[:2]
-    small = civ.reshape(h // LAYER_SCALE, LAYER_SCALE, w // LAYER_SCALE, LAYER_SCALE, 4).mean(axis=(1, 3))
-    write(Image.fromarray(to_img(small), "RGBA"), rel + "-2")
+    write(to_img(base[top:]), rel)
+    write(to_img(civ[top:]), rel + "-2")
     write(Image.new("RGBA", (8, 7), (0, 0, 0, 0)), rel + "-1")
 
 
 def write(img, rel):
-    import os
     path = os.path.join(rt.OUT, rel + ".png")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     img.save(path, optimize=True)
     rt.WRITTEN.append(rel)
 
 
-def placement(cv, spec):
-    """Where to stand a unit and how big to draw it, so it sits on its side of the hex and nothing
-    is cut off at the image edge: draw it small once to measure it, then centre it on its side and
-    shrink it if it is too wide to fit."""
-    civilian = spec["civilian"]
-    u_mid, v0 = spec["at"] or (CIV if civilian else MIL)
-    s = spec["scale"]
-    k = 0.4
-    probe = Layers(cv)
-    spec["fn"](Mini(cv, probe, 0.0, v0, s * k))
-    cols = np.nonzero(probe.base[..., 3].max(axis=0) > 0.02)[0]
-    lo, hi = cv.u[0, cols[0]] / k, cv.u[0, cols[-1]] / k
-    # The flags are discs in the middle of the hex, the military one in the upper half and the
-    # civilian one in the lower half. Low military units (ships, vehicles) can pass under the
-    # military flag; civilians stand at the same height as theirs, so they keep to the left.
-    room = (-0.98, -0.18) if civilian else (-0.16, 0.98) if spec["wide"] else (0.04, 0.97)
-    if hi - lo > room[1] - room[0]:
-        f = (room[1] - room[0]) / (hi - lo)
-        s, lo, hi = s * f, lo * f, hi * f
-    u0 = min(max(u_mid - (lo + hi) / 2, room[0] - lo), room[1] - hi)
-    return u0, v0, s
-
-
 def render_unit(name, spec):
-    rel = "Units/" + name
-    if not rt.wanted(rel):
+    if not rt.wanted("Units/" + name):
         return
-    cv = rt.Canvas(UNIT_W, overhang=OVERHANG)
-    u0, v0, s = placement(cv, spec)
-    L = Layers(cv)
-    spec["fn"](Mini(cv, L, u0, v0, s))
-    save_layers(cv, L, name)
+    ax, ay, k = placement(spec)
+    sheet = Sheet()
+    spec["fn"](Pen(sheet, ax, ay, k))
+    save(sheet, name)
 
 
 def main():

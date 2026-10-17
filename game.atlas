@@ -654,2816 +654,2816 @@ size: 2048, 2048
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-Bottom
-  rotate: false
-  xy: 1908, 1598
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-BottomLeft
-  rotate: false
-  xy: 1916, 1219
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-BottomRight
-  rotate: false
-  xy: 1916, 1148
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-Top
-  rotate: false
-  xy: 4, 610
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-TopLeft
-  rotate: false
-  xy: 1012, 571
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-TopRight
-  rotate: false
-  xy: 124, 559
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-Bottom
-  rotate: false
-  xy: 1916, 1120
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-BottomLeft
-  rotate: false
-  xy: 1348, 581
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-BottomRight
-  rotate: false
-  xy: 1684, 566
-  size: 112, 65
-  orig: 112, 65
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-Top
-  rotate: false
-  xy: 1804, 527
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-TopLeft
-  rotate: false
-  xy: 1924, 527
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-TopRight
-  rotate: false
-  xy: 844, 521
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-Bottom
-  rotate: false
-  xy: 244, 583
-  size: 112, 21
-  orig: 112, 21
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-BottomLeft
-  rotate: false
-  xy: 364, 540
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-BottomRight
-  rotate: false
-  xy: 1468, 536
-  size: 112, 67
-  orig: 112, 67
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-Top
-  rotate: false
-  xy: 4, 505
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-TopLeft
-  rotate: false
-  xy: 1132, 505
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-TopRight
-  rotate: false
-  xy: 484, 484
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-Bottom
-  rotate: false
-  xy: 244, 554
-  size: 112, 21
-  orig: 112, 21
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-BottomLeft
-  rotate: false
-  xy: 604, 510
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-BottomRight
-  rotate: false
-  xy: 724, 508
-  size: 112, 65
-  orig: 112, 65
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-Top
-  rotate: false
-  xy: 1252, 476
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-TopLeft
-  rotate: false
-  xy: 964, 466
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-TopRight
-  rotate: false
-  xy: 1588, 461
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-Bottom
-  rotate: false
-  xy: 124, 530
-  size: 112, 21
-  orig: 112, 21
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-BottomLeft
-  rotate: false
-  xy: 244, 483
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-BottomRight
-  rotate: false
-  xy: 364, 470
-  size: 112, 62
-  orig: 112, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-Top
-  rotate: false
-  xy: 1372, 431
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-TopLeft
-  rotate: false
-  xy: 124, 425
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-TopRight
-  rotate: false
-  xy: 1708, 422
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-Bottom
-  rotate: false
-  xy: 1828, 501
-  size: 112, 18
-  orig: 112, 18
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-BottomLeft
-  rotate: false
-  xy: 844, 450
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-BottomRight
-  rotate: false
-  xy: 604, 440
-  size: 112, 62
-  orig: 112, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-Top
-  rotate: false
-  xy: 724, 403
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-TopLeft
-  rotate: false
-  xy: 4, 400
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-TopRight
-  rotate: false
-  xy: 1828, 396
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-Bottom
-  rotate: false
-  xy: 484, 456
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-BottomLeft
-  rotate: false
-  xy: 1084, 412
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-BottomRight
-  rotate: false
-  xy: 244, 412
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-Top
-  rotate: false
-  xy: 1204, 371
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-TopLeft
-  rotate: false
-  xy: 364, 365
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-TopRight
-  rotate: false
-  xy: 964, 361
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-Bottom
-  rotate: false
-  xy: 1492, 433
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-BottomLeft
-  rotate: false
-  xy: 484, 382
-  size: 112, 66
-  orig: 112, 66
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-BottomRight
-  rotate: false
-  xy: 844, 379
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-Top
-  rotate: false
-  xy: 604, 335
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-TopLeft
-  rotate: false
-  xy: 1492, 328
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-TopRight
-  rotate: false
-  xy: 1324, 326
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-Bottom
-  rotate: false
-  xy: 124, 396
-  size: 112, 21
-  orig: 112, 21
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-BottomLeft
-  rotate: false
-  xy: 1612, 349
-  size: 112, 65
-  orig: 112, 65
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-BottomRight
-  rotate: false
-  xy: 244, 343
-  size: 112, 61
-  orig: 112, 61
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-Top
-  rotate: false
-  xy: 1084, 307
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-TopLeft
-  rotate: false
-  xy: 724, 298
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-TopRight
-  rotate: false
-  xy: 4, 295
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-Bottom
-  rotate: false
-  xy: 124, 368
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-BottomLeft
-  rotate: false
-  xy: 1732, 324
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-BottomRight
-  rotate: false
-  xy: 1852, 324
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-Top
-  rotate: false
-  xy: 484, 277
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-TopLeft
-  rotate: false
-  xy: 844, 274
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-TopRight
-  rotate: false
-  xy: 1204, 266
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-Bottom
-  rotate: false
-  xy: 1908, 1585
-  size: 112, 5
-  orig: 112, 5
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-BottomLeft
-  rotate: false
-  xy: 124, 309
-  size: 112, 51
-  orig: 112, 51
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-BottomRight
-  rotate: false
-  xy: 364, 305
-  size: 112, 52
-  orig: 112, 52
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-Bottom
-  rotate: false
-  xy: 964, 333
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-BottomLeft
-  rotate: false
-  xy: 1612, 277
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-BottomRight
-  rotate: false
-  xy: 244, 273
-  size: 112, 62
-  orig: 112, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-Top
-  rotate: false
-  xy: 604, 230
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-TopLeft
-  rotate: false
-  xy: 964, 228
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-TopRight
-  rotate: false
-  xy: 1444, 223
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-Bottom
-  rotate: false
-  xy: 1324, 298
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-BottomLeft
-  rotate: false
-  xy: 1732, 252
-  size: 112, 64
-  orig: 112, 64
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-BottomRight
-  rotate: false
-  xy: 1852, 257
-  size: 112, 59
-  orig: 112, 59
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-Top
-  rotate: false
-  xy: 124, 204
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-TopLeft
-  rotate: false
-  xy: 1084, 202
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-TopRight
-  rotate: false
-  xy: 364, 200
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-Bottom
-  rotate: false
-  xy: 724, 272
-  size: 112, 18
-  orig: 112, 18
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-BottomLeft
-  rotate: false
-  xy: 1324, 229
-  size: 112, 61
-  orig: 112, 61
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-BottomRight
-  rotate: false
-  xy: 4, 226
-  size: 112, 61
-  orig: 112, 61
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-Top
-  rotate: false
-  xy: 484, 172
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-TopLeft
-  rotate: false
-  xy: 1564, 172
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-TopRight
-  rotate: false
-  xy: 844, 169
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-Bottom
-  rotate: false
-  xy: 244, 248
-  size: 112, 17
-  orig: 112, 17
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-BottomLeft
-  rotate: false
-  xy: 724, 201
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-BottomRight
-  rotate: false
-  xy: 1204, 196
-  size: 112, 62
-  orig: 112, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-Top
-  rotate: false
-  xy: 1852, 152
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-TopLeft
-  rotate: false
-  xy: 1684, 147
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-TopRight
-  rotate: false
-  xy: 244, 143
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-Bottom
-  rotate: false
-  xy: 604, 202
-  size: 112, 20
-  orig: 112, 20
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-BottomLeft
-  rotate: false
-  xy: 1324, 161
-  size: 112, 60
-  orig: 112, 60
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-BottomRight
-  rotate: false
-  xy: 964, 157
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-Top
-  rotate: false
-  xy: 4, 121
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-TopLeft
-  rotate: false
-  xy: 1444, 118
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-TopRight
-  rotate: false
-  xy: 124, 99
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-Bottom
-  rotate: false
-  xy: 604, 176
-  size: 112, 18
-  orig: 112, 18
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-BottomLeft
-  rotate: false
-  xy: 1084, 131
-  size: 112, 63
-  orig: 112, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-BottomRight
-  rotate: false
-  xy: 724, 127
-  size: 112, 66
-  orig: 112, 66
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-Top
-  rotate: false
-  xy: 364, 95
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-TopLeft
-  rotate: false
-  xy: 1204, 91
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-TopRight
-  rotate: false
-  xy: 604, 71
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-Bottom
-  rotate: false
-  xy: 484, 130
-  size: 112, 34
-  orig: 112, 34
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-BottomLeft
-  rotate: false
-  xy: 844, 87
-  size: 112, 74
-  orig: 112, 74
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-BottomRight
-  rotate: false
-  xy: 1564, 87
-  size: 112, 74
-  orig: 112, 74
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-Top
-  rotate: false
-  xy: 1324, 56
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-TopLeft
-  rotate: false
-  xy: 964, 52
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-TopRight
-  rotate: false
-  xy: 1804, 47
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-Bottom
-  rotate: false
-  xy: 1924, 136
-  size: 112, 8
-  orig: 112, 8
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-BottomLeft
-  rotate: false
-  xy: 1684, 84
-  size: 112, 55
-  orig: 112, 55
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-BottomRight
-  rotate: false
-  xy: 244, 82
-  size: 112, 53
-  orig: 112, 53
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-Top
-  rotate: false
-  xy: 1924, 31
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-TopLeft
-  rotate: false
-  xy: 1084, 26
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-TopRight
-  rotate: false
-  xy: 484, 25
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-Bottom
-  rotate: false
-  xy: 724, 109
-  size: 112, 10
-  orig: 112, 10
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-BottomLeft
-  rotate: false
-  xy: 4, 57
-  size: 112, 56
-  orig: 112, 56
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-BottomRight
-  rotate: false
-  xy: 1444, 53
-  size: 112, 57
-  orig: 112, 57
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-Top
-  rotate: false
-  xy: 724, 4
-  size: 112, 97
-  orig: 112, 97
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Railroad
-  rotate: false
-  xy: 1908, 1626
-  size: 128, 72
-  orig: 128, 72
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Road
-  rotate: false
-  xy: 1916, 1291
-  size: 120, 64
-  orig: 120, 64
-  offset: 0, 0
-  index: -1
 TileSets/Visual Hex Satellite/Tiles/Aluminum
   rotate: false
-  xy: 1604, 1745
+  xy: 1004, 1776
   size: 160, 121
   orig: 160, 121
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Bananas
   rotate: false
-  xy: 1172, 1619
+  xy: 1740, 1776
   size: 160, 120
   orig: 160, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Bison
   rotate: false
-  xy: 4, 1613
+  xy: 972, 1647
   size: 160, 121
   orig: 160, 121
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Cattle
   rotate: false
-  xy: 1740, 1577
+  xy: 404, 1419
   size: 160, 121
   orig: 160, 121
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Citrus
   rotate: false
-  xy: 172, 1527
+  xy: 772, 1338
   size: 160, 119
   orig: 160, 119
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Coal
   rotate: false
-  xy: 1508, 1519
+  xy: 372, 1289
   size: 160, 122
   orig: 160, 122
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Cocoa
   rotate: false
-  xy: 908, 1513
+  xy: 540, 1289
   size: 160, 122
   orig: 160, 122
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Copper
   rotate: false
-  xy: 572, 1488
+  xy: 1276, 1455
   size: 160, 118
   orig: 160, 118
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Cotton
   rotate: false
-  xy: 4, 1486
+  xy: 1108, 1339
   size: 160, 119
   orig: 160, 119
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Crab
   rotate: false
-  xy: 340, 1479
+  xy: 940, 1303
   size: 160, 120
   orig: 160, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Deer
   rotate: false
-  xy: 1676, 1449
+  xy: 1644, 1470
   size: 160, 120
   orig: 160, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Dyes
   rotate: false
-  xy: 740, 1425
+  xy: 1812, 1466
   size: 160, 123
   orig: 160, 123
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Fish
   rotate: false
-  xy: 4, 1359
+  xy: 1044, 1036
   size: 160, 119
   orig: 160, 119
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Fort
   rotate: false
-  xy: 4, 1889
+  xy: 4, 1892
   size: 192, 152
   orig: 192, 152
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Furs
   rotate: false
-  xy: 1580, 1321
+  xy: 1380, 1046
   size: 160, 120
   orig: 160, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Gems
   rotate: false
-  xy: 676, 1299
+  xy: 1884, 996
   size: 160, 118
   orig: 160, 118
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Gold Ore
   rotate: false
-  xy: 1012, 1272
+  xy: 1884, 710
   size: 160, 121
   orig: 160, 121
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Holy site
   rotate: false
-  xy: 204, 1894
+  xy: 204, 1897
   size: 192, 147
   orig: 192, 147
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Horses
   rotate: false
-  xy: 1012, 1142
+  xy: 340, 811
   size: 160, 122
   orig: 160, 122
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Incense
   rotate: false
-  xy: 508, 1117
+  xy: 172, 729
   size: 160, 139
   orig: 160, 139
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Iron
   rotate: false
-  xy: 1516, 1075
+  xy: 340, 683
   size: 160, 120
   orig: 160, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Ivory
   rotate: false
-  xy: 340, 1071
+  xy: 1012, 775
   size: 160, 122
   orig: 160, 122
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Landmark
   rotate: false
-  xy: 404, 1894
+  xy: 404, 1897
   size: 192, 147
   orig: 192, 147
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Lumber mill
   rotate: false
-  xy: 604, 1896
+  xy: 604, 1899
   size: 192, 145
   orig: 192, 145
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Manufactory
   rotate: false
-  xy: 804, 1850
+  xy: 804, 1853
   size: 192, 191
   orig: 192, 191
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Marble
   rotate: false
-  xy: 508, 988
+  xy: 508, 445
   size: 160, 121
   orig: 160, 121
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Mine
   rotate: false
-  xy: 1004, 1863
+  xy: 604, 1713
   size: 192, 178
   orig: 192, 178
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Moai
   rotate: false
-  xy: 1204, 1917
+  xy: 204, 1765
   size: 192, 124
   orig: 192, 124
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Offshore Platform
   rotate: false
-  xy: 1404, 1831
+  xy: 4, 1674
   size: 192, 210
   orig: 192, 210
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Oil
   rotate: false
-  xy: 172, 932
+  xy: 172, 276
   size: 160, 111
   orig: 160, 111
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Oil well
   rotate: false
-  xy: 1604, 1874
+  xy: 404, 1722
   size: 192, 167
   orig: 192, 167
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Pasture
   rotate: false
-  xy: 1804, 1881
+  xy: 204, 1597
   size: 192, 160
   orig: 192, 160
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Pearls
   rotate: false
-  xy: 1852, 891
+  xy: 340, 106
   size: 160, 122
   orig: 160, 122
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Plantation
   rotate: false
-  xy: 1204, 1747
+  xy: 4, 1504
   size: 192, 162
   orig: 192, 162
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Polder
   rotate: false
-  xy: 604, 1722
+  xy: 404, 1548
   size: 192, 166
   orig: 192, 166
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Quarry
   rotate: false
-  xy: 204, 1728
+  xy: 204, 1431
   size: 192, 158
   orig: 192, 158
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Salt
   rotate: false
-  xy: 172, 804
+  xy: 1348, 245
   size: 160, 120
   orig: 160, 120
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Sheep
   rotate: false
-  xy: 1852, 761
+  xy: 1348, 115
   size: 160, 122
   orig: 160, 122
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Silk
   rotate: false
-  xy: 508, 753
+  xy: 1180, 91
   size: 160, 121
   orig: 160, 121
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Silver
   rotate: false
-  xy: 844, 752
+  xy: 1684, 143
   size: 160, 119
   orig: 160, 119
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Spices
   rotate: false
-  xy: 1180, 737
+  xy: 1684, 15
   size: 160, 120
   orig: 160, 120
   offset: 0, 0
   index: -1
-TileSets/Visual Hex Satellite/Tiles/Stone
-  rotate: false
-  xy: 1516, 738
-  size: 160, 119
-  orig: 160, 119
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Tiles/Sugar
-  rotate: false
-  xy: 340, 718
-  size: 160, 119
-  orig: 160, 119
-  offset: 0, 0
-  index: -1
 TileSets/Visual Hex Satellite/Tiles/Terrace farm
   rotate: false
-  xy: 404, 1731
+  xy: 4, 1341
   size: 192, 155
   orig: 192, 155
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Tiles/Trading post
   rotate: false
-  xy: 4, 1742
+  xy: 1004, 1905
   size: 192, 139
   orig: 192, 139
   offset: 0, 0
   index: -1
-TileSets/Visual Hex Satellite/Tiles/Truffles
-  rotate: false
-  xy: 1348, 652
-  size: 160, 119
-  orig: 160, 119
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Tiles/Uranium
-  rotate: false
-  xy: 1852, 632
-  size: 160, 121
-  orig: 160, 121
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Tiles/Whales
-  rotate: false
-  xy: 844, 626
-  size: 160, 118
-  orig: 160, 118
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Tiles/Wheat
-  rotate: false
-  xy: 1516, 611
-  size: 160, 119
-  orig: 160, 119
-  offset: 0, 0
-  index: -1
 TileSets/Visual Hex Satellite/Tiles/Wheat+Farm
   rotate: false
-  xy: 1804, 1706
+  xy: 1204, 1877
   size: 192, 167
   orig: 192, 167
   offset: 0, 0
   index: -1
-TileSets/Visual Hex Satellite/Tiles/Wine
-  rotate: false
-  xy: 1180, 610
-  size: 160, 119
-  orig: 160, 119
-  offset: 0, 0
-  index: -1
 TileSets/Visual Hex Satellite/Units/Anti-Aircraft Gun
   rotate: false
-  xy: 1004, 1733
-  size: 160, 122
-  orig: 160, 122
+  xy: 804, 1694
+  size: 160, 151
+  orig: 160, 151
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Anti-Aircraft Gun-2
+  rotate: false
+  xy: 604, 1554
+  size: 160, 151
+  orig: 160, 151
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Anti-Tank Gun
   rotate: false
-  xy: 804, 1752
-  size: 160, 90
-  orig: 160, 90
+  xy: 1404, 1952
+  size: 160, 92
+  orig: 160, 92
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Anti-Tank Gun-2
+  rotate: false
+  xy: 1572, 1952
+  size: 160, 92
+  orig: 160, 92
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Archer
   rotate: false
-  xy: 1404, 1703
-  size: 160, 120
-  orig: 160, 120
+  xy: 1740, 1904
+  size: 160, 140
+  orig: 160, 140
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Archer-2
+  rotate: false
+  xy: 1404, 1804
+  size: 160, 140
+  orig: 160, 140
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Artillery
   rotate: false
-  xy: 804, 1658
-  size: 160, 86
-  orig: 160, 86
+  xy: 1572, 1851
+  size: 160, 93
+  orig: 160, 93
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Artillery-2
+  rotate: false
+  xy: 1172, 1776
+  size: 160, 93
+  orig: 160, 93
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Battleship
   rotate: false
-  xy: 1572, 1649
-  size: 160, 88
-  orig: 160, 88
+  xy: 1572, 1750
+  size: 160, 93
+  orig: 160, 93
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Battleship-2
+  rotate: false
+  xy: 1340, 1703
+  size: 160, 93
+  orig: 160, 93
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Cannon
   rotate: false
-  xy: 972, 1643
-  size: 160, 82
-  orig: 160, 82
+  xy: 772, 1600
+  size: 160, 86
+  orig: 160, 86
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Cannon-2
+  rotate: false
+  xy: 1140, 1682
+  size: 160, 86
+  orig: 160, 86
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Caravel
   rotate: false
-  xy: 404, 1607
-  size: 160, 116
-  orig: 160, 116
+  xy: 1508, 1628
+  size: 160, 114
+  orig: 160, 114
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Caravel-2
+  rotate: false
+  xy: 1308, 1581
+  size: 160, 114
+  orig: 160, 114
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Carrier
   rotate: false
-  xy: 172, 1654
-  size: 160, 66
-  orig: 160, 66
+  xy: 1140, 1590
+  size: 160, 84
+  orig: 160, 84
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Carrier-2
+  rotate: false
+  xy: 940, 1555
+  size: 160, 84
+  orig: 160, 84
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Catapult
   rotate: false
-  xy: 572, 1614
-  size: 160, 100
-  orig: 160, 100
+  xy: 772, 1465
+  size: 160, 127
+  orig: 160, 127
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Catapult-2
+  rotate: false
+  xy: 604, 1419
+  size: 160, 127
+  orig: 160, 127
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Cavalry
   rotate: false
-  xy: 1340, 1577
-  size: 160, 118
-  orig: 160, 118
+  xy: 204, 1282
+  size: 160, 141
+  orig: 160, 141
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Cavalry-2
+  rotate: false
+  xy: 4, 1192
+  size: 160, 141
+  orig: 160, 141
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Chariot Archer
   rotate: false
-  xy: 740, 1556
-  size: 160, 94
-  orig: 160, 94
+  xy: 1108, 1466
+  size: 160, 116
+  orig: 160, 116
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Chariot Archer-2
+  rotate: false
+  xy: 940, 1431
+  size: 160, 116
+  orig: 160, 116
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Composite Bowman
   rotate: false
-  xy: 1076, 1487
-  size: 160, 124
-  orig: 160, 124
+  xy: 1676, 1598
+  size: 160, 144
+  orig: 160, 144
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Composite Bowman-2
+  rotate: false
+  xy: 1476, 1476
+  size: 160, 144
+  orig: 160, 144
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Crossbowman
   rotate: false
-  xy: 1244, 1445
-  size: 160, 124
-  orig: 160, 124
+  xy: 708, 1185
+  size: 160, 145
+  orig: 160, 145
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Crossbowman-2
+  rotate: false
+  xy: 1844, 1597
+  size: 160, 145
+  orig: 160, 145
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Destroyer
   rotate: false
-  xy: 1844, 1487
+  xy: 1444, 1386
+  size: 160, 82
+  orig: 160, 82
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Destroyer-2
+  rotate: false
+  xy: 1276, 1365
   size: 160, 82
   orig: 160, 82
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian
   rotate: false
-  xy: 172, 1435
-  size: 160, 84
-  orig: 160, 84
+  xy: 1612, 1371
+  size: 160, 91
+  orig: 160, 91
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-2
+  rotate: false
+  xy: 1444, 1287
+  size: 160, 91
+  orig: 160, 91
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-Modern era
   rotate: false
-  xy: 1412, 1441
-  size: 160, 70
-  orig: 160, 70
+  xy: 1276, 1281
+  size: 160, 76
+  orig: 160, 76
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-Modern era-2
+  rotate: false
+  xy: 1108, 1255
+  size: 160, 76
+  orig: 160, 76
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-Renaissance era
   rotate: false
-  xy: 908, 1407
-  size: 160, 98
-  orig: 160, 98
+  xy: 876, 1198
+  size: 160, 97
+  orig: 160, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-Renaissance era-2
+  rotate: false
+  xy: 1780, 1361
+  size: 160, 97
+  orig: 160, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military
   rotate: false
-  xy: 508, 1384
-  size: 160, 96
-  orig: 160, 96
+  xy: 1612, 1258
+  size: 160, 105
+  orig: 160, 105
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-2
+  rotate: false
+  xy: 1444, 1174
+  size: 160, 105
+  orig: 160, 105
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-Modern era
   rotate: false
-  xy: 1076, 1401
-  size: 160, 78
-  orig: 160, 78
+  xy: 1276, 1189
+  size: 160, 84
+  orig: 160, 84
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-Modern era-2
+  rotate: false
+  xy: 1044, 1163
+  size: 160, 84
+  orig: 160, 84
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-Renaissance era
   rotate: false
-  xy: 1844, 1363
-  size: 160, 116
-  orig: 160, 116
+  xy: 876, 1076
+  size: 160, 114
+  orig: 160, 114
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-Renaissance era-2
+  rotate: false
+  xy: 1212, 1067
+  size: 160, 114
+  orig: 160, 114
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Frigate
   rotate: false
-  xy: 340, 1355
-  size: 160, 116
-  orig: 160, 116
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Galleass
-  rotate: false
-  xy: 1244, 1331
-  size: 160, 106
-  orig: 160, 106
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Galley
-  rotate: false
-  xy: 1412, 1335
-  size: 160, 98
-  orig: 160, 98
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Gatling Gun
-  rotate: false
-  xy: 172, 1297
-  size: 160, 130
-  orig: 160, 130
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Giant Death Robot
-  rotate: false
-  xy: 844, 1277
-  size: 160, 122
-  orig: 160, 122
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Admiral
-  rotate: false
-  xy: 508, 1264
-  size: 160, 112
-  orig: 160, 112
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Artist
-  rotate: false
-  xy: 1748, 1243
-  size: 160, 112
-  orig: 160, 112
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Engineer
-  rotate: false
-  xy: 4, 1243
-  size: 160, 108
-  orig: 160, 108
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great General
-  rotate: false
-  xy: 340, 1201
-  size: 160, 146
-  orig: 160, 146
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Merchant
-  rotate: false
-  xy: 1412, 1203
-  size: 160, 124
-  orig: 160, 124
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Prophet
-  rotate: false
-  xy: 1180, 1187
-  size: 160, 136
-  orig: 160, 136
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Scientist
-  rotate: false
-  xy: 1580, 1203
-  size: 160, 110
-  orig: 160, 110
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great War Infantry
-  rotate: false
-  xy: 676, 1149
-  size: 160, 142
-  orig: 160, 142
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Helicopter Gunship
-  rotate: false
-  xy: 172, 1171
+  xy: 1780, 1235
   size: 160, 118
   orig: 160, 118
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Units/Frigate-2
+  rotate: false
+  xy: 1612, 1132
+  size: 160, 118
+  orig: 160, 118
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Galleass
+  rotate: false
+  xy: 1212, 954
+  size: 160, 105
+  orig: 160, 105
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Galleass-2
+  rotate: false
+  xy: 1780, 1122
+  size: 160, 105
+  orig: 160, 105
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Galley
+  rotate: false
+  xy: 1548, 1016
+  size: 160, 108
+  orig: 160, 108
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Galley-2
+  rotate: false
+  xy: 1380, 930
+  size: 160, 108
+  orig: 160, 108
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Gatling Gun
+  rotate: false
+  xy: 1716, 981
+  size: 160, 133
+  orig: 160, 133
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Gatling Gun-2
+  rotate: false
+  xy: 1548, 875
+  size: 160, 133
+  orig: 160, 133
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Giant Death Robot
+  rotate: false
+  xy: 1884, 839
+  size: 160, 149
+  orig: 160, 149
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Giant Death Robot-2
+  rotate: false
+  xy: 1716, 824
+  size: 160, 149
+  orig: 160, 149
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Admiral
+  rotate: false
+  xy: 372, 1173
+  size: 160, 108
+  orig: 160, 108
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Admiral-2
+  rotate: false
+  xy: 540, 1173
+  size: 160, 108
+  orig: 160, 108
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Artist
+  rotate: false
+  xy: 708, 1050
+  size: 160, 127
+  orig: 160, 127
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Artist-2
+  rotate: false
+  xy: 876, 941
+  size: 160, 127
+  orig: 160, 127
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Engineer
+  rotate: false
+  xy: 1044, 905
+  size: 160, 123
+  orig: 160, 123
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Engineer-2
+  rotate: false
+  xy: 1212, 823
+  size: 160, 123
+  orig: 160, 123
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great General
+  rotate: false
+  xy: 1380, 747
+  size: 160, 175
+  orig: 160, 175
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great General-2
+  rotate: false
+  xy: 1548, 692
+  size: 160, 175
+  orig: 160, 175
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Merchant
+  rotate: false
+  xy: 1716, 688
+  size: 160, 128
+  orig: 160, 128
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Merchant-2
+  rotate: false
+  xy: 1884, 574
+  size: 160, 128
+  orig: 160, 128
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Prophet
+  rotate: false
+  xy: 172, 1108
+  size: 160, 166
+  orig: 160, 166
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Prophet-2
+  rotate: false
+  xy: 4, 1018
+  size: 160, 166
+  orig: 160, 166
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Scientist
+  rotate: false
+  xy: 340, 1047
+  size: 160, 118
+  orig: 160, 118
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great Scientist-2
+  rotate: false
+  xy: 172, 982
+  size: 160, 118
+  orig: 160, 118
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great War Infantry
+  rotate: false
+  xy: 4, 844
+  size: 160, 166
+  orig: 160, 166
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Great War Infantry-2
+  rotate: false
+  xy: 508, 999
+  size: 160, 166
+  orig: 160, 166
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Helicopter Gunship
+  rotate: false
+  xy: 340, 941
+  size: 160, 98
+  orig: 160, 98
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Helicopter Gunship-2
+  rotate: false
+  xy: 172, 876
+  size: 160, 98
+  orig: 160, 98
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Units/Horseman
   rotate: false
-  xy: 844, 1167
-  size: 160, 102
-  orig: 160, 102
+  xy: 676, 921
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Horseman-2
+  rotate: false
+  xy: 508, 870
+  size: 160, 121
+  orig: 160, 121
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Infantry
   rotate: false
-  xy: 1748, 1111
-  size: 160, 124
-  orig: 160, 124
+  xy: 4, 691
+  size: 160, 145
+  orig: 160, 145
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Infantry-2
+  rotate: false
+  xy: 844, 788
+  size: 160, 145
+  orig: 160, 145
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Inquisitor
   rotate: false
-  xy: 1348, 1059
-  size: 160, 136
-  orig: 160, 136
+  xy: 676, 749
+  size: 160, 164
+  orig: 160, 164
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Inquisitor-2
+  rotate: false
+  xy: 508, 698
+  size: 160, 164
+  orig: 160, 164
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Ironclad
   rotate: false
-  xy: 4, 1097
-  size: 160, 96
-  orig: 160, 96
+  xy: 172, 636
+  size: 160, 85
+  orig: 160, 85
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Ironclad-2
+  rotate: false
+  xy: 4, 598
+  size: 160, 85
+  orig: 160, 85
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Knight
   rotate: false
-  xy: 1180, 1055
-  size: 160, 124
-  orig: 160, 124
+  xy: 844, 633
+  size: 160, 147
+  orig: 160, 147
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Knight-2
+  rotate: false
+  xy: 676, 594
+  size: 160, 147
+  orig: 160, 147
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Lancer
   rotate: false
-  xy: 172, 1051
-  size: 160, 112
-  orig: 160, 112
+  xy: 508, 574
+  size: 160, 116
+  orig: 160, 116
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Lancer-2
+  rotate: false
+  xy: 340, 559
+  size: 160, 116
+  orig: 160, 116
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Landship
   rotate: false
-  xy: 844, 1073
-  size: 160, 86
-  orig: 160, 86
+  xy: 172, 548
+  size: 160, 80
+  orig: 160, 80
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Landship-2
+  rotate: false
+  xy: 4, 510
+  size: 160, 80
+  orig: 160, 80
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Longswordsman
   rotate: false
-  xy: 676, 999
-  size: 160, 142
-  orig: 160, 142
+  xy: 1180, 643
+  size: 160, 172
+  orig: 160, 172
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Longswordsman-2
+  rotate: false
+  xy: 1012, 595
+  size: 160, 172
+  orig: 160, 172
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Machine Gun
   rotate: false
-  xy: 1012, 1034
-  size: 160, 100
-  orig: 160, 100
+  xy: 844, 517
+  size: 160, 108
+  orig: 160, 108
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Machine Gun-2
+  rotate: false
+  xy: 676, 478
+  size: 160, 108
+  orig: 160, 108
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Marine
   rotate: false
-  xy: 1684, 979
-  size: 160, 124
-  orig: 160, 124
+  xy: 340, 406
+  size: 160, 145
+  orig: 160, 145
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Marine-2
+  rotate: false
+  xy: 172, 395
+  size: 160, 145
+  orig: 160, 145
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Mechanized Infantry
   rotate: false
-  xy: 1852, 1021
-  size: 160, 82
-  orig: 160, 82
+  xy: 4, 402
+  size: 160, 100
+  orig: 160, 100
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Mechanized Infantry-2
+  rotate: false
+  xy: 4, 294
+  size: 160, 100
+  orig: 160, 100
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Missile Cruiser
   rotate: false
-  xy: 4, 999
-  size: 160, 90
-  orig: 160, 90
+  xy: 1348, 644
+  size: 160, 95
+  orig: 160, 95
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Missile Cruiser-2
+  rotate: false
+  xy: 1516, 589
+  size: 160, 95
+  orig: 160, 95
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Missionary
   rotate: false
-  xy: 1516, 941
-  size: 160, 126
-  orig: 160, 126
+  xy: 1348, 493
+  size: 160, 143
+  orig: 160, 143
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Missionary-2
+  rotate: false
+  xy: 1180, 492
+  size: 160, 143
+  orig: 160, 143
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Mobile SAM
   rotate: false
-  xy: 844, 961
-  size: 160, 104
-  orig: 160, 104
+  xy: 1012, 454
+  size: 160, 133
+  orig: 160, 133
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Mobile SAM-2
+  rotate: false
+  xy: 844, 376
+  size: 160, 133
+  orig: 160, 133
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Modern Armor
   rotate: false
-  xy: 340, 995
-  size: 160, 68
-  orig: 160, 68
+  xy: 676, 393
+  size: 160, 77
+  orig: 160, 77
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Modern Armor-2
+  rotate: false
+  xy: 508, 360
+  size: 160, 77
+  orig: 160, 77
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Musketman
   rotate: false
-  xy: 1348, 913
-  size: 160, 138
-  orig: 160, 138
+  xy: 676, 223
+  size: 160, 162
+  orig: 160, 162
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Musketman-2
+  rotate: false
+  xy: 340, 236
+  size: 160, 162
+  orig: 160, 162
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Nuclear Submarine
   rotate: false
-  xy: 1180, 977
+  xy: 508, 282
+  size: 160, 70
+  orig: 160, 70
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Nuclear Submarine-2
+  rotate: false
+  xy: 508, 204
   size: 160, 70
   orig: 160, 70
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Paratrooper
   rotate: false
-  xy: 1012, 858
-  size: 160, 168
-  orig: 160, 168
+  xy: 4, 107
+  size: 160, 179
+  orig: 160, 179
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Paratrooper-2
+  rotate: false
+  xy: 172, 89
+  size: 160, 179
+  orig: 160, 179
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Pikeman
   rotate: false
-  xy: 4, 801
-  size: 160, 190
-  orig: 160, 190
+  xy: 1684, 472
+  size: 160, 208
+  orig: 160, 208
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Pikeman-2
+  rotate: false
+  xy: 1516, 373
+  size: 160, 208
+  orig: 160, 208
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Privateer
   rotate: false
-  xy: 676, 877
-  size: 160, 114
-  orig: 160, 114
+  xy: 1348, 373
+  size: 160, 112
+  orig: 160, 112
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Privateer-2
+  rotate: false
+  xy: 1180, 372
+  size: 160, 112
+  orig: 160, 112
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Rifleman
   rotate: false
-  xy: 340, 845
-  size: 160, 142
-  orig: 160, 142
+  xy: 1012, 280
+  size: 160, 166
+  orig: 160, 166
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Rifleman-2
+  rotate: false
+  xy: 844, 202
+  size: 160, 166
+  orig: 160, 166
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Rocket Artillery
   rotate: false
-  xy: 508, 882
-  size: 160, 98
-  orig: 160, 98
+  xy: 676, 108
+  size: 160, 107
+  orig: 160, 107
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Rocket Artillery-2
+  rotate: false
+  xy: 508, 89
+  size: 160, 107
+  orig: 160, 107
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/SS Booster
   rotate: false
-  xy: 1684, 897
-  size: 160, 74
-  orig: 160, 74
+  xy: 340, 18
+  size: 160, 80
+  orig: 160, 80
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/SS Booster-2
+  rotate: false
+  xy: 4, 19
+  size: 160, 80
+  orig: 160, 80
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/SS Cockpit
   rotate: false
-  xy: 1180, 897
-  size: 160, 72
-  orig: 160, 72
+  xy: 1852, 481
+  size: 160, 85
+  orig: 160, 85
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/SS Cockpit-2
+  rotate: false
+  xy: 1852, 388
+  size: 160, 85
+  orig: 160, 85
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/SS Engine
   rotate: false
-  xy: 844, 879
-  size: 160, 74
-  orig: 160, 74
+  xy: 1684, 377
+  size: 160, 87
+  orig: 160, 87
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/SS Engine-2
+  rotate: false
+  xy: 1852, 293
+  size: 160, 87
+  orig: 160, 87
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/SS Stasis Chamber
   rotate: false
-  xy: 1516, 865
-  size: 160, 68
-  orig: 160, 68
+  xy: 1684, 270
+  size: 160, 99
+  orig: 160, 99
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/SS Stasis Chamber-2
+  rotate: false
+  xy: 1852, 186
+  size: 160, 99
+  orig: 160, 99
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Scout
   rotate: false
-  xy: 1348, 779
-  size: 160, 126
-  orig: 160, 126
+  xy: 1180, 220
+  size: 160, 144
+  orig: 160, 144
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Scout-2
+  rotate: false
+  xy: 1012, 128
+  size: 160, 144
+  orig: 160, 144
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Settler
   rotate: false
-  xy: 1684, 783
-  size: 160, 106
-  orig: 160, 106
+  xy: 844, 71
+  size: 160, 123
+  orig: 160, 123
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Settler-2
+  rotate: false
+  xy: 1516, 242
+  size: 160, 123
+  orig: 160, 123
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Spearman
   rotate: false
-  xy: 676, 717
-  size: 160, 152
-  orig: 160, 152
+  xy: 1852, 4
+  size: 160, 174
+  orig: 160, 174
   offset: 0, 0
   index: -1
-TileSets/Visual Hex Satellite/Units/Submarine
+TileSets/Visual Hex Satellite/Units/Spearman-2
   rotate: false
-  xy: 1012, 782
-  size: 160, 68
-  orig: 160, 68
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Swordsman
-  rotate: false
-  xy: 172, 664
-  size: 160, 132
-  orig: 160, 132
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Tank
-  rotate: false
-  xy: 4, 715
-  size: 160, 78
-  orig: 160, 78
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Trebuchet
-  rotate: false
-  xy: 1684, 639
-  size: 160, 136
-  orig: 160, 136
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Trireme
-  rotate: false
-  xy: 1012, 676
-  size: 160, 98
-  orig: 160, 98
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Warrior
-  rotate: false
-  xy: 508, 589
-  size: 160, 156
-  orig: 160, 156
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Work Boats
-  rotate: false
-  xy: 340, 612
-  size: 160, 98
-  orig: 160, 98
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Worker
-  rotate: false
-  xy: 676, 581
-  size: 160, 128
-  orig: 160, 128
+  xy: 1516, 60
+  size: 160, 174
+  orig: 160, 174
   offset: 0, 0
   index: -1
 
 game3.png
-size: 2048, 512
+size: 2048, 1024
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-Bottom
+  rotate: false
+  xy: 300, 774
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-BottomLeft
+  rotate: false
+  xy: 420, 707
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-BottomRight
+  rotate: false
+  xy: 540, 708
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-Top
+  rotate: false
+  xy: 1652, 673
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-TopLeft
+  rotate: false
+  xy: 1772, 672
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Grassland-TopRight
+  rotate: false
+  xy: 1892, 672
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-Bottom
+  rotate: false
+  xy: 300, 746
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-BottomLeft
+  rotate: false
+  xy: 4, 689
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-BottomRight
+  rotate: false
+  xy: 300, 673
+  size: 112, 65
+  orig: 112, 65
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-Top
+  rotate: false
+  xy: 660, 636
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-TopLeft
+  rotate: false
+  xy: 1516, 635
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Plains-TopRight
+  rotate: false
+  xy: 1012, 632
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-Bottom
+  rotate: false
+  xy: 1132, 708
+  size: 112, 21
+  orig: 112, 21
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-BottomLeft
+  rotate: false
+  xy: 124, 660
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-BottomRight
+  rotate: false
+  xy: 540, 633
+  size: 112, 67
+  orig: 112, 67
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-Top
+  rotate: false
+  xy: 1132, 603
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-TopLeft
+  rotate: false
+  xy: 420, 602
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Snow-TopRight
+  rotate: false
+  xy: 780, 586
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-Bottom
+  rotate: false
+  xy: 4, 660
+  size: 112, 21
+  orig: 112, 21
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-BottomLeft
+  rotate: false
+  xy: 244, 602
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-BottomRight
+  rotate: false
+  xy: 1636, 600
+  size: 112, 65
+  orig: 112, 65
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-Top
+  rotate: false
+  xy: 1756, 567
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-TopLeft
+  rotate: false
+  xy: 1876, 567
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Desert-Tundra-TopRight
+  rotate: false
+  xy: 1252, 557
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-Bottom
+  rotate: false
+  xy: 1372, 633
+  size: 112, 21
+  orig: 112, 21
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-BottomLeft
+  rotate: false
+  xy: 4, 589
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-BottomRight
+  rotate: false
+  xy: 124, 590
+  size: 112, 62
+  orig: 112, 62
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-Top
+  rotate: false
+  xy: 660, 531
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-TopLeft
+  rotate: false
+  xy: 1492, 530
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Grassland-Snow-TopRight
+  rotate: false
+  xy: 540, 528
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-Bottom
+  rotate: false
+  xy: 1372, 607
+  size: 112, 18
+  orig: 112, 18
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-BottomLeft
+  rotate: false
+  xy: 900, 561
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-BottomRight
+  rotate: false
+  xy: 1372, 537
+  size: 112, 62
+  orig: 112, 62
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-Top
+  rotate: false
+  xy: 1020, 498
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-TopLeft
+  rotate: false
+  xy: 244, 497
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Grassland-TopRight
+  rotate: false
+  xy: 364, 497
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-Bottom
+  rotate: false
+  xy: 1612, 572
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-BottomLeft
+  rotate: false
+  xy: 124, 518
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-BottomRight
+  rotate: false
+  xy: 4, 518
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-Top
+  rotate: false
+  xy: 780, 481
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-TopLeft
+  rotate: false
+  xy: 1612, 467
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Plains-Snow-TopRight
+  rotate: false
+  xy: 1732, 462
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-Bottom
+  rotate: false
+  xy: 1852, 539
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-BottomLeft
+  rotate: false
+  xy: 900, 487
+  size: 112, 66
+  orig: 112, 66
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-BottomRight
+  rotate: false
+  xy: 1140, 486
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-Top
+  rotate: false
+  xy: 1852, 434
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-TopLeft
+  rotate: false
+  xy: 1260, 432
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Grassland-TopRight
+  rotate: false
+  xy: 660, 426
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-Bottom
+  rotate: false
+  xy: 1380, 501
+  size: 112, 21
+  orig: 112, 21
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-BottomLeft
+  rotate: false
+  xy: 484, 455
+  size: 112, 65
+  orig: 112, 65
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-BottomRight
+  rotate: false
+  xy: 4, 449
+  size: 112, 61
+  orig: 112, 61
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-Top
+  rotate: false
+  xy: 124, 413
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-TopLeft
+  rotate: false
+  xy: 1380, 396
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Plains-TopRight
+  rotate: false
+  xy: 1020, 393
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-Bottom
+  rotate: false
+  xy: 244, 469
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-BottomLeft
+  rotate: false
+  xy: 364, 425
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-BottomRight
+  rotate: false
+  xy: 900, 415
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-Top
+  rotate: false
+  xy: 1140, 381
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-TopLeft
+  rotate: false
+  xy: 780, 376
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Blend/Blend-Tundra-Snow-TopRight
+  rotate: false
+  xy: 244, 364
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-Bottom
+  rotate: false
+  xy: 1500, 454
+  size: 112, 5
+  orig: 112, 5
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-BottomLeft
+  rotate: false
+  xy: 1620, 403
+  size: 112, 51
+  orig: 112, 51
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Cliff/Cliff-Mountain-Water-BottomRight
+  rotate: false
+  xy: 484, 395
+  size: 112, 52
+  orig: 112, 52
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-Bottom
+  rotate: false
+  xy: 1500, 426
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-BottomLeft
+  rotate: false
+  xy: 4, 377
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-BottomRight
+  rotate: false
+  xy: 1740, 364
+  size: 112, 62
+  orig: 112, 62
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-Top
+  rotate: false
+  xy: 1860, 329
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-TopLeft
+  rotate: false
+  xy: 1260, 327
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Foam/Foam-Water-Land-TopRight
+  rotate: false
+  xy: 604, 321
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-Bottom
+  rotate: false
+  xy: 1500, 398
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-BottomLeft
+  rotate: false
+  xy: 364, 353
+  size: 112, 64
+  orig: 112, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-BottomRight
+  rotate: false
+  xy: 900, 348
+  size: 112, 59
+  orig: 112, 59
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-Top
+  rotate: false
+  xy: 124, 308
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-TopLeft
+  rotate: false
+  xy: 1620, 298
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Desert-Mountain-TopRight
+  rotate: false
+  xy: 1500, 293
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-Bottom
+  rotate: false
+  xy: 1380, 370
+  size: 112, 18
+  orig: 112, 18
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-BottomLeft
+  rotate: false
+  xy: 484, 326
+  size: 112, 61
+  orig: 112, 61
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-BottomRight
+  rotate: false
+  xy: 1020, 324
+  size: 112, 61
+  orig: 112, 61
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-Top
+  rotate: false
+  xy: 1140, 276
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-TopLeft
+  rotate: false
+  xy: 4, 272
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Grassland-Mountain-TopRight
+  rotate: false
+  xy: 724, 271
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-Bottom
+  rotate: false
+  xy: 1380, 345
+  size: 112, 17
+  orig: 112, 17
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-BottomLeft
+  rotate: false
+  xy: 244, 293
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-BottomRight
+  rotate: false
+  xy: 1740, 294
+  size: 112, 62
+  orig: 112, 62
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-Top
+  rotate: false
+  xy: 364, 248
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-TopLeft
+  rotate: false
+  xy: 844, 243
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Plains-Mountain-TopRight
+  rotate: false
+  xy: 1380, 240
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-Bottom
+  rotate: false
+  xy: 1860, 301
+  size: 112, 20
+  orig: 112, 20
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-BottomLeft
+  rotate: false
+  xy: 1260, 259
+  size: 112, 60
+  orig: 112, 60
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-BottomRight
+  rotate: false
+  xy: 484, 255
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-Top
+  rotate: false
+  xy: 964, 219
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-TopLeft
+  rotate: false
+  xy: 604, 216
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Snow-Mountain-TopRight
+  rotate: false
+  xy: 124, 203
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-Bottom
+  rotate: false
+  xy: 1860, 275
+  size: 112, 18
+  orig: 112, 18
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-BottomLeft
+  rotate: false
+  xy: 1620, 227
+  size: 112, 63
+  orig: 112, 63
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-BottomRight
+  rotate: false
+  xy: 1740, 220
+  size: 112, 66
+  orig: 112, 66
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-Top
+  rotate: false
+  xy: 244, 188
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-TopLeft
+  rotate: false
+  xy: 1500, 188
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Scree/Scree-Tundra-Mountain-TopRight
+  rotate: false
+  xy: 1084, 171
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-Bottom
+  rotate: false
+  xy: 1860, 233
+  size: 112, 34
+  orig: 112, 34
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-BottomLeft
+  rotate: false
+  xy: 4, 190
+  size: 112, 74
+  orig: 112, 74
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-BottomRight
+  rotate: false
+  xy: 724, 189
+  size: 112, 74
+  orig: 112, 74
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-Top
+  rotate: false
+  xy: 1204, 154
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-TopLeft
+  rotate: false
+  xy: 484, 150
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shelf/Shelf-Ocean-Coast-TopRight
+  rotate: false
+  xy: 364, 143
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-Bottom
+  rotate: false
+  xy: 844, 227
+  size: 112, 8
+  orig: 112, 8
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-BottomLeft
+  rotate: false
+  xy: 1324, 177
+  size: 112, 55
+  orig: 112, 55
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-BottomRight
+  rotate: false
+  xy: 1860, 172
+  size: 112, 53
+  orig: 112, 53
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-Top
+  rotate: false
+  xy: 844, 122
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-TopLeft
+  rotate: false
+  xy: 1620, 122
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Desert-Water-TopRight
+  rotate: false
+  xy: 1740, 115
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-Bottom
+  rotate: false
+  xy: 964, 201
+  size: 112, 10
+  orig: 112, 10
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-BottomLeft
+  rotate: false
+  xy: 604, 152
+  size: 112, 56
+  orig: 112, 56
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-BottomRight
+  rotate: false
+  xy: 124, 138
+  size: 112, 57
+  orig: 112, 57
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-Top
+  rotate: false
+  xy: 964, 96
+  size: 112, 97
+  orig: 112, 97
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-TopLeft
   rotate: false
-  xy: 4, 400
+  xy: 4, 85
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Grassland-Water-TopRight
   rotate: false
-  xy: 4, 295
+  xy: 724, 84
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-Bottom
   rotate: false
-  xy: 124, 486
+  xy: 244, 169
   size: 112, 11
   orig: 112, 11
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-BottomLeft
   rotate: false
-  xy: 4, 235
+  xy: 1324, 117
   size: 112, 52
   orig: 112, 52
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-BottomRight
   rotate: false
-  xy: 124, 423
+  xy: 1860, 109
   size: 112, 55
   orig: 112, 55
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-Top
   rotate: false
-  xy: 4, 130
+  xy: 1084, 66
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-TopLeft
   rotate: false
-  xy: 124, 318
+  xy: 1444, 66
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Plains-Water-TopRight
   rotate: false
-  xy: 244, 400
+  xy: 244, 64
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-Bottom
   rotate: false
-  xy: 4, 112
+  xy: 1204, 136
   size: 112, 10
   orig: 112, 10
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-BottomLeft
   rotate: false
-  xy: 124, 257
+  xy: 604, 91
   size: 112, 53
   orig: 112, 53
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-BottomRight
   rotate: false
-  xy: 364, 442
+  xy: 484, 87
   size: 112, 55
   orig: 112, 55
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-Top
   rotate: false
-  xy: 4, 7
+  xy: 364, 38
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-TopLeft
   rotate: false
-  xy: 124, 152
+  xy: 124, 33
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Snow-Water-TopRight
   rotate: false
-  xy: 124, 47
+  xy: 1204, 31
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-Bottom
   rotate: false
-  xy: 364, 425
+  xy: 844, 105
   size: 112, 9
   orig: 112, 9
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-BottomLeft
   rotate: false
-  xy: 484, 440
+  xy: 1564, 57
   size: 112, 57
   orig: 112, 57
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-BottomRight
   rotate: false
-  xy: 604, 443
+  xy: 1324, 55
   size: 112, 54
   orig: 112, 54
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-Top
   rotate: false
-  xy: 724, 400
+  xy: 1684, 10
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-TopLeft
   rotate: false
-  xy: 844, 400
+  xy: 1804, 4
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Edges/Shore/Shore-Tundra-Water-TopRight
   rotate: false
-  xy: 964, 400
+  xy: 1924, 4
   size: 112, 97
   orig: 112, 97
   offset: 0, 0
   index: -1
+TileSets/Visual Hex Satellite/Railroad
+  rotate: false
+  xy: 1516, 740
+  size: 128, 72
+  orig: 128, 72
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Road
+  rotate: false
+  xy: 172, 732
+  size: 120, 64
+  orig: 120, 64
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Stone
+  rotate: false
+  xy: 4, 887
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Sugar
+  rotate: false
+  xy: 508, 887
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Truffles
+  rotate: false
+  xy: 172, 804
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Uranium
+  rotate: false
+  xy: 340, 802
+  size: 160, 121
+  orig: 160, 121
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Whales
+  rotate: false
+  xy: 1684, 778
+  size: 160, 118
+  orig: 160, 118
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Wheat
+  rotate: false
+  xy: 1852, 777
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Tiles/Wine
+  rotate: false
+  xy: 4, 760
+  size: 160, 119
+  orig: 160, 119
+  offset: 0, 0
+  index: -1
 TileSets/Visual Hex Satellite/Units/Anti-Aircraft Gun-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Anti-Tank Gun-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Archer-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Artillery-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Battleship-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Cannon-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Caravel-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Carrier-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Catapult-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Cavalry-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Chariot Archer-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Composite Bowman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Crossbowman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Destroyer-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-Modern era-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-Renaissance era-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-Modern era-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-Renaissance era-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Frigate-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Galleass-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Galley-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Gatling Gun-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Giant Death Robot-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Great Admiral-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Great Artist-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Great Engineer-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Great General-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Great Merchant-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Great Prophet-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Great Scientist-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Great War Infantry-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Helicopter Gunship-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Horseman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Infantry-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Inquisitor-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Ironclad-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Knight-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Lancer-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Landship-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Longswordsman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Machine Gun-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Marine-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Mechanized Infantry-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Missile Cruiser-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Missionary-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Mobile SAM-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Modern Armor-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Musketman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Nuclear Submarine-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Paratrooper-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Pikeman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Privateer-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Rifleman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Rocket Artillery-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/SS Booster-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/SS Cockpit-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/SS Engine-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/SS Stasis Chamber-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Scout-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Settler-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Spearman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Submarine-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Swordsman-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Tank-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Trebuchet-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Trireme-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Warrior-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Work Boats-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Worker-1
   rotate: false
-  xy: 1068, 385
+  xy: 2020, 999
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
-TileSets/Visual Hex Satellite/Units/Anti-Aircraft Gun-2
+TileSets/Visual Hex Satellite/Units/Submarine
   rotate: false
-  xy: 1084, 436
-  size: 80, 61
-  orig: 80, 61
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Anti-Tank Gun-2
-  rotate: false
-  xy: 1172, 452
-  size: 80, 45
-  orig: 80, 45
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Archer-2
-  rotate: false
-  xy: 1260, 437
-  size: 80, 60
-  orig: 80, 60
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Artillery-2
-  rotate: false
-  xy: 1348, 454
-  size: 80, 43
-  orig: 80, 43
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Battleship-2
-  rotate: false
-  xy: 1436, 453
-  size: 80, 44
-  orig: 80, 44
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Cannon-2
-  rotate: false
-  xy: 1524, 456
-  size: 80, 41
-  orig: 80, 41
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Caravel-2
-  rotate: false
-  xy: 1612, 439
-  size: 80, 58
-  orig: 80, 58
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Carrier-2
-  rotate: false
-  xy: 1700, 464
-  size: 80, 33
-  orig: 80, 33
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Catapult-2
-  rotate: false
-  xy: 1788, 447
-  size: 80, 50
-  orig: 80, 50
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Cavalry-2
-  rotate: false
-  xy: 1876, 438
-  size: 80, 59
-  orig: 80, 59
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Chariot Archer-2
-  rotate: false
-  xy: 1964, 450
-  size: 80, 47
-  orig: 80, 47
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Composite Bowman-2
-  rotate: false
-  xy: 1964, 380
-  size: 80, 62
-  orig: 80, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Crossbowman-2
-  rotate: false
-  xy: 1700, 394
-  size: 80, 62
-  orig: 80, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Destroyer-2
-  rotate: false
-  xy: 1788, 398
-  size: 80, 41
-  orig: 80, 41
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-2
-  rotate: false
-  xy: 1876, 388
-  size: 80, 42
-  orig: 80, 42
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-Modern era-2
-  rotate: false
-  xy: 124, 4
-  size: 80, 35
-  orig: 80, 35
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Civilian-Renaissance era-2
-  rotate: false
-  xy: 1084, 379
-  size: 80, 49
-  orig: 80, 49
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-2
-  rotate: false
-  xy: 1172, 396
-  size: 80, 48
-  orig: 80, 48
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-Modern era-2
-  rotate: false
-  xy: 1260, 390
-  size: 80, 39
-  orig: 80, 39
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/EmbarkedUnit-Military-Renaissance era-2
-  rotate: false
-  xy: 1348, 388
-  size: 80, 58
-  orig: 80, 58
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Frigate-2
-  rotate: false
-  xy: 1436, 387
-  size: 80, 58
-  orig: 80, 58
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Galleass-2
-  rotate: false
-  xy: 1524, 395
-  size: 80, 53
-  orig: 80, 53
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Galley-2
-  rotate: false
-  xy: 1612, 382
-  size: 80, 49
-  orig: 80, 49
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Gatling Gun-2
-  rotate: false
-  xy: 364, 352
-  size: 80, 65
-  orig: 80, 65
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Giant Death Robot-2
-  rotate: false
-  xy: 1524, 326
-  size: 80, 61
-  orig: 80, 61
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Admiral-2
-  rotate: false
-  xy: 1612, 318
-  size: 80, 56
-  orig: 80, 56
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Artist-2
-  rotate: false
-  xy: 1700, 330
-  size: 80, 56
-  orig: 80, 56
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Engineer-2
-  rotate: false
-  xy: 1788, 336
-  size: 80, 54
-  orig: 80, 54
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great General-2
-  rotate: false
-  xy: 1876, 307
-  size: 80, 73
-  orig: 80, 73
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Merchant-2
-  rotate: false
-  xy: 1964, 310
-  size: 80, 62
-  orig: 80, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Prophet-2
-  rotate: false
-  xy: 1964, 234
-  size: 80, 68
-  orig: 80, 68
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great Scientist-2
-  rotate: false
-  xy: 1788, 273
-  size: 80, 55
-  orig: 80, 55
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Great War Infantry-2
-  rotate: false
-  xy: 1876, 228
-  size: 80, 71
-  orig: 80, 71
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Helicopter Gunship-2
-  rotate: false
-  xy: 1964, 167
-  size: 80, 59
-  orig: 80, 59
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Horseman-2
-  rotate: false
-  xy: 1700, 271
-  size: 80, 51
-  orig: 80, 51
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Infantry-2
-  rotate: false
-  xy: 1788, 203
-  size: 80, 62
-  orig: 80, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Inquisitor-2
-  rotate: false
-  xy: 1876, 152
-  size: 80, 68
-  orig: 80, 68
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Ironclad-2
-  rotate: false
-  xy: 1964, 111
-  size: 80, 48
-  orig: 80, 48
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Knight-2
-  rotate: false
-  xy: 452, 355
-  size: 80, 62
-  orig: 80, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Lancer-2
-  rotate: false
-  xy: 604, 379
-  size: 80, 56
-  orig: 80, 56
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Landship-2
-  rotate: false
-  xy: 452, 304
-  size: 80, 43
-  orig: 80, 43
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Longswordsman-2
-  rotate: false
-  xy: 364, 273
-  size: 80, 71
-  orig: 80, 71
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Machine Gun-2
-  rotate: false
-  xy: 452, 246
-  size: 80, 50
-  orig: 80, 50
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Marine-2
-  rotate: false
-  xy: 540, 309
-  size: 80, 62
-  orig: 80, 62
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Mechanized Infantry-2
-  rotate: false
-  xy: 540, 260
-  size: 80, 41
-  orig: 80, 41
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Missile Cruiser-2
-  rotate: false
-  xy: 628, 326
-  size: 80, 45
-  orig: 80, 45
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Missionary-2
-  rotate: false
-  xy: 628, 255
-  size: 80, 63
-  orig: 80, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Mobile SAM-2
-  rotate: false
-  xy: 716, 340
-  size: 80, 52
-  orig: 80, 52
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Modern Armor-2
-  rotate: false
-  xy: 804, 358
-  size: 80, 34
-  orig: 80, 34
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Musketman-2
-  rotate: false
-  xy: 716, 263
-  size: 80, 69
-  orig: 80, 69
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Nuclear Submarine-2
-  rotate: false
-  xy: 804, 315
-  size: 80, 35
-  orig: 80, 35
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Paratrooper-2
-  rotate: false
-  xy: 892, 308
-  size: 80, 84
-  orig: 80, 84
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Pikeman-2
-  rotate: false
-  xy: 980, 297
-  size: 80, 95
-  orig: 80, 95
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Privateer-2
-  rotate: false
-  xy: 804, 250
-  size: 80, 57
-  orig: 80, 57
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Rifleman-2
-  rotate: false
-  xy: 892, 229
-  size: 80, 71
-  orig: 80, 71
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Rocket Artillery-2
-  rotate: false
-  xy: 980, 240
-  size: 80, 49
-  orig: 80, 49
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/SS Booster-2
-  rotate: false
-  xy: 1068, 334
-  size: 80, 37
-  orig: 80, 37
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/SS Cockpit-2
-  rotate: false
-  xy: 1068, 290
-  size: 80, 36
-  orig: 80, 36
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/SS Engine-2
-  rotate: false
-  xy: 716, 218
-  size: 80, 37
-  orig: 80, 37
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/SS Stasis Chamber-2
-  rotate: false
-  xy: 804, 208
-  size: 80, 34
-  orig: 80, 34
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Scout-2
-  rotate: false
-  xy: 892, 158
-  size: 80, 63
-  orig: 80, 63
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Settler-2
-  rotate: false
-  xy: 980, 179
-  size: 80, 53
-  orig: 80, 53
-  offset: 0, 0
-  index: -1
-TileSets/Visual Hex Satellite/Units/Spearman-2
-  rotate: false
-  xy: 980, 95
-  size: 80, 76
-  orig: 80, 76
+  xy: 172, 931
+  size: 160, 75
+  orig: 160, 75
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Submarine-2
   rotate: false
-  xy: 540, 218
-  size: 80, 34
-  orig: 80, 34
+  xy: 340, 931
+  size: 160, 75
+  orig: 160, 75
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Swordsman
+  rotate: false
+  xy: 676, 849
+  size: 160, 157
+  orig: 160, 157
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Swordsman-2
   rotate: false
-  xy: 628, 181
-  size: 80, 66
-  orig: 80, 66
+  xy: 844, 849
+  size: 160, 157
+  orig: 160, 157
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Tank
+  rotate: false
+  xy: 1012, 912
+  size: 160, 94
+  orig: 160, 94
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Tank-2
   rotate: false
-  xy: 716, 171
-  size: 80, 39
-  orig: 80, 39
+  xy: 1180, 912
+  size: 160, 94
+  orig: 160, 94
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Trebuchet
+  rotate: false
+  xy: 1348, 820
+  size: 160, 186
+  orig: 160, 186
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Trebuchet-2
   rotate: false
-  xy: 804, 132
-  size: 80, 68
-  orig: 80, 68
+  xy: 1516, 820
+  size: 160, 186
+  orig: 160, 186
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Trireme
+  rotate: false
+  xy: 1684, 904
+  size: 160, 102
+  orig: 160, 102
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Trireme-2
   rotate: false
-  xy: 892, 101
-  size: 80, 49
-  orig: 80, 49
+  xy: 1852, 904
+  size: 160, 102
+  orig: 160, 102
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Warrior
+  rotate: false
+  xy: 1012, 737
+  size: 160, 167
+  orig: 160, 167
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Warrior-2
   rotate: false
-  xy: 1156, 293
-  size: 80, 78
-  orig: 80, 78
+  xy: 1180, 737
+  size: 160, 167
+  orig: 160, 167
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Work Boats
+  rotate: false
+  xy: 508, 779
+  size: 160, 100
+  orig: 160, 100
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Work Boats-2
   rotate: false
-  xy: 1244, 333
-  size: 80, 49
-  orig: 80, 49
+  xy: 676, 741
+  size: 160, 100
+  orig: 160, 100
+  offset: 0, 0
+  index: -1
+TileSets/Visual Hex Satellite/Units/Worker
+  rotate: false
+  xy: 844, 691
+  size: 160, 150
+  orig: 160, 150
   offset: 0, 0
   index: -1
 TileSets/Visual Hex Satellite/Units/Worker-2
   rotate: false
-  xy: 1244, 261
-  size: 80, 64
-  orig: 80, 64
+  xy: 1348, 662
+  size: 160, 150
+  orig: 160, 150
   offset: 0, 0
   index: -1

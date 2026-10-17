@@ -21,4 +21,5 @@ java -cp "$GDX_DIR/gdx.jar:$GDX_DIR/gdx-tools.jar" tools/PackAtlas.java .
 
 python3 tools/preview_map.py --out preview/preview.jpg
 python3 tools/preview_map.py --width 160 --cols 9 --rows 6 --seed 9 --out preview/close-up.jpg
+python3 tools/preview_map.py --fog --out preview/fog.jpg
 python3 tools/preview_map.py --catalog

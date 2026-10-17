@@ -863,12 +863,13 @@ def render_overlays():
         a, b = warp(cv.a, cv.b, 0.3, 2, 4000)
         n = fbm(a, b, 3, 5, 4001)
         save(cv, premult(np.ones(cv.shape + (3,)), cv.hex_alpha() * (0.2 + 0.8 * smooth(0.42, 0.72, n))), "CrosshatchHexagon")
-    if wanted("UnexploredTile"):      # never-seen land: a deck of cloud tops
-        cv = Canvas(TILE_W)
-        a, b = warp(cv.a, cv.b, 0.35, 2, 4100)
-        n = fbm(a, b, 2, 6, 4101)
-        rgb = ramp(n, [(0.3, C(.62, .66, .72)), (0.55, C(.80, .83, .87)), (0.75, C(.93, .94, .96))])
-        rgb = lit(rgb, shade(0.25 * n, cv.spx), lo=0.6, hi=1.25)
+    if wanted("UnexploredTile"):      # never-seen tiles next to known ones: a bank of soft mist
+        cv = Canvas(TILE_W)           # no shading or crisp detail, which would read as rocky relief
+        a, b = warp(cv.a, cv.b, 0.3, 2, 4000)
+        wisp = smooth(0.42, 0.72, fbm(a, b, 3, 5, 4001))      # the fog-of-war wisps, so the two join up
+        a, b = warp(cv.a, cv.b, 0.6, 1, 4200)
+        swell = smooth(0.25, 0.75, fbm(a, b, 2, 2, 4201))     # broad, gentle brightness swells
+        rgb = mix(C(.33, .37, .45), C(.52, .56, .62), 0.65 * swell + 0.35 * wisp)
         save(cv, premult(rgb, cv.hex_alpha()), "UnexploredTile")
     if wanted("Highlight"):           # selection and movement circles, tinted by the game
         w, h = TILE_W, round(TILE_W * 212 / 284)

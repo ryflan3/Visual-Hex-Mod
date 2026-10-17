@@ -6,6 +6,7 @@
     python3 tools/preview_map.py --catalog               # preview/catalog-*.jpg, every item on its usual terrain
     python3 tools/preview_map.py --bare                  # terrain only, no cities, resources or improvements
     python3 tools/preview_map.py --fallback PATH         # draw missing images from another tileset's Tiles folder
+    python3 tools/preview_map.py --fog                   # as a player sees it: fog of war and unexplored tiles
 
 It follows the game's rules for tile images:
 * each image is drawn at the hex width, keeping its aspect ratio, anchored at the hex bottom;
@@ -13,7 +14,10 @@ It follows the game's rules for tile images:
 * per tile: base terrain (a numbered version picked from the tile position) and features, or only the
   natural wonder image; then every edge image whose origin filter matches this tile and whose
   destination filter matches the neighbour on that side; then rivers; then the resource and the
-  improvement, or the combined "Resource+Improvement" image when the tileset has one.
+  improvement, or the combined "Resource+Improvement" image when the tileset has one;
+* with --fog, tiles seen before but not visible now are tinted toward the tileset's fogOfWarColor with
+  CrosshatchHexagon over them at 20%, never-seen tiles next to known ones show UnexploredTile, and
+  the rest are left empty.
 """
 
 import argparse
@@ -21,6 +25,7 @@ import glob
 import math
 import os
 import random
+import re
 
 from PIL import Image, ImageDraw
 
@@ -249,25 +254,75 @@ def tile_layers(painter, tiles, c, r, rivers):
     return out
 
 
-def render(tiles, cols, rows, width, painter=None, rivers=None):
+def fog_of_war(tiles, seed):
+    """What a player knows of each tile: "visible" now, "seen" before, or never seen. Never-seen tiles
+    next to a known one are a "frontier"; the rest are left out, like Unciv does."""
+    cities = [cr for cr, t in tiles.items() if t.get("improvement", "").startswith("City center")]
+    cols, rows = max(c for c, _ in tiles) + 1, max(r for _, r in tiles) + 1
+    eyes = cities[:2] or [(cols // 3, rows // 2), (2 * cols // 3, rows // 2)]
+    reach = value_noise(seed + 20, 2.0)
+    state = {}
+    for cr in tiles:
+        d = min(hex_dist(cr, e) for e in eyes)
+        x, y = 1.5 * cr[0], S3 * (cr[1] + 0.5 * (cr[0] & 1))
+        if d <= 2:
+            state[cr] = "visible"
+        elif d <= 3 + round(1.5 * reach(x, y)):
+            state[cr] = "seen"
+    for (c, r) in tiles:
+        if (c, r) not in state and any(state.get(neighbor(c, r, d)) in ("visible", "seen") for d in DIRECTIONS):
+            state[(c, r)] = "frontier"
+    return state
+
+
+def fog_color():
+    """The tileset's fogOfWarColor, from its config (which has // comments, so not plain JSON)."""
+    with open(os.path.join(ROOT, "jsons", "TileSets", "Visual Hex Satellite.json")) as f:
+        text = f.read()
+    m = re.search(r'"fogOfWarColor"\s*:\s*\{([^}]*)\}', text)
+    return tuple(float(re.search(r'"%s"\s*:\s*([\d.]+)' % ch, m.group(1)).group(1)) for ch in "rgb")
+
+
+def tinted(im, mul):
+    """The image with its colour multiplied, like a libGDX Image.color."""
+    r, g, b, a = im.split()
+    return Image.merge("RGBA", [ch.point(lambda x, k=k: round(x * k)) for ch, k in zip((r, g, b), mul)] + [a])
+
+
+def render(tiles, cols, rows, width, painter=None, rivers=None, fog=None):
     painter = painter or Painter()
     rivers = rivers or {}
     hex_h = width * S3 / 2
     top_pad = width * 0.45
     img_w = int(width * (0.75 * (cols - 1) + 1)) + 2
     img_h = int(hex_h * (rows + 0.5) + top_pad) + 2
-    canvas = Image.new("RGBA", (img_w, img_h), (13, 20, 28, 255))
+    # With fog, the background is Unciv's default screen colour, which shows where nothing is drawn.
+    canvas = Image.new("RGBA", (img_w, img_h), (0, 0, 51, 255) if fog else (13, 20, 28, 255))
     order = sorted(tiles, key=lambda cr: (cr[1] + 0.5 * (cr[0] & 1), cr[0]))
-    for c, r in order:
+    # Seen tiles are tinted 60% toward the fog colour; their overlays are drawn after every tile's terrain.
+    seen_tint = [1 - 0.6 + 0.6 * k for k in fog_color()] if fog else None
+
+    def draw(c, r, im, alpha=1.0):
         cx = width / 2 + c * 1.5 * width / 2
         cy = top_pad + hex_h / 2 + (r + 0.5 * (c & 1)) * hex_h
+        h = math.ceil(im.height * width / im.width)   # the game scales with floats; round up so no gaps appear
+        im = im.resize((width, h), Image.LANCZOS)
+        if alpha < 1:
+            im.putalpha(im.getchannel("A").point(lambda x: round(x * alpha)))
+        canvas.alpha_composite(im, (round(cx - width / 2), round(cy + hex_h / 2) - h))
+
+    for c, r in order:
+        state = fog.get((c, r)) if fog else "visible"
+        if state not in ("visible", "seen"):
+            continue
         for path in tile_layers(painter, tiles, c, r, rivers):
             im = painter.load(path)
-            if im is None:
-                continue
-            h = math.ceil(im.height * width / im.width)   # the game scales with floats; round up so no gaps appear
-            canvas.alpha_composite(im.resize((width, h), Image.LANCZOS),
-                                   (round(cx - width / 2), round(cy + hex_h / 2) - h))
+            if im is not None:
+                draw(c, r, tinted(im, seen_tint) if state == "seen" else im)
+    for c, r in order if fog else []:
+        overlay = {"seen": ("CrosshatchHexagon", 0.2), "frontier": ("UnexploredTile", 1.0)}.get(fog.get((c, r)))
+        if overlay:
+            draw(c, r, painter.load(os.path.join(TILESET, overlay[0])), overlay[1])
     return canvas
 
 
@@ -343,6 +398,7 @@ def main():
     ap.add_argument("--bare", action="store_true", help="terrain only")
     ap.add_argument("--fallback", help="another tileset's Tiles folder to use for missing images")
     ap.add_argument("--catalog", action="store_true", help="write labelled catalog sheets instead of a map")
+    ap.add_argument("--fog", action="store_true", help="show the map as a player sees it, with fog of war")
     ap.add_argument("--out", default=os.path.join(ROOT, "preview", "preview.jpg"))
     args = ap.parse_args()
     if args.catalog:
@@ -355,7 +411,8 @@ def main():
     for (c, r), t in tiles.items():   # a short river along the bottom sides of a few land tiles
         if LAND_TYPE[t["base"]] == "Land" and not t.get("wonder") and c in (5, 6) and 3 <= r <= 6:
             rivers[(c, r)] = ["BottomRight"] if c == 5 else ["Bottom"]
-    save(render(tiles, args.cols, args.rows, args.width, Painter(args.fallback), rivers), args.out)
+    fog = fog_of_war(tiles, args.seed) if args.fog else None
+    save(render(tiles, args.cols, args.rows, args.width, Painter(args.fallback), rivers, fog), args.out)
 
 
 if __name__ == "__main__":

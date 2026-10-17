@@ -1,6 +1,6 @@
 {
-    // Terrain, edges and map overlays come from this tileset. Anything it doesn't draw
-    // (improvements, resources, natural wonders, cities, units) comes from HexaRealm.
+    // Anything this tileset doesn't draw, such as units or a mod's extra resources and
+    // improvements, comes from HexaRealm.
     "fallbackTileSet": "HexaRealm",
     // Seen-but-not-visible tiles are tinted 60% toward this deep blue, under the cloud wisps.
     "fogOfWarColor": {"r": 0.05, "g": 0.08, "b": 0.13, "a": 1}

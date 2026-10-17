@@ -6,6 +6,10 @@ A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map 
 
 ![Close-up](preview/close-up.jpg)
 
+As a player sees it, with fog of war. Tiles you've seen but can't see now are darkened under thin wisps of mist, and a bank of fog marks the edge of the explored map:
+
+![Fog of war](preview/fog.jpg)
+
 *The previews and catalogs are made by `tools/preview_map.py`, which lays the images out using the same rules as the game. They aren't screenshots from Unciv.*
 
 ## Install
@@ -15,6 +19,8 @@ A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map 
 3. Leave the Mods screen and open **Options**, either from the main menu or from the menu during a game. On the **Display** tab, set **Tileset** to **Visual Hex Satellite**. The tileset isn't chosen on the New Game screen.
 
 Unciv downloads the repository's default branch, and only works with public repositories.
+
+To update the mod, download the same URL again, then close and reopen Unciv. Until it restarts, Unciv keeps showing the old images.
 
 If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't load. Check the checkbox in step 2 again. **Options → Locate mod errors** shows whether Unciv found a problem with the mod.
 
@@ -48,7 +54,7 @@ If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't l
 | Improvements | 25 | Every buildable improvement, ruins and barbarian camps, plus a combined `Wheat+Farm` |
 | City centres | 8 | Ancient, Classical, Medieval, Renaissance, Industrial, Modern and Information eras, plus a default |
 | Natural wonders | 17 | All of the base game's wonders |
-| Map overlays | 22 | Selection hex, highlight, crosshair, fog clouds, unexplored clouds, 8 border pieces, 7 movement arrows, road, railroad |
+| Map overlays | 22 | Selection hex, highlight, crosshair, fog-of-war mist, unexplored-edge fog, 8 border pieces, 7 movement arrows, road, railroad |
 
 All 280 images pack onto **two 2048×2048 texture sheets**. That's about 42 MB of graphics memory including mipmaps.
 

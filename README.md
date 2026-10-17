@@ -10,11 +10,13 @@ A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map 
 
 ## Install
 
-1. In Unciv, open **Mods** and choose **Download mod from URL**. Paste `https://github.com/ryflan3/Visual-Hex-Mod`.
-2. On the Mods screen, select the mod in the **Installed** column and tick **Permanent audiovisual mod**.
-3. Open **Options → Display** and set **Tileset** to **Visual Hex Satellite**.
+1. In Unciv, open **Mods** and choose **Download mod from URL**. Paste `https://github.com/ryflan3/Visual-Hex-Mod` and choose **Download**.
+2. Select **Visual Hex Mod** in the **Installed** column. Unciv ticks **Permanent audiovisual mod** by itself, but it doesn't load the mod's images yet. Untick the box and tick it again, which loads the images and saves the setting. If the box is empty, tick it once.
+3. Leave the Mods screen and open **Options**, either from the main menu or from the menu during a game. On the **Display** tab, set **Tileset** to **Visual Hex Satellite**. The tileset isn't chosen on the New Game screen.
 
 Unciv downloads the repository's default branch, and only works with public repositories.
+
+If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't load. Check the checkbox in step 2 again. **Options → Locate mod errors** shows whether Unciv found a problem with the mod.
 
 ## Catalog
 

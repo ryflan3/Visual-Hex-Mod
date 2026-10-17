@@ -2,6 +2,6 @@
     // Anything this tileset or its unit set doesn't draw, such as a mod's extra units,
     // resources and improvements, comes from HexaRealm.
     "fallbackTileSet": "HexaRealm",
-    // Seen-but-not-visible tiles are tinted 60% toward this deep blue, under the cloud wisps.
-    "fogOfWarColor": {"r": 0.05, "g": 0.08, "b": 0.13, "a": 1}
+    // Seen-but-not-visible tiles are tinted 60% toward this dark blue-grey, under a layer of mist.
+    "fogOfWarColor": {"r": 0.02, "g": 0.035, "b": 0.07, "a": 1}
 }

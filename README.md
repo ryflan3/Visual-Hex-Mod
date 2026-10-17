@@ -6,7 +6,7 @@ A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map 
 
 ![Close-up](preview/close-up.jpg)
 
-As a player sees it, with fog of war and unit flags. Tiles you've seen but can't see now are darkened under thin wisps of mist, and a bank of fog marks the edge of the explored map:
+As a player sees it, with fog of war and unit flags. Tiles you've seen but can't see now are darkened under a layer of mist, and a bank of fog marks the edge of the explored map:
 
 ![Fog of war](preview/fog.jpg)
 

@@ -858,11 +858,12 @@ def render_overlays():
     if wanted("Hexagon"):
         cv = Canvas(TILE_W)
         save(cv, premult(np.ones(cv.shape + (3,)), cv.hex_alpha(0.0)), "Hexagon")
-    if wanted("CrosshatchHexagon"):   # fog of war: thin cloud wisps, shown by the game at 20%
+    if wanted("CrosshatchHexagon"):   # fog of war: the game draws this at 20%, so it is opaque mist to get all of that
         cv = Canvas(TILE_W)
         a, b = warp(cv.a, cv.b, 0.3, 2, 4000)
-        n = fbm(a, b, 3, 5, 4001)
-        save(cv, premult(np.ones(cv.shape + (3,)), cv.hex_alpha() * (0.2 + 0.8 * smooth(0.42, 0.72, n))), "CrosshatchHexagon")
+        wisp = smooth(0.42, 0.72, fbm(a, b, 3, 5, 4001))
+        rgb = mix(C(.7, .74, .8), C(.95, .96, .98), wisp)
+        save(cv, premult(rgb, cv.hex_alpha(0.0)), "CrosshatchHexagon")   # no bleed: overlapping edges would show as lines
     if wanted("UnexploredTile"):      # never-seen tiles next to known ones: a bank of soft mist
         cv = Canvas(TILE_W)           # no shading or crisp detail, which would read as rocky relief
         a, b = warp(cv.a, cv.b, 0.3, 2, 4000)

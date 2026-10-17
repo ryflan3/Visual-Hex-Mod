@@ -1,22 +1,22 @@
 # Visual Hex Satellite
 
-A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map look like satellite imagery. It has hill-shaded terrain, mountains that rise above their tiles, and soft transitions where terrains meet. It also redraws resources, improvements, cities and natural wonders in the same style. Readability comes first: resources are drawn larger than life so each one is recognizable at a glance.
+A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map look like satellite imagery. It has hill-shaded terrain, mountains that rise above their tiles, and soft transitions where terrains meet. It also redraws resources, improvements, cities, natural wonders and every unit in the same style. Readability comes first: resources are drawn larger than life so each one is recognizable at a glance, and units carry their owner's colours.
 
 ![Sample map rendered with the tileset](preview/preview.jpg)
 
 ![Close-up](preview/close-up.jpg)
 
-As a player sees it, with fog of war. Tiles you've seen but can't see now are darkened under thin wisps of mist, and a bank of fog marks the edge of the explored map:
+As a player sees it, with fog of war and unit flags. Tiles you've seen but can't see now are darkened under thin wisps of mist, and a bank of fog marks the edge of the explored map:
 
 ![Fog of war](preview/fog.jpg)
 
-*The previews and catalogs are made by `tools/preview_map.py`, which lays the images out using the same rules as the game. They aren't screenshots from Unciv.*
+*The previews and catalogs are made by `tools/preview_map.py`, which lays the images out using the same rules as the game. They aren't screenshots from Unciv, and the round unit flags are simple stand-ins for the game's own.*
 
 ## Install
 
 1. In Unciv, open **Mods** and choose **Download mod from URL**. Paste `https://github.com/ryflan3/Visual-Hex-Mod` and choose **Download**.
 2. Select **Visual Hex Mod** in the **Installed** column. Unciv ticks **Permanent audiovisual mod** by itself, but it doesn't load the mod's images yet. Untick the box and tick it again, which loads the images and saves the setting. If the box is empty, tick it once.
-3. Leave the Mods screen and open **Options**, either from the main menu or from the menu during a game. On the **Display** tab, set **Tileset** to **Visual Hex Satellite**. The tileset isn't chosen on the New Game screen.
+3. Leave the Mods screen and open **Options**, either from the main menu or from the menu during a game. On the **Display** tab, set **Tileset** to **Visual Hex Satellite**, and **Unitset** to **Visual Hex Satellite** for the units. Neither is chosen on the New Game screen. Keep **Show pixel improvements** on, or resources and improvements are hidden.
 
 Unciv downloads the repository's default branch, and only works with public repositories.
 
@@ -42,6 +42,10 @@ If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't l
 
 ![Natural wonders](preview/catalog-wonders.jpg)
 
+**Units**, each in a different nation's colours. Ships and boats are shown at sea:
+
+![Units](preview/catalog-units.jpg)
+
 ## What's included
 
 | Group | Images | Notes |
@@ -55,10 +59,21 @@ If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't l
 | City centres | 8 | Ancient, Classical, Medieval, Renaissance, Industrial, Modern and Information eras, plus a default |
 | Natural wonders | 17 | All of the base game's wonders |
 | Map overlays | 22 | Selection hex, highlight, crosshair, fog-of-war mist, unexplored-edge fog, 8 border pieces, 7 movement arrows, road, railroad |
+| Units | 213 | 65 units and 6 boats for embarked units, each with two colour layers. See below |
 
-All 280 images pack onto **two 2048×2048 texture sheets**. That's about 42 MB of graphics memory including mipmaps.
+All 493 images pack onto **two 2048×2048 texture sheets and one 2048×512 sheet**. That's about 48 MB of graphics memory including mipmaps.
 
-Anything this tileset doesn't draw falls back to the built-in **HexaRealm** tileset. With the base game's rules that's nothing on the map itself. Resources, improvements or wonders added by other mods would come from HexaRealm, and units come from whichever unit set you choose in the options.
+Anything this tileset doesn't draw falls back to the built-in **HexaRealm** tileset. With the base game's rules that's nothing on the map itself. Units, resources, improvements or wonders added by other mods would come from HexaRealm.
+
+### Units
+
+The unit set is called **Visual Hex Satellite**, like the tileset, and is chosen separately under **Options → Display → Unitset**. It has every land unit, ship, civilian, great person and spaceship part in the base game:
+
+* **Owner's colours.** Each unit has its owner's main colour on a large, easy-to-spot part: tunics and coats up to the First World War, shields, banners, crests and horse barding, sails, turret bands and hull stripes, and the canopy of the paratrooper. Later infantry wear realistic olive and camouflage, with the colour on a scarf, armband and helmet band. Unciv tints the `-2` layer of each unit image with the owner's outer colour. `-1` is an empty placeholder because the layers must be numbered from 1.
+* **Placement.** Unciv draws a tile's unit flags in the middle of the hex, the military unit's in the upper half and the civilian's in the lower half. Military units stand on the right of the hex and civilians on the left, as in the HexaRealm units, so the flags don't cover them. Ships and vehicles are low, so they may reach under the military flag toward the middle.
+* **Embarked units** sail in a longboat, a two-masted transport from the Renaissance and a landing craft from the Modern era. Military boats carry soldiers and civilian boats carry cargo.
+* **Unique units** without their own image, such as the Legion or the Samurai, use the image of the unit they replace. That's how Unciv looks them up, so every civilization's army stays in the same style.
+* **Aircraft and missiles** have no images. Unciv never draws them on the map; they're listed on their city's or carrier's flag instead.
 
 ### Edge transitions
 
@@ -88,6 +103,7 @@ Every image is generated by Python scripts, using NumPy and Pillow. There's no h
 
 * `tools/render_tiles.py` draws the terrain, features, rivers, edge transitions and map overlays.
 * `tools/render_items.py` draws the resources, improvements, city centres and natural wonders, with the same light and projection.
+* `tools/render_units.py` draws the units as small painted miniatures, built from shaded rods, balls, plates and boxes in the same light. It paints each unit's base image and its owner-colour layer together, so whatever stands in front of a coloured part also hides it in the colour layer. It measures each unit first and then sizes and places it, so nothing is cut off at the image edge.
 
 How the images fit together:
 
@@ -105,7 +121,7 @@ tools/build.sh Mountain    # only re-render images whose path contains "Mountain
 
 You need Python 3 with `numpy` and `pillow`, plus Java 11 or newer. The script downloads the libGDX 1.14.2 texture packer (the version Unciv uses) into `.gdx/`. `tools/PackAtlas.java` packs with the same settings as Unciv's desktop packer: 2048 px pages, 8 px padding and mipmaps.
 
-Android can't pack images on the device, so the packed `game.atlas`, `game.png`, `game2.png` and `Atlases.json` are committed. The **Pack texture atlas** GitHub workflow repacks and commits them whenever files under `Images/` change.
+Android can't pack images on the device, so the packed `game.atlas`, `game.png`, `game2.png`, `game3.png` and `Atlases.json` are committed. The **Pack texture atlas** GitHub workflow repacks and commits them whenever files under `Images/` change.
 
 ## Known limitations
 
@@ -113,6 +129,7 @@ Android can't pack images on the device, so the packed `game.atlas`, `game.png`,
 * **Edge order.** Unciv draws edge images after terrain features, so a beach or blend along a forest tile's edge paints over the trees right at that edge. Fixing this needs a change in Unciv itself: drawing edge images before features.
 * **Mountain cliffs.** Cliffs only appear on the south sides of mountains. On the north sides the mountain rises over the edge, and an edge image would paint across it.
 * **Pillaged improvements.** There are no separate pillaged images, so the game shows the normal image with its red pillage tint.
-* **Era changes.** Only city centres change with the era. Other improvements keep one look all game.
+* **Era changes.** Only city centres and embarked boats change with the era. Other improvements and units keep one look all game.
+* **Unit poses.** Units have one pose each. Unciv doesn't animate unit images.
 
 To list the mod in Unciv's in-game mod browser, add the `unciv-mod` topic to the GitHub repository.

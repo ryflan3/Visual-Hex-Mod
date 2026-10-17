@@ -7,6 +7,7 @@ cd "$(dirname "$0")/.."
 
 python3 tools/render_tiles.py "$@"
 python3 tools/render_items.py "$@"
+python3 tools/render_units.py "$@"
 
 GDX_VERSION=1.14.2   # the libGDX version Unciv is built with
 GDX_DIR="${GDX_DIR:-.gdx}"
@@ -21,5 +22,5 @@ java -cp "$GDX_DIR/gdx.jar:$GDX_DIR/gdx-tools.jar" tools/PackAtlas.java .
 
 python3 tools/preview_map.py --out preview/preview.jpg
 python3 tools/preview_map.py --width 160 --cols 9 --rows 6 --seed 9 --out preview/close-up.jpg
-python3 tools/preview_map.py --fog --out preview/fog.jpg
+python3 tools/preview_map.py --fog --flags --out preview/fog.jpg
 python3 tools/preview_map.py --catalog

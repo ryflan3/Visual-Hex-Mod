@@ -6,7 +6,7 @@
     python3 tools/preview_map.py --catalog               # preview/catalog-*.jpg, every item on its usual terrain
     python3 tools/preview_map.py --bare                  # terrain only, no cities, resources or improvements
     python3 tools/preview_map.py --fallback PATH         # draw missing images from another tileset's Tiles folder
-    python3 tools/preview_map.py --fog                   # as a player sees it: fog of war and unexplored tiles
+    python3 tools/preview_map.py --fog --flags           # as a player sees it: fog of war, unit flags
 
 It follows the game's rules for tile images:
 * each image is drawn at the hex width, keeping its aspect ratio, anchored at the hex bottom;
@@ -17,7 +17,9 @@ It follows the game's rules for tile images:
   improvement, or the combined "Resource+Improvement" image when the tileset has one;
 * with --fog, tiles seen before but not visible now are tinted toward the tileset's fogOfWarColor with
   CrosshatchHexagon over them at 20%, never-seen tiles next to known ones show UnexploredTile, and
-  the rest are left empty.
+  the rest are left empty;
+* units on visible tiles, civilian then military, each image followed by its "-1" and "-2" layers
+  tinted with the nation's inner and outer colour; --flags adds discs where Unciv draws unit flags.
 """
 
 import argparse
@@ -187,7 +189,36 @@ def populate(tiles, seed):
             t["improvement"] = "Farm"
         else:
             t["improvement"] = "Trading post"
+    add_units(tiles, cities, rnd)
     return tiles
+
+
+# The units each sample city fields, by its era: (military on land, civilians, ships).
+ERA_UNITS = {"Medieval era": (["Knight", "Pikeman", "Crossbowman", "Trebuchet", "Longswordsman"], ["Worker", "Great General"], ["Galleass"]),
+             "Industrial era": (["Rifleman", "Cavalry", "Artillery", "Gatling Gun"], ["Worker", "Settler"], ["Ironclad"]),
+             "Information era": (["Modern Armor", "Mechanized Infantry", "Helicopter Gunship", "Mobile SAM"], ["Great Scientist", "Worker"],
+                                 ["Missile Cruiser"])}
+
+
+def add_units(tiles, cities, rnd):
+    """Station a few units of each city's nation around it, plus a barbarian."""
+    for (cr, nation) in zip(cities, ("England", "France", "Rome")):
+        era = tiles[cr]["improvement"].split("-", 1)[1]
+        land, civilians, ships = ERA_UNITS[era]
+        near = sorted((hex_dist(cr, o), o) for o in tiles if 0 < hex_dist(cr, o) <= 2 and not tiles[o].get("wonder"))
+        tiles[cr]["military"] = (land[0], nation)
+        free_land = [o for _, o in near if LAND_TYPE[tiles[o]["base"]] == "Land" and tiles[o]["base"] != "Mountain"]
+        free_sea = [o for _, o in near if LAND_TYPE[tiles[o]["base"]] == "Water"]
+        for o, name in zip(free_land[::2], land[1:]):
+            tiles[o]["military"] = (name, nation)
+        for o, name in zip(free_land[1::2], civilians):
+            tiles[o]["civilian"] = (name, nation)
+        for o, name in zip(free_sea, ships):
+            tiles[o]["military"] = (name, nation)
+    wild = [o for o, t in sorted(tiles.items()) if LAND_TYPE[t["base"]] == "Land" and t["base"] != "Mountain" and not t.get("wonder")
+            and not t.get("military") and not t.get("civilian") and all(hex_dist(o, c) > 3 for c in cities)]
+    if wild:
+        tiles[rnd.choice(wild)]["military"] = ("Warrior", "Barbarians")
 
 
 class Painter:
@@ -289,7 +320,38 @@ def tinted(im, mul):
     return Image.merge("RGBA", [ch.point(lambda x, k=k: round(x * k)) for ch, k in zip((r, g, b), mul)] + [a])
 
 
-def render(tiles, cols, rows, width, painter=None, rivers=None, fog=None):
+# Outer (main) and inner colours of a few base-game nations, to tint unit layers and flags.
+NATIONS = {"England": ((109, 2, 0), (255, 255, 255)), "France": ((38, 98, 255), (239, 236, 148)),
+           "Rome": ((70, 0, 118), (240, 199, 0)), "China": ((9, 112, 84), (255, 255, 255)),
+           "Egypt": ((255, 252, 3), (83, 0, 208)), "Greece": ((255, 255, 255), (65, 141, 254)),
+           "Barbarians": ((0, 0, 0), (185, 12, 12))}
+
+
+def unit_layers(painter, name, nation):
+    """The unit image and its numbered layers, each with the tint Unciv gives it: none, then the
+    nation's inner colour for "-1" and its outer colour for "-2"."""
+    outer, inner = NATIONS[nation]
+    base = os.path.join(TILESET, "Units", name)
+    out = [(base, None)]
+    for i, col in enumerate((inner, outer), start=1):
+        if painter.load("%s-%d" % (base, i)) is None:
+            break
+        out.append(("%s-%d" % (base, i), [k / 255 for k in col]))
+    return out
+
+
+def flag_icon(width, nation):
+    """A stand-in for Unciv's unit flag: a disc in the nation's outer colour with an inner-colour mark."""
+    outer, inner = NATIONS[nation]
+    d = round(width * 0.37) * 4    # 30 of the hex image's 81 units, drawn 4x and scaled down for smooth edges
+    im = Image.new("RGBA", (d, d), (0, 0, 0, 0))
+    g = ImageDraw.Draw(im)
+    g.ellipse((2, 2, d - 3, d - 3), fill=outer + (255,), outline=(20, 20, 20, 255), width=max(2, d // 30))
+    g.ellipse((d * 0.3, d * 0.3, d * 0.7, d * 0.7), outline=inner + (255,), width=max(3, d // 12))
+    return im.resize((d // 4, d // 4), Image.LANCZOS)
+
+
+def render(tiles, cols, rows, width, painter=None, rivers=None, fog=None, flags=False):
     painter = painter or Painter()
     rivers = rivers or {}
     hex_h = width * S3 / 2
@@ -323,6 +385,23 @@ def render(tiles, cols, rows, width, painter=None, rivers=None, fog=None):
         overlay = {"seen": ("CrosshatchHexagon", 0.2), "frontier": ("UnexploredTile", 1.0)}.get(fog.get((c, r)))
         if overlay:
             draw(c, r, painter.load(os.path.join(TILESET, overlay[0])), overlay[1])
+    # Units on tiles the player can see, civilian before military, then their flags on top:
+    # the military unit's flag in the upper half of the hex, the civilian's in the lower half.
+    shown = [cr for cr in order if not fog or fog.get(cr) == "visible"]
+    for c, r in shown:
+        for slot in ("civilian", "military"):
+            if tiles[(c, r)].get(slot):
+                name, nation = tiles[(c, r)][slot]
+                for path, tint in unit_layers(painter, name, nation):
+                    im = painter.load(path)
+                    draw(c, r, im if tint is None else tinted(im, tint))
+    for c, r in shown if flags else []:
+        for slot, dv in (("civilian", 0.477), ("military", -0.511)):
+            if tiles[(c, r)].get(slot):
+                icon = flag_icon(width, tiles[(c, r)][slot][1])
+                cx = width / 2 + c * 1.5 * width / 2
+                cy = top_pad + hex_h / 2 + (r + 0.5 * (c & 1)) * hex_h + dv * width / 2
+                canvas.alpha_composite(icon, (round(cx - icon.width / 2), round(cy - icon.height / 2)))
     return canvas
 
 
@@ -335,12 +414,13 @@ def save(img, out):
     print("Saved", out, img.size)
 
 
-def catalog(items, out, cols, width=150):
+def catalog(items, out, cols, width=150, flags=False):
     """One labelled tile per item, each on a terrain it normally appears on."""
     painter = Painter()
     cells = []
     for label, tile in items:
-        im = render({(0, 0): tile}, 1, 1, width, painter)
+        im = render({(0, 0): tile}, 1, 1, width, painter, flags=flags)
+        im = im.crop((0, 0, im.width, math.ceil(width * 0.45 + width * S3 / 2) + 2))   # down to the hex's bottom edge
         cell = Image.new("RGBA", (im.width, im.height + 18), (20, 26, 34, 255))
         cell.paste(im, (0, 0))
         ImageDraw.Draw(cell).text((5, im.height + 3), label, fill=(240, 220, 150, 255))
@@ -387,6 +467,15 @@ def write_catalogs(folder):
                "Barringer Crater", "Krakatoa", "Lake Victoria", "Great Barrier Reef", "Old Faithful", "El Dorado", "Fountain of Youth",
                "King Solomon's Mines", "Rock of Gibraltar"]
     catalog([(w, t("Mountain", wonder=w)) for w in wonders], os.path.join(folder, "catalog-wonders.jpg"), 6)
+    from render_units import AT_SEA, CIV_SEA, UNITS
+    nations = ["England", "France", "Rome", "China", "Egypt", "Greece"]
+    land = ["Grassland", "Plains", "Desert", "Tundra"]
+    units = []
+    for i, (name, spec) in enumerate(UNITS.items()):
+        slot = "civilian" if spec["civilian"] else "military"
+        base = "Coast" if spec["at"] in (AT_SEA, CIV_SEA) else land[i % 4]
+        units.append((name.replace("EmbarkedUnit-", "Embarked ").replace(" era", ""), t(base, **{slot: (name, nations[i % 6])})))
+    catalog(units, os.path.join(folder, "catalog-units.jpg"), 8, width=140)
 
 
 def main():
@@ -399,6 +488,7 @@ def main():
     ap.add_argument("--fallback", help="another tileset's Tiles folder to use for missing images")
     ap.add_argument("--catalog", action="store_true", help="write labelled catalog sheets instead of a map")
     ap.add_argument("--fog", action="store_true", help="show the map as a player sees it, with fog of war")
+    ap.add_argument("--flags", action="store_true", help="draw stand-ins for Unciv's unit flags over the units")
     ap.add_argument("--out", default=os.path.join(ROOT, "preview", "preview.jpg"))
     args = ap.parse_args()
     if args.catalog:
@@ -412,7 +502,7 @@ def main():
         if LAND_TYPE[t["base"]] == "Land" and not t.get("wonder") and c in (5, 6) and 3 <= r <= 6:
             rivers[(c, r)] = ["BottomRight"] if c == 5 else ["Bottom"]
     fog = fog_of_war(tiles, args.seed) if args.fog else None
-    save(render(tiles, args.cols, args.rows, args.width, Painter(args.fallback), rivers, fog), args.out)
+    save(render(tiles, args.cols, args.rows, args.width, Painter(args.fallback), rivers, fog, args.flags), args.out)
 
 
 if __name__ == "__main__":

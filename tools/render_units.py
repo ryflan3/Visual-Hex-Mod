@@ -70,7 +70,8 @@ C = {name: hexcol(h) for name, h in {
     "hull": "#3d2a1c", "deck": "#a27c52", "sail": "#f3efe2", "darksail": "#55575b", "rope": "#c9b48a",
     "straw": "#d8b65c", "foam": "#e8f4f8", "glass": "#3e5664", "grey": "#8a9096", "navygrey": "#7d858c",
     "darkgrey": "#4a4f55", "red": "#b33a2a", "stone": "#9c9890", "flame": "#ffb43c", "glow": "#9fe6ff",
-    "robe": "#6b4a2e", "black_robe": "#2a2626", "paper": "#f4ead2"}.items()}
+    "robe": "#6b4a2e", "black_robe": "#2a2626", "paper": "#f4ead2",
+    "yellow": "#e3ae22"}.items()}
 
 
 # ----------------------------------------------------------------------------- geometry
@@ -1408,6 +1409,131 @@ def u_settler(p):
     p.rect(15, -106, 3, 44, "wood", rx=1.3, rot=12)                                            # axe over the shoulder
     p.path("M20,-110 L30,-112 L30,-100 L22,-101 Z", "metal")
     arm(p, 13, -72, 16, -84, OWNER)
+
+
+# Era versions. Unciv looks for "<unit>-<era>" from the owner's era back to the first one, so the
+# medieval look above is repeated under its era's name: without it a medieval worker would get the
+# ancient image. Renaissance civs keep the medieval look and information-era civs the modern one.
+@unit("Worker-Ancient era", civilian=True)
+def u_worker_ancient(p):
+    ground(p)
+    p.ellipse(22, -6, 10, 6, "straw")                                                      # a basket
+    p.thin(14, -6, 30, -6, 1.0, "wood")
+    p.limb(16, -104, -30, -8, 3.2, "wood")                                                 # hoe, at work
+    p.path("M-30,-8 L-42,-4 L-38,2 L-28,-3 Z", "bronze")
+    figure(p, tunic=OWNER, pants="skin", boots="leather", belt="cloth")
+    hair(p)
+    p.rect(-10, -96, 20, 3.4, OWNER, rx=1.2)                                               # headband
+    arm(p, -13, -72, -10, -52, OWNER)
+    arm(p, 13, -72, 0, -70, OWNER)
+
+
+@unit("Worker-Industrial era", civilian=True)
+def u_worker_industrial(p):
+    ground(p, 34, -10)
+    wheel(p, -36, -8, 8, col="iron")                                                       # wheelbarrow of coal
+    p.path("M-44,-26 L-10,-28 L-14,-12 L-36,-12 Z", "darkwood")
+    p.ellipse(-27, -28, 15, 5, "black")
+    p.limb(-12, -20, -4, -30, 2.4, "darkwood")
+    figure(p, tunic=OWNER, pants="pants", boots="black", skirt=False, belt=None)
+    p.path("M-13,-74 L-3,-74 L-3,-50 L-13,-50 Z", "darkgrey")                              # waistcoat
+    p.path("M3,-74 L13,-74 L13,-50 L3,-50 Z", "darkgrey")
+    hat(p, "cap", "darkgrey")
+    p.ellipse(0, -84, 5, 1.6, "hair", ink=False)                                           # moustache
+    p.limb(6, -54, 22, -112, 3.2, "wood")                                                  # pickaxe on the shoulder
+    p.curve("M10,-116 Q22,-121 32,-110", 3.6, "iron")
+    arm(p, 13, -72, 11, -72, OWNER)
+    arm(p, -13, -72, -6, -32, OWNER)
+
+
+@unit("Worker-Modern era", civilian=True)
+def u_worker_modern(p):
+    ground(p, 44, -4)
+    tracks(p, -40, 30, 0, 16, wheel_col="darkgrey")
+    p.path("M-66,-34 Q-56,-20 -62,-2 L-54,-2 Q-48,-20 -58,-34 Z", "darkgrey")             # the blade
+    p.limb(-56, -14, -30, -20, 3, "yellow")
+    p.rect(-40, -36, 42, 22, "yellow", rx=3)                                                 # engine
+    for x in (-34, -28, -22):
+        p.thin(x, -33, x, -18, 1.2, "darkgrey")
+    p.rect(-26, -50, 3, 14, "black")                                                       # exhaust
+    p.circle(-20, -56, 5, "grey", alpha=0.5, ink=False)
+    p.rect(2, -64, 28, 50, OWNER, rx=2)                                                    # owner-coloured cab
+    p.rect(6, -58, 20, 18, "glass", rx=1.5)
+    p.rect(0, -68, 32, 6, OWNER, rx=2)                                                     # owner-coloured roof
+    p.rect(2, -30, 28, 5, OWNER, rx=1)
+    p.limb(30, -14, 42, -4, 3, "darkgrey")                                                 # ripper
+
+
+@unit("Settler-Ancient era", civilian=True)
+def u_settler_ancient(p):
+    """A family on the move: a woman with a pot on her head, a man with a staff and a bundle on his back."""
+    ground(p, 36, 0)
+    w = Shift(p, 16, 0, 0.92)
+    figure(w, tunic="linen", robe=OWNER, belt=None, wide=0.9)
+    hair(w)
+    w.ellipse(0, -104, 9, 6, "bronze")                                                    # the pot
+    w.ellipse(0, -109, 6, 2, "darkwood", ink=False)
+    arm(w, 13, -72, 6, -104, OWNER)
+    arm(w, -13, -72, -14, -52, OWNER)
+    m = Shift(p, -14, 0)
+    m.rect(-2, -88, 26, 30, "linen", rx=8)                                                 # bundle on his back
+    m.rect(4, -82, 14, 4, OWNER, ink=False)
+    figure(m, tunic=OWNER, pants="skin", boots="leather")
+    m.path("M-15,-76 L-4,-76 L-6,-30 L-19,-30 Z", "cloth")                                 # cloak
+    hair(m)
+    beard(m)
+    m.rect(-26, -116, 3.2, 116, "wood", rx=1.4)                                             # staff
+    arm(m, -13, -72, -24, -70, OWNER)
+    arm(m, 13, -72, 14, -86, OWNER)
+
+
+@unit("Settler-Industrial era", civilian=True)
+def u_settler_industrial(p):
+    """A covered wagon."""
+    ground(p, 70, 0)
+    horse(Shift(p, -34, 0, 0.82), col="horse")
+    p.limb(-20, -32, 0, -32, 2.6, "darkwood")
+    p.path("M0,-48 L60,-48 L58,-26 L4,-26 Z", OWNER)                                        # wagon box
+    p.path("M2,-48 Q-2,-92 16,-92 L48,-92 Q66,-92 60,-48 Z", "sail")                        # canvas cover
+    for x in (14, 30, 46):
+        p.thin(x, -91, x - 1, -49, 1.2, "rope")
+    wheel(p, 12, -16, 12)
+    wheel(p, 48, -18, 16)
+
+
+@unit("Settler-Modern era", civilian=True)
+def u_settler_modern(p):
+    """A long family station wagon with wood-panelled sides and the family's bags on the roof rack."""
+    ground(p, 58, 2)
+    p.path("M-58,-14 L-58,-28 Q-57,-34 -48,-35 L-30,-37 L-18,-53 Q-15,-56 -8,-56 L54,-56 Q60,-56 60,-50 "
+           "L61,-14 Z", OWNER)                                                             # the body
+    p.path("M-16,-51 L-8,-52 L-8,-39 L-27,-39 Z", "glass")                                 # windows
+    p.path("M-5,-52 L16,-52 L16,-39 L-5,-39 Z", "glass")
+    p.path("M19,-52 L36,-52 L36,-39 L19,-39 Z", "glass")
+    p.path("M39,-52 L55,-52 L56,-39 L39,-39 Z", "glass")
+    p.rect(-48, -32, 107, 11, "wood", rx=2)                                                 # wood panelling
+    p.thin(-48, -27, 59, -27, 0.9, "darkwood")
+    for x in (-8, 17, 38):
+        p.thin(x, -32, x, -21, 0.9, "darkwood")
+    p.rect(-61, -22, 8, 6, "steel", rx=2)                                                  # bumpers and lamps
+    p.rect(57, -22, 6, 6, "steel", rx=2)
+    p.circle(-56, -29, 2.6, "linen", ink=False)
+    for x in (-34, 40):
+        tyre(p, x, -10, 10)
+    p.thin(-6, -59, 54, -59, 1.6, "darkgrey")                                              # roof rack
+    for x in (-4, 24, 52):
+        p.thin(x, -59, x, -56, 1.4, "darkgrey")
+    p.rect(-4, -72, 24, 13, "leather", rx=2)                                               # suitcase
+    p.rect(4, -75, 8, 3, "darkwood", rx=1)
+    p.ellipse(32, -65, 12, 6, "olive")                                                     # duffel bag
+    p.ellipse(49, -64, 6, 5, "khaki")                                                      # rolled sleeping bag
+    p.rect(38, -69, 18, 10, "khaki", rx=4)
+    for x in (6, 32, 47):
+        p.thin(x, -74 if x == 6 else -71, x, -59, 0.9, "rope")
+
+
+unit("Worker-Medieval era", civilian=True)(u_worker)
+unit("Settler-Medieval era", civilian=True)(u_settler)
 
 
 @unit("Work Boats", civilian=True, at=CIV_SEA)

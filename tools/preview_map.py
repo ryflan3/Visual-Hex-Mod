@@ -467,16 +467,27 @@ def write_catalogs(folder):
                "Barringer Crater", "Krakatoa", "Lake Victoria", "Great Barrier Reef", "Old Faithful", "El Dorado", "Fountain of Youth",
                "King Solomon's Mines", "Rock of Gibraltar"]
     catalog([(w, t("Mountain", wonder=w)) for w in wonders], os.path.join(folder, "catalog-wonders.jpg"), 6)
-    from render_units import AT_SEA, CIV_SEA, UNITS
+    import render_units
+    base_units = list(render_units.UNITS)
+    import render_unique_units
     nations = ["England", "France", "Rome", "China", "Egypt", "Greece"]
     land = ["Grassland", "Plains", "Desert", "Tundra"]
-    units = []
-    for i, (name, spec) in enumerate(UNITS.items()):
-        slot = "civilian" if spec["civilian"] else "military"
-        base = "Coast" if spec["at"] in (AT_SEA, CIV_SEA) else land[i % 4]
-        units.append((name.replace("EmbarkedUnit-", "Embarked ").replace(" era", ""), t(base, **{slot: (name, nations[i % 6])})))
-    catalog(units, os.path.join(folder, "catalog-units.jpg"), 8, width=140)
-
+    for names, out, cols in ((base_units, "catalog-units.jpg", 8), (render_unique_units.UNIQUE, "catalog-unique-units.jpg", 9)):
+        units = []
+        for i, name in enumerate(names):
+            spec = render_units.UNITS[name]
+            slot = "civilian" if spec["civilian"] else "military"
+            base = "Coast" if spec["at"] in (render_units.AT_SEA, render_units.CIV_SEA) else land[i % 4]
+            units.append((name.replace("EmbarkedUnit-", "Embarked ").replace(" era", ""), t(base, **{slot: (name, nations[i % 6])})))
+        catalog(units, os.path.join(folder, out), cols, width=140)
+    on = {"Farm": t("Plains"), "Mine": t("Plains", "Hill", resource="Iron"), "Lumber mill": t("Grassland", "Forest")}
+    eras = [("Farm", e) for e in ("Ancient era", "Medieval era", "Industrial era", "Modern era")] + \
+           [("Mine", e) for e in ("Ancient era", "Industrial era", "Modern era")] + [("Lumber mill", e) for e in (None, "Industrial era", "Modern era")]
+    catalog([("%s, %s" % (n, (e or "earlier").replace(" era", "")), dict(on[n], improvement=n + ("-" + e if e else ""))) for n, e in eras],
+            os.path.join(folder, "catalog-improvement-eras.jpg"), 5)
+    unpillagable = ("Ancient ruins", "City ruins", "Barbarian encampment")
+    catalog([(label, dict(tile, improvement=tile["improvement"] + "-Pillaged")) for label, tile in imps
+             if tile["improvement"] not in unpillagable and label != "Mine"], os.path.join(folder, "catalog-pillaged.jpg"), 7)
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)

@@ -1,6 +1,6 @@
 # Visual Hex Satellite
 
-A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map look like satellite imagery. It has hill-shaded terrain, mountains that rise above their tiles, and soft transitions where terrains meet. It also redraws resources, improvements, cities and natural wonders in the same style, and every unit as a bold illustration. Readability comes first: resources are drawn larger than life so each one is recognizable at a glance, and units have ink outlines and their owner's colours so they stand out on any terrain.
+A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map look like satellite imagery. It has hill-shaded terrain, mountains that rise above their tiles, and soft transitions where terrains meet. It also redraws resources, improvements, cities and natural wonders in the same style, and every unit, including each civilization's unique units, as a bold illustration. Farms, mines, lumber mills, workers and settlers change with the eras, and pillaged improvements are shown burning. Readability comes first: resources are drawn larger than life so each one is recognizable at a glance, and units have ink outlines and their owner's colours so they stand out on any terrain.
 
 ![Sample map rendered with the tileset](preview/preview.jpg)
 
@@ -34,6 +34,14 @@ If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't l
 
 ![Improvements](preview/catalog-improvements.jpg)
 
+**Improvements through the eras.** A farm, mine or lumber mill in a city's territory changes as its owner moves through the eras:
+
+![Improvements through the eras](preview/catalog-improvement-eras.jpg)
+
+**Pillaged improvements**, burned and still smoking:
+
+![Pillaged improvements](preview/catalog-pillaged.jpg)
+
 **City centres**, which change as their owner moves through the eras:
 
 ![City centres](preview/catalog-cities.jpg)
@@ -46,6 +54,10 @@ If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't l
 
 ![Units](preview/catalog-units.jpg)
 
+**Unique units**, each civilization's own version of a regular unit:
+
+![Unique units](preview/catalog-unique-units.jpg)
+
 ## What's included
 
 | Group | Images | Notes |
@@ -55,24 +67,26 @@ If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't l
 | Rivers | 3 | `River-Bottom`, `River-BottomLeft`, `River-BottomRight` |
 | Edge transitions | 135 | See below |
 | Resources | 35 | Every resource that appears on the map |
-| Improvements | 25 | Every buildable improvement, ruins and barbarian camps, plus a combined `Wheat+Farm` |
+| Improvements | 38 | Every buildable improvement, ruins and barbarian camps, plus a combined `Wheat+Farm`. Farms, mines and lumber mills have 13 era versions. See below |
+| Pillaged improvements | 35 | Every improvement that can be pillaged, and each era version |
 | City centres | 8 | Ancient, Classical, Medieval, Renaissance, Industrial, Modern and Information eras, plus a default |
 | Natural wonders | 17 | All of the base game's wonders |
 | Map overlays | 22 | Selection hex, highlight, crosshair, fog-of-war mist, unexplored-edge fog, 8 border pieces, 7 movement arrows, road, railroad |
-| Units | 213 | 65 units and 6 boats for embarked units, each with two colour layers. See below |
+| Units | 390 | 65 units, 51 unique units, 8 era versions of the worker and settler, and 6 boats for embarked units, each with two colour layers. See below |
 
-All 493 images pack onto **two 2048×2048 texture sheets and one 2048×1024 sheet**. That's about 53 MB of graphics memory including mipmaps.
+All 718 images pack onto **four 2048×2048 texture sheets**. Identical images, such as an era version that repeats the base look, are stored once, so that's 578 distinct images and about 90 MB of graphics memory including mipmaps.
 
 Anything this tileset doesn't draw falls back to the built-in **HexaRealm** tileset. With the base game's rules that's nothing on the map itself. Units, resources, improvements or wonders added by other mods would come from HexaRealm.
 
 ### Units
 
-The unit set is called **Visual Hex Satellite**, like the tileset, and is chosen separately under **Options → Display → Unitset**. It has every land unit, ship, civilian, great person and spaceship part in the base game:
+The unit set is called **Visual Hex Satellite**, like the tileset, and is chosen separately under **Options → Display → Unitset**. It has every land unit, ship, civilian, great person and spaceship part in the base game, and every civilization's unique units:
 
 * **Owner's colours.** Each unit has its owner's main colour on a large, easy-to-spot part: tunics and coats up to the First World War, shields, banners, crests and horse barding, sails, turret bands and hull stripes, and the canopy of the paratrooper. Later infantry wear realistic olive and camouflage, with the colour on a scarf, armband and helmet band. Unciv tints the `-2` layer of each unit image with the owner's outer colour. `-1` is an empty placeholder because the layers must be numbered from 1.
 * **Placement.** Unciv draws a tile's unit flags in the middle of the hex, the military unit's in the upper half and the civilian's in the lower half. Military units stand on the right of the hex and civilians on the left, as in the HexaRealm units, so the flags don't cover them. Ships and vehicles are low, so they may reach under the military flag toward the middle.
 * **Embarked units** sail in a longboat, a two-masted transport from the Renaissance and a landing craft from the Modern era. Military boats carry soldiers and civilian boats carry cargo.
-* **Unique units** without their own image, such as the Legion or the Samurai, use the image of the unit they replace. That's how Unciv looks them up, so every civilization's army stays in the same style.
+* **Unique units** each have their own image: 51 of them, from the Maori Warrior and the Jaguar to the Panzer and the Khan. They wear the dress and carry the weapons of their civilization, so they're easy to tell from the unit they replace, which is what Unciv would show without them. The Zero and the B17 are aircraft, so they're never on the map.
+* **Workers and settlers change with the eras.** The worker hoes a field in the Ancient era, digs with a shovel from the Medieval era, carries a pickaxe and wheelbarrow in the Industrial era and drives a bulldozer from the Modern era. Settlers go from a family on foot to a handcart, a covered wagon and a station wagon. Unciv picks the unit image for its owner's era, or the latest earlier era that has one.
 * **Aircraft and missiles** have no images. Unciv never draws them on the map; they're listed on their city's or carrier's flag instead.
 
 ### Edge transitions
@@ -95,6 +109,8 @@ Unciv draws a tile's resource first and its improvement on top of it. So:
 * **Resources** sit in the middle of the tile on a cleared, contrasting patch with a soft drop shadow, so they stand out on any terrain, including forest and jungle. Each has its own colour and silhouette, and animals, fruit, crystals and nuggets are drawn much larger than life.
 * **Ring improvements.** Improvements that only ever exist on a resource (pasture, camp, plantation, mine, quarry, fishing boats, oil well, offshore platform) are drawn as a ring around the middle and leave the centre clear. The resource under them stays visible, and the ring shows that it's being worked. Tall parts such as mine headframes and drilling rigs stand on the north side, because height is drawn upward on screen.
 * **Farms** usually stand alone, so `Farm` covers the whole tile. `Wheat+Farm` keeps the wheat in the middle; Unciv uses that name when both are on the tile.
+* **Eras.** For a tile in a city's territory, Unciv looks for `<image>-<era>`, from the owner's era back to the first, before the plain image. So farms have ancient plots, the medieval strip fields, industrial fields with a barn and silo, and modern circular irrigated fields. Mines go from tunnels and a hand winch to the lift tower of the Industrial era and a modern open pit. Lumber mills go from a timber yard to a steam sawmill and a modern log yard. Where a later era goes back to the plain look, the plain image is repeated under that era's name, or the eras after an earlier image would keep it.
+* **Pillaged.** Unciv uses `<improvement>-Pillaged` when it exists, instead of tinting the tile red. Each pillaged image is the improvement charred and smouldering, with scorched ground, embers, broken beams and smoke. Improvements round a resource keep the middle clear, and at sea the scorch marks are oil slicks.
 * **Natural wonders** replace the whole tile. Their outer edge uses the ground of the terrain the wonder turns into, which is what the neighbouring tiles' edge images blend toward.
 
 ## How the images are made
@@ -104,6 +120,7 @@ Every image is generated by Python scripts, using NumPy and Pillow. There's no h
 * `tools/render_tiles.py` draws the terrain, features, rivers, edge transitions and map overlays.
 * `tools/render_items.py` draws the resources, improvements, city centres and natural wonders, with the same light and projection.
 * `tools/render_units.py` draws the units as flat illustrations: shapes with dark ink outlines and simple shading lit from the west, like the map, plus a soft dark edge and a ground shadow. It paints each unit's image and its owner-colour layer together, so whatever is drawn in front of a coloured part also hides it in the colour layer. It measures each unit first and then sizes and places it, so nothing is cut off at the image edge.
+* `tools/render_unique_units.py` draws the unique units with the same people, animals, ships and guns.
 
 How the images fit together:
 
@@ -121,15 +138,15 @@ tools/build.sh Mountain    # only re-render images whose path contains "Mountain
 
 You need Python 3 with `numpy` and `pillow`, plus Java 11 or newer. The script downloads the libGDX 1.14.2 texture packer (the version Unciv uses) into `.gdx/`. `tools/PackAtlas.java` packs with the same settings as Unciv's desktop packer: 2048 px pages, 8 px padding and mipmaps.
 
-Android can't pack images on the device, so the packed `game.atlas`, `game.png`, `game2.png`, `game3.png` and `Atlases.json` are committed. The **Pack texture atlas** GitHub workflow repacks and commits them whenever files under `Images/` change.
+Android can't pack images on the device, so the packed `game.atlas`, `game.png` to `game4.png` and `Atlases.json` are committed. The **Pack texture atlas** GitHub workflow repacks and commits them whenever files under `Images/` change.
 
 ## Known limitations
 
 * **In-game testing.** This version was checked with the preview tool, not yet in Unciv itself.
 * **Edge order.** Unciv draws edge images after terrain features, so a beach or blend along a forest tile's edge paints over the trees right at that edge. Fixing this needs a change in Unciv itself: drawing edge images before features.
 * **Mountain cliffs.** Cliffs only appear on the south sides of mountains. On the north sides the mountain rises over the edge, and an edge image would paint across it.
-* **Pillaged improvements.** There are no separate pillaged images, so the game shows the normal image with its red pillage tint.
-* **Era changes.** Only city centres and embarked boats change with the era. Other improvements and units keep one look all game.
+* **Era changes.** City centres, embarked boats, farms, mines, lumber mills, workers and settlers change with the era. Other improvements and units keep one look all game.
+* **Pillaged roads.** A pillaged road or railroad still gets the game's red tint, as there's no pillaged road image.
 * **Unit poses.** Units have one pose each. Unciv doesn't animate unit images.
 
 To list the mod in Unciv's in-game mod browser, add the `unciv-mod` topic to the GitHub repository.

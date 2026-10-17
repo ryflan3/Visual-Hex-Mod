@@ -935,7 +935,7 @@ RING_IMPROVEMENTS = {"Pasture": imp_pasture, "Camp": imp_camp, "Plantation": imp
 
 
 # ============================================================================ improvements (whole tile)
-def farm_fields(cv, P, rng, keep_center=False):
+def farm_fields(cv, P, rng):
     ang = 0.35
     ca, sa = math.cos(ang), math.sin(ang)
     x, y = cv.u * ca - cv.v * sa, cv.u * sa + cv.v * ca
@@ -951,10 +951,7 @@ def farm_fields(cv, P, rng, keep_center=False):
     rgb = mix(rgb, C(.16, .25, .11), smooth(0.05, 0.015, edge) * 0.9)
     n = fbm(cv.a, cv.b, 5, 3, 112)
     d = np.hypot(cv.u, cv.v * 1.05) + (n - 0.5) * 0.12
-    m = smooth(0.9, 0.78, d) * footprint(cv)
-    if keep_center:
-        m = m * smooth(R0 - 0.02, R0 + 0.05, d)
-    P = over(P, premult(rgb, m))
+    P = over(P, premult(rgb, smooth(0.9, 0.78, d) * footprint(cv)))
     for u, v, w, dd, h, wall, roof in [(0.36, -0.5, 0.15, 0.08, 0.04, C(.84, .80, .72), C(.58, .25, .16)),
                                         (0.53, -0.42, 0.08, 0.12, 0.045, C(.62, .20, .14), C(.36, .34, .33)),
                                         (0.28, -0.38, 0.07, 0.06, 0.035, C(.82, .78, .70), C(.55, .25, .16))]:
@@ -968,19 +965,19 @@ def imp_farm(cv, P, rng):
 
 
 def imp_lumber_mill(cv, P, rng):
-    P = patch(cv, P, 0.62, C(.46, .36, .24), 121, halo=0.3)
-    for u, v in scatter(rng, 14, 0.58, 0.08, rmin=0.35):
-        blob(cv, P, u, v, 0.02, 0.02, C(.62, .48, .30), lift=0.01)
-    box(cv, P, -0.12, -0.12, 0.34, 0.13, 0.07, C(.55, .38, .22), C(.36, .34, .33), kind="gable")
-    for row in range(3):
-        for k in range(5 - row):
-            u = 0.12 + k * 0.045 + row * 0.022
-            v = 0.18 - row * 0.012
-            blob(cv, P, u, v - K * row * 0.04, 0.022, 0.04, C(.45, .30, .17), lift=0.02)
-            blob(cv, P, u, v - K * row * 0.04 + 0.03, 0.02, 0.012, C(.80, .66, .45), lift=0.02, flat=True)
-    for k in range(4):
-        blob(cv, P, -0.3 + k * 0.08, 0.25, 0.09, 0.018, C(.50, .34, .20), lift=0.015, shadow_h=0.015)
-    smoke(cv, P, -0.25, -0.15, 0.13, n=4, alpha=0.4)
+    """A timber yard: a thatched saw shed, a sawpit, split logs and a cart."""
+    P = patch(cv, P, 0.6, C(.48, .38, .26), 1001, halo=0.3)
+    for u, v in scatter(rng, 14, 0.56, 0.08, rmin=0.35):
+        blob(cv, P, u, v, 0.02, 0.02, C(.66, .52, .32), lift=0.01)
+    box(cv, P, -0.15, -0.2, 0.3, 0.13, 0.06, C(.54, .40, .26), C(.74, .62, .34), kind="gable")
+    for k in range(3):
+        blob(cv, P, 0.05 + k * 0.03, 0.02, 0.1, 0.018, C(.52, .36, .20), lift=0.02 + 0.03 * k, shadow_h=0.02, ang=0.0)
+    poly(cv, P, [(-0.2, 0.18), (0.0, 0.18), (0.0, 0.26), (-0.2, 0.26)], C(.12, .09, .07))               # sawpit
+    blob(cv, P, -0.1, 0.22, 0.13, 0.014, C(.62, .44, .26), lift=0.02)
+    box(cv, P, 0.28, 0.3, 0.12, 0.07, 0.03, C(.50, .36, .22), C(.50, .36, .22), kind="flat")             # cart
+    for du in (-0.04, 0.04):
+        blob(cv, P, 0.28 + du, 0.34, 0.025, 0.012, C(.30, .22, .14), flat=True)
+    smoke(cv, P, -0.3, -0.24, 0.1, n=4, alpha=0.35)
     return P
 
 
@@ -1215,24 +1212,397 @@ FULL_IMPROVEMENTS = {"Farm": imp_farm, "Lumber mill": imp_lumber_mill, "Trading 
                      "Barbarian encampment": imp_barbarian}
 
 
-def render_improvement(name, fn):
-    rel = "Tiles/" + name
-    if not rt.wanted(rel):
-        return
-    cv = canvas(IMP_W, overhang=110)
-    P = fn(cv, cv.empty(), res_rng(name))
-    finish(cv, P, rel)
+# ============================================================================ era improvements
+# Unciv shows a city's tiles with "<image>-<era>" when there is one, trying the owner's era first and
+# then each earlier one, and the plain image only when none matches. So an era image covers the eras
+# after it until the next one, and the base look is repeated under the era it belongs to, or the
+# eras after an earlier image would never get it back.
+def hut(cv, P, u, v, r=0.055, roof=C(.70, .58, .32), wall=C(.62, .50, .36)):
+    """A round hut with a conical thatched roof."""
+    shadow(cv, P, u, v, r, r * 0.9, 0.06)
+    cyl(cv, P, u, v, r * 0.85, 0.025, wall, wall * 0.9, shadow_a=0.0)
+    cone(cv, P, u, v - K * 0.025, r, 0.07, roof, shadow_a=0.0)
 
 
-def render_wheat_farm():
-    rel = "Tiles/Wheat+Farm"
-    if not rt.wanted(rel):
+def plots(cv, P, seed, cells=7, palette=None, wall=None, rmax=0.84, center_clear=0.0):
+    """Small irregular fields, like a Voronoi patchwork, separated by low walls or hedges."""
+    rng = np.random.default_rng(seed)
+    pts = np.array([(rng.uniform(-1, 1), rng.uniform(-0.9, 0.9)) for _ in range(cells * cells)])
+    uu, vv = cv.u[..., None], cv.v[..., None]
+    wa, wb = warp(cv.a, cv.b, 0.08, 6, seed)
+    d = np.hypot(uu + (wa - cv.a)[..., None] * 0.6 - pts[:, 0], vv + (wb - cv.b)[..., None] * 0.6 - pts[:, 1])
+    order = np.sort(d, axis=-1)
+    idx = np.argmin(d, axis=-1)
+    edge = order[..., 1] - order[..., 0]
+    palette = palette or [C(.56, .44, .28), C(.50, .54, .26), C(.66, .58, .34), C(.44, .50, .22), C(.60, .48, .32)]
+    rgb = np.zeros(cv.shape + (3,))
+    for i in range(len(pts)):
+        rgb[idx == i] = palette[i % len(palette)] * rng.uniform(0.9, 1.08)
+    ang = (idx % 3) * 0.9
+    rows = np.sin((cv.u * np.cos(ang) + cv.v * np.sin(ang)) * 70)
+    rgb = rgb * (0.9 + 0.1 * rows)[..., None] * rt.fine(cv, seed + 3, 0.14)
+    rgb = mix(rgb, wall if wall is not None else C(.26, .30, .16), smooth(0.03, 0.012, edge) * 0.85)
+    n = fbm(cv.a, cv.b, 5, 3, seed + 4)
+    dm = np.hypot(cv.u, cv.v * 1.05) + (n - 0.5) * 0.12
+    m = smooth(rmax, rmax - 0.12, dm) * footprint(cv)
+    if center_clear:
+        m = m * smooth(center_clear, center_clear + 0.06, dm)
+    return over(P, premult(rgb, m))
+
+
+def farm_ancient(cv, P, rng):
+    P = plots(cv, P, 501, cells=6, wall=C(.42, .36, .26), rmax=0.8)
+    seg(cv, P, [(-0.8, 0.35), (-0.3, 0.1), (0.1, -0.2), (0.35, -0.45)], 0.035, C(.62, .52, .38), alpha=0.8)   # a dirt path
+    for u, v in [(0.32, -0.55), (0.48, -0.48), (0.42, -0.36)]:
+        hut(cv, P, u, v, 0.07)
+    seg(cv, P, [(0.25, -0.62), (0.6, -0.62), (0.62, -0.3), (0.26, -0.28), (0.25, -0.62)], 0.012, C(.42, .30, .18), lift=0.02)
+    P = trees(cv, P, [(0.12, -0.6), (0.66, -0.2), (-0.62, -0.4)], rng, r=(0.045, 0.06), ht=(0.06, 0.08))
+    for u, v, ang in [(-0.2, 0.32, 0.3), (-0.05, 0.38, 0.4)]:
+        animal(cv, P, u, v, ang, 0.045, 0.026, C(.52, .38, .24), head=C(.40, .28, .18))
+    return P
+
+
+def farm_industrial(cv, P, rng):
+    """Big square fields, hedgerows, a red barn, a farmhouse, a silo and a wind pump."""
+    ang = 0.2
+    x = cv.u * math.cos(ang) - cv.v * math.sin(ang)
+    y = cv.u * math.sin(ang) + cv.v * math.cos(ang)
+    fx, fy = np.floor(x * 1.6 + 0.5), np.floor(y * 1.7 + 0.3)
+    pick = (fx * 3 + fy * 5) % 4
+    crops = [C(.80, .70, .34), C(.42, .58, .22), C(.62, .50, .32), C(.70, .72, .34)]
+    rgb = np.zeros(cv.shape + (3,))
+    for i, c in enumerate(crops):
+        rgb[pick == i] = c
+    stripes = np.sin(x * 2 * math.pi * 18 + pick)
+    rgb = rgb * (0.9 + 0.1 * stripes)[..., None] * rt.fine(cv, 601, 0.1)
+    ex = np.abs(x * 1.6 + 0.5 - np.round(x * 1.6 + 0.5))
+    ey = np.abs(y * 1.7 + 0.3 - np.round(y * 1.7 + 0.3))
+    hedge = smooth(0.035, 0.015, np.minimum(ex, ey))
+    rgb = mix(rgb, C(.18, .30, .12), hedge)
+    n = fbm(cv.a, cv.b, 5, 3, 602)
+    d = np.hypot(cv.u, cv.v * 1.05) + (n - 0.5) * 0.1
+    P = over(P, premult(rgb, smooth(0.9, 0.8, d) * footprint(cv)))
+    poly(cv, P, [(0.12, -0.7), (0.72, -0.7), (0.72, -0.24), (0.12, -0.24)], C(.56, .52, .40), alpha=0.9)   # farmyard
+    box(cv, P, 0.30, -0.52, 0.2, 0.13, 0.07, C(.66, .16, .12), C(.36, .30, .28), kind="gable")              # barn
+    box(cv, P, 0.58, -0.56, 0.11, 0.09, 0.05, C(.92, .90, .84), C(.30, .30, .34))                           # farmhouse
+    cyl(cv, P, 0.48, -0.36, 0.045, 0.16, C(.82, .80, .74), C(.55, .54, .52))                                # silo
+    blob(cv, P, 0.48, -0.36, 0.045, 0.042, C(.55, .54, .52), lift=0.165)
+    u, v, h = 0.2, -0.32, 0.26                                                                               # wind pump
+    for du in (-0.025, 0.025):
+        seg(cv, P, [(u + du, v), (u, v - K * h)], 0.008, C(.40, .40, .42))
+    for k in range(8):
+        a2 = k * math.pi / 4
+        seg(cv, P, [(u, v - K * h), (u + 0.06 * math.cos(a2), v - K * h + 0.06 * math.sin(a2))], 0.01, C(.85, .85, .82))
+    for u2, v2 in [(0.36, -0.30), (0.62, -0.32)]:
+        animal(cv, P, u2, v2, 0.2, 0.035, 0.02, C(.30, .26, .22))
+    P = trees(cv, P, [(0.08, -0.62), (0.74, -0.42), (-0.5, -0.1), (-0.12, 0.3)], rng, r=(0.04, 0.055), ht=(0.06, 0.08))
+    return P
+
+
+def pivot(cv, P, u, v, r, crop, seed):
+    """A centre-pivot irrigated field: a green disc with wheel tracks and the pivot arm."""
+    d = np.hypot(cv.u - u, cv.v - v)
+    th = np.arctan2(cv.v - v, cv.u - u)
+    rings = 0.92 + 0.08 * np.sin(d * 140)
+    harvested = smooth(0.0, 0.3, np.sin(th * 1 + seed)) * 0.5
+    rgb = mix(col_arr(crop, cv.shape), C(.72, .64, .40), harvested) * rings[..., None] * rt.fine(cv, seed, 0.1)
+    P = over(P, premult(rgb, smooth(r, r - 0.012, d) * footprint(cv)))
+    a = seed * 1.7
+    seg(cv, P, [(u, v), (u + r * 0.97 * math.cos(a), v + r * 0.97 * math.sin(a))], 0.01, C(.85, .86, .88), lift=0.015)
+    blob(cv, P, u, v, 0.015, 0.015, C(.6, .6, .62), lift=0.02)
+    return P
+
+
+def farm_modern(cv, P, rng):
+    n = fbm(cv.a, cv.b, 5, 3, 701)
+    d = np.hypot(cv.u, cv.v * 1.05) + (n - 0.5) * 0.1
+    P = over(P, premult(ground(cv, C(.66, .60, .42), 702, 0.15), smooth(0.92, 0.82, d) * footprint(cv)))
+    for (u, v, r, crop, s) in [(-0.38, -0.1, 0.36, C(.34, .56, .20), 1), (0.32, 0.36, 0.32, C(.46, .62, .22), 2),
+                               (-0.2, 0.52, 0.2, C(.60, .62, .26), 3), (0.62, -0.05, 0.2, C(.40, .58, .22), 4)]:
+        P = pivot(cv, P, u, v, r, crop, s)
+    poly(cv, P, [(0.08, -0.72), (0.66, -0.72), (0.66, -0.36), (0.08, -0.36)], C(.62, .62, .60))           # concrete yard
+    for k in range(4):                                                                                   # grain bins
+        u = 0.16 + k * 0.1
+        cyl(cv, P, u, -0.6, 0.045, 0.1, C(.80, .82, .84), C(.70, .72, .74))
+        cone(cv, P, u, -0.6 - K * 0.1, 0.047, 0.04, C(.82, .84, .86), shadow_a=0.0)
+    box(cv, P, 0.36, -0.44, 0.24, 0.09, 0.06, C(.70, .72, .74), C(.40, .48, .56), kind="gable")           # machine shed
+    box(cv, P, 0.58, -0.44, 0.08, 0.05, 0.05, C(.84, .82, .78), C(.32, .32, .34))
+    box(cv, P, 0.16, -0.42, 0.06, 0.035, 0.03, C(.20, .55, .25), C(.20, .55, .25), kind="flat")           # a tractor
+    return P
+
+
+def mine_ancient(cv, P, rng):
+    """Adits dug into the ground with timber frames, a windlass over a shaft, spoil heaps and huts."""
+    P = ring_ground(cv, P, C(.54, .46, .36), 801, alpha=0.6)
+    for u, v in [(-0.48, -0.42), (0.5, -0.4)]:                              # adits, with timber posts and a lintel
+        blob(cv, P, u, v, 0.075, 0.05, C(.08, .06, .05), flat=True)
+        for du in (-0.07, 0.07):
+            seg(cv, P, [(u + du, v + 0.02), (u + du, v + 0.02 - K * 0.07)], 0.014, C(.44, .30, .18))
+        seg(cv, P, [(u - 0.085, v + 0.02 - K * 0.07), (u + 0.085, v + 0.02 - K * 0.07)], 0.016, C(.44, .30, .18))
+    for u, v, s in [(-0.66, 0.08, 0.9), (0.66, 0.12, 0.8), (-0.3, 0.6, 0.7), (0.3, 0.62, 0.65)]:
+        cone(cv, P, u, v, 0.1 * s, 0.08 * s, C(.56, .48, .38))
+    u, v, h = 0.0, -0.62, 0.14                                              # windlass
+    blob(cv, P, u, v + 0.03, 0.06, 0.04, C(.06, .05, .04), flat=True)
+    for du in (-0.06, 0.06):
+        seg(cv, P, [(u + du - 0.02, v + 0.03), (u + du, v - K * h)], 0.012, C(.50, .34, .20))
+        seg(cv, P, [(u + du + 0.02, v + 0.03), (u + du, v - K * h)], 0.012, C(.50, .34, .20))
+    seg(cv, P, [(u - 0.07, v - K * h), (u + 0.07, v - K * h)], 0.02, C(.42, .28, .16))
+    seg(cv, P, [(u, v - K * h), (u, v + 0.02)], 0.004, C(.80, .70, .50))
+    for u2, v2 in [(-0.25, -0.66), (0.26, -0.66)]:
+        hut(cv, P, u2, v2, 0.05)
+    for u2 in (-0.14, 0.14):
+        blob(cv, P, u2, 0.55, 0.03, 0.022, C(.62, .48, .28), lift=0.02, shadow_h=0.02)    # baskets of ore
+    return P
+
+
+def mine_modern(cv, P, rng):
+    """An open pit: stepped benches on the far side, a haul road, big trucks, a conveyor and a plant."""
+    r = np.hypot(cv.u, cv.v * 1.08)
+    steps = np.floor(np.clip((r - (R0 + 0.06)) / 0.07, 0, 5))
+    h = -0.035 * steps
+    base = mix(C(.62, .52, .42), C(.74, .66, .56), smooth(0.3, 0.7, fbm(cv.a, cv.b, 9, 3, 901)))
+    lit = rt.lit(base, rt.shade(h, cv.spx, 2.2), lo=0.45)
+    bench = np.abs((r - (R0 + 0.06)) / 0.07 - np.round((r - (R0 + 0.06)) / 0.07))
+    lit = mix(lit, C(.50, .42, .34), smooth(0.08, 0.02, bench) * 0.3)
+    m = ring_mask(cv, R0 + 0.04, 0.88, 901)
+    P = over(P, premult(lit, m))
+    seg(cv, P, [(0.86, 0.12), (0.74, 0.34), (0.56, 0.5), (0.36, 0.56)], 0.05, C(.58, .50, .42), alpha=0.9)   # haul ramp
+    for u, v, ang in [(0.66, 0.36, 2.3), (-0.6, -0.3, -0.6)]:              # haul trucks
+        ca, sa = math.cos(ang), math.sin(ang)
+        L, W = 0.09, 0.05
+        shadow(cv, P, u, v, L, W, 0.06, ang=ang)
+        poly(cv, P, [(u + L * ca - W * sa, v + L * sa + W * ca), (u + L * ca + W * sa, v + L * sa - W * ca),
+                     (u - L * ca + W * sa, v - L * sa - W * ca), (u - L * ca - W * sa, v - L * sa + W * ca)],
+             C(.95, .72, .12), lift=0.045)
+        poly(cv, P, [(u - 0.01 * ca - 0.04 * sa, v - 0.01 * sa + 0.04 * ca), (u - 0.01 * ca + 0.04 * sa, v - 0.01 * sa - 0.04 * ca),
+                     (u - 0.08 * ca + 0.04 * sa, v - 0.08 * sa - 0.04 * ca), (u - 0.08 * ca - 0.04 * sa, v - 0.08 * sa + 0.04 * ca)],
+             C(.58, .48, .40), lift=0.05)
+    seg(cv, P, [(-0.15, -0.5), (0.0, -0.62), (0.3, -0.7)], 0.025, C(.35, .35, .38), lift=0.08)          # conveyor
+    seg(cv, P, [(-0.15, -0.5), (0.0, -0.62), (0.3, -0.7)], 0.01, C(.55, .45, .35), lift=0.085)
+    box(cv, P, 0.42, -0.62, 0.22, 0.12, 0.12, C(.70, .72, .74), C(.42, .46, .50), kind="flat")          # processing plant
+    cyl(cv, P, 0.58, -0.5, 0.05, 0.14, C(.84, .84, .82), C(.6, .6, .6))
+    cone(cv, P, -0.5, -0.6, 0.1, 0.09, C(.60, .52, .44))                                                # stockpiles
+    cone(cv, P, -0.68, -0.22, 0.09, 0.08, C(.28, .26, .26))
+    return P
+
+
+def lumber_industrial(cv, P, rng):
+    """A steam sawmill: brick mill with a tall chimney, rows of sawn planks and a rail siding."""
+    P = patch(cv, P, 0.66, C(.44, .40, .34), 1101, halo=0.3)
+    seg(cv, P, [(-0.66, 0.42), (0.66, 0.42)], 0.03, C(.32, .30, .28))
+    seg(cv, P, [(-0.66, 0.41), (0.66, 0.41)], 0.006, C(.75, .75, .78))
+    seg(cv, P, [(-0.66, 0.43), (0.66, 0.43)], 0.006, C(.75, .75, .78))
+    for k in range(3):
+        box(cv, P, -0.4 + k * 0.17, 0.41, 0.14, 0.06, 0.04, C(.30, .26, .24), C(.36, .32, .28), kind="flat")
+    box(cv, P, -0.18, -0.24, 0.42, 0.16, 0.1, C(.62, .32, .22), C(.34, .34, .36), kind="gable")
+    cyl(cv, P, 0.08, -0.36, 0.03, 0.42, C(.54, .28, .20), C(.15, .15, .15))
+    smoke(cv, P, 0.08, -0.36, 0.45, n=7, col=C(.75, .75, .75), size=0.045, drift=0.04, alpha=0.55)
+    for row in range(3):                                                                                  # plank stacks
+        for col in range(3):
+            u, v = 0.18 + col * 0.14, -0.06 + row * 0.13
+            box(cv, P, u, v, 0.11, 0.07, 0.04 + 0.01 * ((row + col) % 2), C(.70, .56, .38), C(.86, .74, .54), kind="flat")
+    for k in range(5):
+        blob(cv, P, -0.5 + k * 0.08, 0.16, 0.1, 0.02, C(.50, .34, .20), lift=0.02, shadow_h=0.02)
+    return P
+
+
+def lumber_modern(cv, P, rng):
+    """A log yard: huge decks of logs, a log stacker, metal sheds and a truck."""
+    P = patch(cv, P, 0.7, C(.50, .46, .40), 1201, halo=0.3)
+    for row in range(3):
+        for k in range(2):
+            u, v = -0.42 + k * 0.42, -0.02 + row * 0.18
+            shadow(cv, P, u, v, 0.18, 0.06, 0.06)
+            for j in range(9):
+                blob(cv, P, u - 0.16 + j * 0.04, v + 0.01 * (j % 2), 0.025, 0.06, C(.46, .32, .18), lift=0.03 + 0.012 * (j % 3))
+                blob(cv, P, u - 0.16 + j * 0.04, v + 0.05, 0.02, 0.012, C(.84, .70, .48), lift=0.03, flat=True)
+    box(cv, P, -0.1, -0.44, 0.44, 0.16, 0.1, C(.72, .74, .76), C(.36, .52, .62), kind="gable")
+    box(cv, P, 0.36, -0.46, 0.18, 0.12, 0.08, C(.78, .78, .76), C(.56, .58, .60), kind="flat")
+    u, v = 0.52, 0.1                                                                                     # log stacker
+    shadow(cv, P, u, v, 0.06, 0.04, 0.08)
+    box(cv, P, u, v, 0.08, 0.06, 0.06, C(.95, .70, .12), C(.95, .72, .12), kind="flat")
+    seg(cv, P, [(u, v - K * 0.06), (u - 0.12, v - K * 0.12)], 0.016, C(.95, .70, .12), lift=0.0)
+    box(cv, P, 0.3, 0.46, 0.18, 0.05, 0.04, C(.80, .20, .15), C(.80, .20, .15), kind="flat")             # truck
+    for j in range(4):
+        blob(cv, P, 0.26 + j * 0.035, 0.45, 0.014, 0.04, C(.46, .32, .18), lift=0.05)
+    return P
+
+
+ERA_IMPROVEMENTS = {   # improvement: [(era, drawing, fires when pillaged)]
+    "Farm": [("Ancient era", farm_ancient, [(0.40, -0.48, 0.06, 1.0), (-0.3, 0.1, 0.0, 0.8), (0.15, 0.4, 0.0, 0.7)]),
+             ("Medieval era", None, None),
+             ("Industrial era", farm_industrial, [(0.30, -0.52, 0.07, 1.0), (0.58, -0.56, 0.05, 0.8), (-0.3, 0.2, 0.0, 0.8)]),
+             ("Modern era", farm_modern, [(0.36, -0.44, 0.06, 1.0), (0.2, -0.6, 0.1, 0.7), (-0.38, -0.1, 0.0, 0.8)])],
+    "Mine": [("Ancient era", mine_ancient, [(-0.25, -0.66, 0.04, 0.8), (0.26, -0.66, 0.04, 0.8), (0.0, -0.62, 0.08, 0.8)]),
+             ("Industrial era", None, None),
+             ("Modern era", mine_modern, [(0.42, -0.62, 0.1, 1.0), (-0.6, -0.3, 0.05, 0.8), (0.66, 0.36, 0.05, 0.8)])],
+    "Lumber mill": [("Industrial era", lumber_industrial, [(-0.18, -0.24, 0.1, 1.1), (0.32, 0.06, 0.05, 0.9)]),
+                    ("Modern era", lumber_modern, [(-0.1, -0.44, 0.1, 1.1), (-0.3, 0.12, 0.06, 0.9), (0.3, 0.3, 0.06, 0.8)])],
+}
+
+
+def wheat_farm(fn):
+    """Wheat in the middle of a farm drawn by fn, the farm cleared round it. Unciv shows "Wheat+Farm"
+    instead of the two images when both are on a tile. The wheat and the farm are kept as separate
+    layers too (under, layer), so that pillaging burns the farm and leaves the wheat."""
+    def layer(cv, P, rng):
+        F = fn(cv, P, rng)
+        n = fbm(cv.a, cv.b, 5, 3, 112)
+        d = np.hypot(cv.u, cv.v * 1.05) + (n - 0.5) * 0.12
+        return F * smooth(R0 - 0.02, R0 + 0.05, d)[..., None]
+
+    def under(cv):
+        return r_wheat(Zoom(cv, RES_ZOOM), cv.empty(), res_rng("Wheat"))
+
+    def draw(cv, P, rng):
+        return over(over(P, under(cv)), layer(cv, cv.empty(), rng))
+    draw.layer, draw.under = layer, under
+    return draw
+
+
+def round_wheat(fires):
+    """The same fires, moved out of the middle where the wheat is."""
+    out = []
+    for u, v, h, s in fires:
+        r = math.hypot(u, v)
+        k = max(1.0, 0.62 / max(r, 1e-6))
+        out.append((u * k, v * k, h, s))
+    return out
+
+
+# ============================================================================ pillaged improvements
+# Unciv tints a pillaged tile red unless the tileset has "<improvement>-Pillaged"; for a city's tile
+# it then looks for "<improvement>-Pillaged-<era>" too, like any other image.
+def flames(cv, P, u, v, h, rng, s=1.0):
+    """A fire: a glow on the ground, licking flames and a column of dark smoke drifting east."""
+    blob(cv, P, u, v, 0.16 * s, 0.13 * s, C(1.0, .42, .06), lift=h, alpha=0.3, flat=True)
+    for k in range(7):
+        du, dv = rng.uniform(-0.045, 0.045) * s, rng.uniform(-0.02, 0.02) * s
+        r = rng.uniform(0.028, 0.042) * s
+        lift = h + rng.uniform(0.0, 0.05) * s
+        blob(cv, P, u + du, v + dv, r, r * 1.35, C(1.0, .45, .08), lift=lift, shade_lo=0.85)
+        blob(cv, P, u + du, v + dv + 0.004, r * 0.55, r * 0.75, C(1.0, .85, .40), lift=lift + 0.01 * s, shade_lo=1.0)
+    for k in range(9):
+        r = (0.05 + 0.017 * k) * s
+        blob(cv, P, u + 0.045 * k * s + rng.uniform(-0.01, 0.01), v - 0.012 * k, r, r * 0.95,
+             C(.20, .19, .18) * (1 + 0.1 * k), lift=h + 0.08 * s + 0.085 * k * s, alpha=0.82 * (1 - k / 11), shade_lo=0.7)
+
+
+def pillage(cv, P, rng, fires, clear=0.0, water=False, char=0.92, seed=7000, debris=12):
+    """Burn an improvement: char and ash where the fire spread, the rest dulled and sooty, scorched
+    ground (or an oil slick, at sea) round each fire, embers in the ashes, broken beams, and fires
+    with smoke where it still burns. `clear` keeps the middle of the hex clear, for improvements
+    drawn round a resource; char is how black the burnt parts get (stone only blackens a little)."""
+    a = P[..., 3:4]
+    rgb = np.where(a > 1e-6, P[..., :3] / np.maximum(a, 1e-6), 0.0)
+    wa, wb = warp(cv.a, cv.b, 0.5, 2, seed)
+    n = fbm(wa, wb, 3, 4, seed + 1)
+    burn = smooth(0.42, 0.52, n)
+    speck = fbm(cv.a, cv.b, 24, 2, seed + 2)
+    lum = rgb.mean(-1, keepdims=True)
+    ash = mix(C(.10, .085, .07), C(.24, .22, .20), smooth(0.45, 0.75, speck)) * (0.7 + 0.6 * lum)
+    dull = mix(rgb, np.repeat(lum, 3, -1), 0.5) * np.array([0.76, 0.70, 0.64])
+    rgb = mix(dull, ash, burn * char)
+    front = smooth(0.40, 0.42, n) * smooth(0.45, 0.43, n) * smooth(0.45, 0.6, fbm(cv.a, cv.b, 9, 2, seed + 5))
+    rgb = mix(rgb, C(.95, .36, .06), front * 0.5)                    # the edge of the burn still smoulders
+    out = premult(rgb, a[..., 0])
+    # scorch marks on the ground round each fire, under the drawing
+    d_mid = np.hypot(cv.u, cv.v * 1.08)
+    scorch = np.zeros(cv.shape)
+    for u, v, h, s in fires:
+        n = fbm(cv.a, cv.b, 7, 3, seed + int(u * 100) + int(v * 1000))
+        d = np.hypot(cv.u - u, (cv.v - v) * 1.15) + (n - 0.5) * 0.12
+        scorch = np.maximum(scorch, smooth(0.24 * s, 0.08 * s, d))
+    scorch *= footprint(cv) * (smooth(clear, clear + 0.06, d_mid) if clear else 1.0)
+    if water:
+        ground_rgb = mix(C(.04, .05, .06), C(.20, .18, .30), smooth(0.6, 0.8, speck) * 0.6)
+    else:
+        ground_rgb = mix(C(.11, .09, .07), C(.24, .21, .18), smooth(0.45, 0.75, speck))
+    out = over(premult(ground_rgb, scorch * (0.6 if water else 0.8)), out)
+    # embers glowing in the ashes
+    for _ in range(0 if water else 40):
+        u, v = rng.uniform(-0.85, 0.85), rng.uniform(-0.75, 0.75)
+        iy, ix = cv.px(u, v)[1], cv.px(u, v)[0]
+        iy, ix = int(min(max(iy, 0), cv.shape[0] - 1)), int(min(max(ix, 0), cv.shape[1] - 1))
+        if rt.hex_edge_dist(u, v) < 0.05 or (clear and math.hypot(u, v * 1.08) < clear + 0.04):
+            continue
+        if burn[iy, ix] > 0.5 and a[iy, ix, 0] > 0.5 or scorch[iy, ix] > 0.5:
+            r = rng.uniform(0.006, 0.012)
+            blob(cv, out, u, v, r * 2.2, r * 2.2, C(1.0, .4, .05), alpha=0.35, flat=True)
+            blob(cv, out, u, v, r, r, C(1.0, .62, .18), flat=True)
+    # broken, charred beams
+    for u, v, h, s in fires:
+        for _ in range(debris):
+            ang = rng.uniform(0, math.pi)
+            r, t = rng.uniform(0.05, 0.2) * s, rng.uniform(0, 2 * math.pi)
+            cu, cvv = u + r * math.cos(t), v + r * math.sin(t) * 0.9
+            if rt.hex_edge_dist(cu, cvv) < 0.06 or (clear and math.hypot(cu, cvv * 1.08) < clear + 0.04):
+                continue
+            ln = rng.uniform(0.03, 0.07)
+            seg(cv, out, [(cu - ln * math.cos(ang), cvv - ln * math.sin(ang) * 0.6), (cu + ln * math.cos(ang), cvv + ln * math.sin(ang) * 0.6)],
+                0.011, C(.30, .22, .14) if water else C(.12, .09, .07), lift=0.006)
+    for u, v, h, s in sorted(fires, key=lambda f: f[1]):
+        flames(cv, out, u, v, h, rng, s)
+    return out
+
+
+PILLAGE = {   # improvement: (fires as (u, v, height, size), radius kept clear for the resource, at sea, how black it burns)
+    "Farm": ([(0.40, -0.47, 0.05, 1.0), (-0.35, 0.15, 0.0, 0.8), (0.1, 0.45, 0.0, 0.7)], 0.0, False, 0.92),
+    "Lumber mill": ([(-0.15, -0.2, 0.07, 1.1), (0.1, 0.04, 0.04, 0.8)], 0.0, False, 0.92),
+    "Trading post": ([(-0.28, -0.3, 0.05, 0.9), (0.26, -0.32, 0.05, 0.9), (0.06, 0.06, 0.04, 0.8)], 0.0, False, 0.92),
+    "Pasture": ([(-0.5, -0.52, 0.05, 0.9), (0.55, -0.42, 0.04, 0.7)], R0 + 0.02, False, 0.92),
+    "Camp": ([(-0.55, -0.4, 0.06, 0.8), (0.55, -0.38, 0.06, 0.8)], R0 + 0.02, False, 0.92),
+    "Plantation": ([(0.0, -0.66, 0.05, 0.9), (0.6, 0.25, 0.04, 0.8), (-0.62, 0.1, 0.04, 0.8)], R0 + 0.02, False, 0.92),
+    "Mine": ([(-0.4, -0.55, 0.07, 1.0), (0.4, -0.55, 0.05, 0.8)], R0 + 0.02, False, 0.92),
+    "Quarry": ([(-0.55, -0.25, 0.04, 0.8), (0.58, 0.2, 0.05, 0.7)], R0 + 0.02, False, 0.92),
+    "Fishing Boats": ([(-0.55, -0.42, 0.02, 0.7), (0.6, -0.36, 0.02, 0.7)], R0 + 0.02, True, 0.92),
+    "Oil well": ([(0.6, -0.24, 0.08, 1.2), (-0.52, -0.42, 0.05, 0.8)], R0 + 0.02, False, 0.92),
+    "Offshore Platform": ([(0.0, -0.62, 0.2, 1.2)], R0 + 0.02, True, 0.92),
+    "Fort": ([(-0.1, -0.06, 0.09, 0.9), (0.12, 0.08, 0.09, 0.8)], 0.0, False, 0.92),
+    "Citadel": ([(0.0, 0.02, 0.27, 1.0), (-0.4, 0.3, 0.07, 0.8)], 0.0, False, 0.92),
+    "Academy": ([(0.0, -0.36, 0.2, 1.0), (0.38, 0.0, 0.07, 0.8), (-0.38, 0.1, 0.07, 0.7)], 0.0, False, 0.92),
+    "Landmark": ([(0.0, 0.0, 0.03, 0.9), (0.3, 0.2, 0.05, 0.6)], 0.0, False, 0.5),
+    "Manufactory": ([(-0.12, 0.0, 0.1, 1.1), (0.35, 0.25, 0.04, 0.8)], 0.0, False, 0.92),
+    "Customs house": ([(-0.15, -0.3, 0.1, 1.0), (0.13, 0.1, 0.08, 0.9)], 0.0, False, 0.92),
+    "Holy site": ([(0.0, 0.0, 0.06, 1.0), (-0.3, 0.28, 0.04, 0.7)], 0.0, False, 0.92),
+    "Moai": ([(-0.2, 0.0, 0.03, 0.7), (0.3, 0.05, 0.03, 0.7)], 0.0, False, 0.3),
+    "Terrace farm": ([(0.0, 0.05, 0.04, 0.9), (-0.4, 0.3, 0.0, 0.8), (0.35, -0.35, 0.0, 0.7)], 0.0, False, 0.92),
+    "Polder": ([(0.3, -0.25, 0.2, 1.0), (-0.3, 0.2, 0.0, 0.8)], 0.0, False, 0.92),
+}
+
+
+def render_improvement(name, fn, era=None, pillage_as=None, seed_name=None, overhang=110):
+    """Write Tiles/<name>[-<era>] and, with pillage_as (a PILLAGE entry), its burned image
+    Tiles/<name>-Pillaged[-<era>]. seed_name picks the random layout: an era image that repeats the
+    base look uses the base's, so it comes out identical and the atlas packer stores it once."""
+    tail = "-" + era if era else ""
+    rel, rel_p = "Tiles/" + name + tail, "Tiles/" + name + "-Pillaged" + tail
+    if not (rt.wanted(rel) or pillage_as and rt.wanted(rel_p)):
         return
-    cv = canvas(IMP_W, overhang=80)
-    rng = res_rng("Wheat")
-    P = r_wheat(Zoom(cv, RES_ZOOM), cv.empty(), rng)
-    P = farm_fields(cv, P, res_rng("Farm"), keep_center=True)
-    finish(cv, P, rel)
+    seed_name = seed_name or name
+    cv = canvas(IMP_W, overhang=overhang)
+    P = fn(cv, cv.empty(), res_rng(seed_name))
+    if rt.wanted(rel):
+        finish(cv, P, rel)
+    if pillage_as and rt.wanted(rel_p):
+        layer = fn.layer(cv, cv.empty(), res_rng(seed_name)) if hasattr(fn, "layer") else P.copy()
+        B = pillage(cv, layer, res_rng(seed_name + "-Pillaged"), *pillage_as, seed=7000 + sum(map(ord, seed_name)))
+        finish(cv, over(fn.under(cv), B) if hasattr(fn, "under") else B, rel_p)
+
+
+def render_improvements():
+    for name, fn in {**RING_IMPROVEMENTS, **FULL_IMPROVEMENTS}.items():
+        render_improvement(name, fn, pillage_as=PILLAGE.get(name))
+    fires, clear, water, char = PILLAGE["Farm"]
+    render_improvement("Wheat+Farm", wheat_farm(imp_farm), pillage_as=(round_wheat(fires), R0 + 0.02, water, char), seed_name="Farm")
+    for name, eras in ERA_IMPROVEMENTS.items():
+        base_fires, clear, water, char = PILLAGE[name]
+        for era, fn, fires in eras:
+            seed = name if fn is None else name + "-" + era
+            fn, fires = fn or {**RING_IMPROVEMENTS, **FULL_IMPROVEMENTS}[name], fires or base_fires
+            render_improvement(name, fn, era, (fires, clear, water, char), seed)
+            if name == "Farm":
+                render_improvement("Wheat+Farm", wheat_farm(fn), era, (round_wheat(fires), R0 + 0.02, water, char), seed)
 
 
 # ============================================================================ city centres
@@ -1730,9 +2100,7 @@ def main():
     rt.FILTER = sys.argv[1:] or None
     for name in RESOURCES:
         render_resource(name)
-    for name, fn in {**RING_IMPROVEMENTS, **FULL_IMPROVEMENTS}.items():
-        render_improvement(name, fn)
-    render_wheat_farm()
+    render_improvements()
     render_cities()
     render_wonders()
     groups = {"resources": 0, "improvements": 0, "cities": 0, "wonders": 0}

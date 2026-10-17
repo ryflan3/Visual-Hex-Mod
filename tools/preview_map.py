@@ -340,15 +340,22 @@ def unit_layers(painter, name, nation):
     return out
 
 
-def flag_icon(width, nation):
-    """A stand-in for Unciv's unit flag: a disc in the nation's outer colour with an inner-colour mark."""
+def flag_icon(width, nation, state=""):
+    """The unit flag as Unciv composes it from the mod's UnitFlagIcons: the banner in the nation's
+    inner colour, its inner shape in the outer colour, and the cloth and rod on top at 88%. The
+    unit's icon, which comes from the game itself, is left out."""
     outer, inner = NATIONS[nation]
-    d = round(width * 0.37) * 4    # 30 of the hex image's 81 units, drawn 4x and scaled down for smooth edges
-    im = Image.new("RGBA", (d, d), (0, 0, 0, 0))
-    g = ImageDraw.Draw(im)
-    g.ellipse((2, 2, d - 3, d - 3), fill=outer + (255,), outline=(20, 20, 20, 255), width=max(2, d // 30))
-    g.ellipse((d * 0.3, d * 0.3, d * 0.7, d * 0.7), outline=inner + (255,), width=max(3, d // 12))
-    return im.resize((d // 4, d // 4), Image.LANCZOS)
+    folder = os.path.join(ROOT, "Images", "UnitFlagIcons")
+    shape = Image.open(os.path.join(folder, "UnitFlag%s.png" % state)).convert("RGBA")
+    w = round(width * 0.37)    # 30 of the 81 px a tile is wide in the game
+    h = round(w * shape.height / shape.width)
+    im = tinted(shape.resize((w, h), Image.LANCZOS), [k / 255 for k in inner])
+    im.alpha_composite(tinted(Image.open(os.path.join(folder, "UnitFlag%sInner.png" % state)).convert("RGBA").resize((w, h), Image.LANCZOS),
+                              [k / 255 for k in outer]))
+    cloth = Image.open(os.path.join(folder, "UnitFlagMask%s.png" % state)).convert("RGBA")
+    mw, mh = round(w * 0.88), round(w * 0.88 * cloth.height / cloth.width)
+    im.alpha_composite(cloth.resize((mw, mh), Image.LANCZOS), ((w - mw) // 2, (h - mh) // 2))
+    return im
 
 
 def render(tiles, cols, rows, width, painter=None, rivers=None, fog=None, flags=False):
@@ -398,7 +405,8 @@ def render(tiles, cols, rows, width, painter=None, rivers=None, fog=None, flags=
     for c, r in shown if flags else []:
         for slot, dv in (("civilian", 0.477), ("military", -0.511)):
             if tiles[(c, r)].get(slot):
-                icon = flag_icon(width, tiles[(c, r)][slot][1])
+                name, nation = tiles[(c, r)][slot]
+                icon = flag_icon(width, nation, "Civilian" if slot == "civilian" else "Embark" if name.startswith("EmbarkedUnit") else "")
                 cx = width / 2 + c * 1.5 * width / 2
                 cy = top_pad + hex_h / 2 + (r + 0.5 * (c & 1)) * hex_h + dv * width / 2
                 canvas.alpha_composite(icon, (round(cx - icon.width / 2), round(cy - icon.height / 2)))
@@ -463,6 +471,9 @@ def write_catalogs(folder):
     eras = ["Ancient era", "Classical era", "Medieval era", "Renaissance era", "Industrial era", "Modern era", "Information era"]
     catalog([(e.replace(" era", ""), t("Grassland", improvement="City center-" + e)) for e in eras],
             os.path.join(folder, "catalog-cities.jpg"), 7)
+    from render_regional_cities import ERAS, REGIONS
+    catalog([("%s, %s" % (style, e.replace(" era", "")), t("Grassland", improvement="City center-%s-%s" % (civs[0], e)))
+             for style, civs in REGIONS.items() for e in ERAS], os.path.join(folder, "catalog-regional-cities.jpg"), 4)
     wonders = ["Mount Fuji", "Mount Kilimanjaro", "Mount Kailash", "Mount Sinai", "Sri Pada", "Cerro de Potosi", "Uluru", "Grand Mesa",
                "Barringer Crater", "Krakatoa", "Lake Victoria", "Great Barrier Reef", "Old Faithful", "El Dorado", "Fountain of Youth",
                "King Solomon's Mines", "Rock of Gibraltar"]

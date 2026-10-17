@@ -1,6 +1,6 @@
 # Visual Hex Satellite
 
-A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map look like satellite imagery. It has hill-shaded terrain, mountains that rise above their tiles, and soft transitions where terrains meet. It also redraws resources, improvements, cities and natural wonders in the same style, and every unit, including each civilization's unique units, as a bold illustration. Farms, mines, lumber mills, workers and settlers change with the eras, and pillaged improvements are shown burning. Readability comes first: resources are drawn larger than life so each one is recognizable at a glance, and units have ink outlines and their owner's colours so they stand out on any terrain.
+A tileset mod for [Unciv](https://github.com/yairm210/Unciv) that makes the map look like satellite imagery. It has hill-shaded terrain, mountains that rise above their tiles, and soft transitions where terrains meet. It also redraws resources, improvements, cities and natural wonders in the same style, and every unit, including each civilization's unique units, as a bold illustration. Cities outside Europe are built in their own region's style, farms, mines, lumber mills, workers and settlers change with the eras, pillaged improvements are shown burning, and unit flags are heraldic banners. Readability comes first: resources are drawn larger than life so each one is recognizable at a glance, and units have ink outlines and their owner's colours so they stand out on any terrain.
 
 ![Sample map rendered with the tileset](preview/preview.jpg)
 
@@ -10,7 +10,7 @@ As a player sees it, with fog of war and unit flags. Tiles you've seen but can't
 
 ![Fog of war](preview/fog.jpg)
 
-*The previews and catalogs are made by `tools/preview_map.py`, which lays the images out using the same rules as the game. They aren't screenshots from Unciv, and the round unit flags are simple stand-ins for the game's own.*
+*The previews and catalogs are made by `tools/preview_map.py`, which lays the images out using the same rules as the game. They aren't screenshots from Unciv. The game also puts each unit's icon on its flag, which the previews leave out.*
 
 ## Install
 
@@ -46,6 +46,10 @@ If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't l
 
 ![City centres](preview/catalog-cities.jpg)
 
+**Regional city centres** for civilizations outside Europe, from the Ancient to the Renaissance era. From the Industrial era on, every city is a modern one:
+
+![Regional city centres](preview/catalog-regional-cities.jpg)
+
 **Natural wonders:**
 
 ![Natural wonders](preview/catalog-wonders.jpg)
@@ -70,11 +74,13 @@ If **Visual Hex Satellite** isn't in the Tileset list, the mod's images didn't l
 | Improvements | 38 | Every buildable improvement, ruins and barbarian camps, plus a combined `Wheat+Farm`. Farms, mines and lumber mills have 13 era versions. See below |
 | Pillaged improvements | 35 | Every improvement that can be pillaged, and each era version |
 | City centres | 8 | Ancient, Classical, Medieval, Renaissance, Industrial, Modern and Information eras, plus a default |
+| Regional city centres | 119 | 20 pictures in 5 styles, one image per civilization and era. See below |
 | Natural wonders | 17 | All of the base game's wonders |
 | Map overlays | 22 | Selection hex, highlight, crosshair, fog-of-war mist, unexplored-edge fog, 8 border pieces, 7 movement arrows, road, railroad |
 | Units | 390 | 65 units, 51 unique units, 8 era versions of the worker and settler, and 6 boats for embarked units, each with two colour layers. See below |
+| Unit flags | 16 | A banner for military, civilian, fortified and embarked units: shape, inner shape, cloth and selection glow |
 
-All 718 images pack onto **four 2048×2048 texture sheets**. Identical images, such as an era version that repeats the base look, are stored once, so that's 578 distinct images and about 90 MB of graphics memory including mipmaps.
+All 853 images pack onto **four 2048×2048 texture sheets and a small 1024×256 one**. Identical images, such as an era version that repeats the base look or the same city for several civilizations, are stored once, so that's 614 distinct images and about 91 MB of graphics memory including mipmaps.
 
 Anything this tileset doesn't draw falls back to the built-in **HexaRealm** tileset. With the base game's rules that's nothing on the map itself. Units, resources, improvements or wonders added by other mods would come from HexaRealm.
 
@@ -88,6 +94,24 @@ The unit set is called **Visual Hex Satellite**, like the tileset, and is chosen
 * **Unique units** each have their own image: 51 of them, from the Maori Warrior and the Jaguar to the Panzer and the Khan. They wear the dress and carry the weapons of their civilization, so they're easy to tell from the unit they replace, which is what Unciv would show without them. The Zero and the B17 are aircraft, so they're never on the map.
 * **Workers and settlers change with the eras.** The worker hoes a field in the Ancient era, digs with a shovel from the Medieval era, carries a pickaxe and wheelbarrow in the Industrial era and drives a bulldozer from the Modern era. Settlers go from a family on foot to a handcart, a covered wagon and a station wagon. Unciv picks the unit image for its owner's era, or the latest earlier era that has one.
 * **Aircraft and missiles** have no images. Unciv never draws them on the map; they're listed on their city's or carrier's flag instead.
+
+### Unit flags
+
+The mod replaces Unciv's round unit flags with heraldic banners hanging from a gold rod, in the owner's colours with the unit's icon on the cloth. The shape shows the unit's state: a swallowtail for military units, a point for civilians, crenellations for a fortified unit and a wavy hem for an embarked one. Flags aren't part of the tileset, so the banners replace the game's flags whenever the mod is enabled, whichever tileset is chosen. **Options → Display → Unit icon opacity** makes them more see-through.
+
+### Regional cities
+
+For a city's tile Unciv looks for `City center-<civilization>-<era>`, from the owner's era back to the first one, before the plain era images. So each of the base game's civilizations outside Europe has its own city images:
+
+| Style | Civilizations | Ancient | Classical | Medieval | Renaissance |
+|---|---|---|---|---|---|
+| East Asian | China, Japan, Korea, Mongolia | Rammed-earth walls, thatch, a great hall | Courtyard houses, gate towers, a palace with twin towers | Brick walls, a pagoda, green-roofed halls, a canal | A red-walled palace city with golden roofs, a lake |
+| Middle Eastern | Babylon, Egypt, Arabia, Persia, Ottomans, Carthage | A mud-brick town round a ziggurat, palms by a canal | The blue Ishtar gate, a palace, hanging gardens | A round city with a green-domed mosque | A great mosque with grey domes and needle minarets |
+| South Asian | India, Siam | A brick grid with a citadel and its great bath | A great stupa with gateways, a monastery | A temple city with gopurams and a towering vimana | A red sandstone fort round a marble tomb and garden |
+| Mesoamerican | Aztecs, Maya, Inca | Thatched houses round a mound and colossal heads | Pyramids of the Sun and Moon on a great avenue | A lake city with causeways, canals and the twin temple | An Inca city: terraces, stone compounds, zigzag walls |
+| African | Songhai, Ethiopia | Hut compounds in a thorn fence, a cattle pen | Carved stelae and a stone palace | The great mud mosque and a market | A stone castle with domed towers, round churches |
+
+From the Industrial era on, cities everywhere look modern, so these civilizations use the same images as everyone else, repeated under their own names. Without them a later era would fall back to the civilization's last regional image. City-states and the other civilizations use the plain images.
 
 ### Edge transitions
 
@@ -121,6 +145,8 @@ Every image is generated by Python scripts, using NumPy and Pillow. There's no h
 * `tools/render_items.py` draws the resources, improvements, city centres and natural wonders, with the same light and projection.
 * `tools/render_units.py` draws the units as flat illustrations: shapes with dark ink outlines and simple shading lit from the west, like the map, plus a soft dark edge and a ground shadow. It paints each unit's image and its owner-colour layer together, so whatever is drawn in front of a coloured part also hides it in the colour layer. It measures each unit first and then sizes and places it, so nothing is cut off at the image edge.
 * `tools/render_unique_units.py` draws the unique units with the same people, animals, ships and guns.
+* `tools/render_regional_cities.py` draws the regional city centres, with the same buildings as the city centres plus roofs that flare, domes, pyramids and the like.
+* `tools/render_flags.py` draws the unit flag banners.
 
 How the images fit together:
 
@@ -138,7 +164,7 @@ tools/build.sh Mountain    # only re-render images whose path contains "Mountain
 
 You need Python 3 with `numpy` and `pillow`, plus Java 11 or newer. The script downloads the libGDX 1.14.2 texture packer (the version Unciv uses) into `.gdx/`. `tools/PackAtlas.java` packs with the same settings as Unciv's desktop packer: 2048 px pages, 8 px padding and mipmaps.
 
-Android can't pack images on the device, so the packed `game.atlas`, `game.png` to `game4.png` and `Atlases.json` are committed. The **Pack texture atlas** GitHub workflow repacks and commits them whenever files under `Images/` change.
+Android can't pack images on the device, so the packed `game.atlas`, `game.png` to `game5.png` and `Atlases.json` are committed. The **Pack texture atlas** GitHub workflow repacks and commits them whenever files under `Images/` change.
 
 ## Known limitations
 
@@ -146,6 +172,7 @@ Android can't pack images on the device, so the packed `game.atlas`, `game.png` 
 * **Edge order.** Unciv draws edge images after terrain features, so a beach or blend along a forest tile's edge paints over the trees right at that edge. Fixing this needs a change in Unciv itself: drawing edge images before features.
 * **Mountain cliffs.** Cliffs only appear on the south sides of mountains. On the north sides the mountain rises over the edge, and an edge image would paint across it.
 * **Era changes.** City centres, embarked boats, farms, mines, lumber mills, workers and settlers change with the era. Other improvements and units keep one look all game.
+* **Flags and eras.** Unciv picks flag images by name only, with no era or civilization, so every unit has the same banner all game.
 * **Pillaged roads.** A pillaged road or railroad still gets the game's red tint, as there's no pillaged road image.
 * **Unit poses.** Units have one pose each. Unciv doesn't animate unit images.
 

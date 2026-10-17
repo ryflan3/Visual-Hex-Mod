@@ -7,8 +7,10 @@ cd "$(dirname "$0")/.."
 
 python3 tools/render_tiles.py "$@"
 python3 tools/render_items.py "$@"
+python3 tools/render_regional_cities.py "$@"
 python3 tools/render_units.py "$@"
 python3 tools/render_unique_units.py "$@"
+python3 tools/render_flags.py
 
 GDX_VERSION=1.14.2   # the libGDX version Unciv is built with
 GDX_DIR="${GDX_DIR:-.gdx}"

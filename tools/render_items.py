@@ -1626,20 +1626,17 @@ def grid_streets(cv, freq, width=0.12, ang=0.0):
     return smooth(width, width * 0.5, np.minimum(gx, gy))
 
 
-def wall_ring(cv, P, r, h, col, towers=0, tower_r=0.04, star=0):
-    pts = [(r * math.cos(a), r * 0.92 * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 49)]
-    if star:
-        pts = star_points(star, r * 1.12, r * 0.84, 0.0)
-        pts = pts + [pts[0]]
-    back = [p for p in pts if p[1] <= 0.02]
-    front = [p for p in pts if p[1] > -0.02]
-    seg(cv, P, pts, 0.04, np.asarray(col) * 0.55, alpha=0.6)
-    seg(cv, P, back, 0.045, col, lift=h)
+def wall_ring(cv, P, r, h, col, towers=0, tower_r=0.04):
+    """A round city wall: its shadow, the northern half and its towers. Returns the southern half's
+    points for wall_front(), which draws it after the houses."""
+    ring = lambda a0, a1, n: [(r * math.cos(a), r * 0.92 * math.sin(a)) for a in np.linspace(a0, a1, n)]
+    seg(cv, P, ring(0, 2 * math.pi, 49), 0.04, np.asarray(col) * 0.55, alpha=0.6)
+    seg(cv, P, ring(math.pi, 2 * math.pi, 25), 0.045, col, lift=h)
     for k in range(towers):
         a = k * 2 * math.pi / towers
         if math.sin(a) <= 0:
             cyl(cv, P, r * math.cos(a), r * 0.92 * math.sin(a), tower_r, h * 1.5, col, np.asarray(col) * 0.75)
-    return front
+    return ring(0, math.pi, 25)
 
 
 def wall_front(cv, P, front, h, col, towers=0, r=0.0, tower_r=0.04):
